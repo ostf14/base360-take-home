@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import { CHAPTERS } from "@/lib/chapters";
 import { Canvas } from "./Canvas";
@@ -7,8 +7,8 @@ import { CopyColumn } from "./CopyColumn";
 
 // The scroll-story hero. Owns the single source of scroll truth
 // (scrollYProgress) and derives the active chapter. Everything downstream —
-// surfaces, copy, stepper, and the shared-layout Maya morph — is driven off
-// this one value.
+// surfaces, copy, stepper, and the single always-mounted Maya overlay — is
+// driven off this one value.
 export function Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -16,14 +16,24 @@ export function Hero() {
     offset: ["start start", "end end"],
   });
   const [activeChapter, setActiveChapter] = useState(0);
+  const [glitching, setGlitching] = useState(false);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     const next = Math.min(
       CHAPTERS.length - 1,
       Math.max(0, Math.floor(v * CHAPTERS.length))
     );
-    setActiveChapter((prev) => (next === prev ? prev : next));
+    setActiveChapter((prev) => {
+      if (next !== prev) setGlitching(true);
+      return next;
+    });
   });
+
+  useEffect(() => {
+    if (!glitching) return;
+    const id = window.setTimeout(() => setGlitching(false), 220);
+    return () => window.clearTimeout(id);
+  }, [glitching]);
 
   return (
     <section
@@ -41,6 +51,7 @@ export function Hero() {
           <Canvas
             scrollYProgress={scrollYProgress}
             activeChapter={activeChapter}
+            glitching={glitching}
           />
           {/* Single 1px acid hairline at the seam between copy and canvas —
               a static, honest continuity marker, no dashed debris. */}

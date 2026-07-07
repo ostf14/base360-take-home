@@ -1,10 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
-import { MayaAvatar } from "../MayaAvatar";
+import { MayaAnchor } from "../MayaOverlay";
 
 interface Props {
-  isActive: boolean;
   progress: number;
+  anchorRef: React.RefObject<HTMLDivElement>;
 }
 
 const NODES = [
@@ -16,7 +16,7 @@ const NODES = [
   { key: "closed", label: "CLOSED · $32", x: 55, y: 75, sub: "won" },
 ];
 
-export function SystemSurface({ isActive, progress }: Props) {
+export function SystemSurface({ progress, anchorRef }: Props) {
   return (
     <div className="absolute inset-0 p-6 pt-12 flex">
       <div
@@ -58,14 +58,7 @@ export function SystemSurface({ isActive, progress }: Props) {
               style={{ left: `${n.x}%`, top: `${n.y}%` }}
             >
               <div className="flex flex-col items-center gap-2">
-                {isClosed &&
-                  (isActive ? (
-                    <motion.div layoutId="maya-lead" className="shrink-0">
-                      <MayaAvatar size={40} ring />
-                    </motion.div>
-                  ) : (
-                    <MayaAvatar size={40} ring />
-                  ))}
+                {isClosed && <MayaAnchor anchorRef={anchorRef} />}
                 <div
                   className="px-3 py-1.5 rounded-sm text-[10px] font-mono uppercase tracking-wider"
                   style={{

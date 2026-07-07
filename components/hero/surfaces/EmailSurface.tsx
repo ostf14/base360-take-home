@@ -1,10 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
-import { MayaAvatar } from "../MayaAvatar";
+import { MayaAnchor } from "../MayaOverlay";
 
 interface Props {
-  isActive: boolean;
   progress: number;
+  anchorRef: React.RefObject<HTMLDivElement>;
 }
 
 const EMAILS = [
@@ -36,7 +36,7 @@ const EMAILS = [
   },
 ];
 
-export function EmailSurface({ isActive, progress }: Props) {
+export function EmailSurface({ progress, anchorRef }: Props) {
   return (
     <div className="absolute inset-0 p-6 pt-12 flex">
       <div
@@ -60,13 +60,7 @@ export function EmailSurface({ isActive, progress }: Props) {
               className="flex items-center gap-2 px-2 py-1 rounded-sm"
               style={{ border: "1px solid var(--hairline)" }}
             >
-              {isActive ? (
-                <motion.div layoutId="maya-lead" className="shrink-0">
-                  <MayaAvatar size={24} />
-                </motion.div>
-              ) : (
-                <MayaAvatar size={24} />
-              )}
+              <MayaAnchor anchorRef={anchorRef} />
               <span className="text-text-hi normal-case">Maya R.</span>
             </span>
           </div>

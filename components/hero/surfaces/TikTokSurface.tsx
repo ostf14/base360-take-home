@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { MayaAvatar } from "../MayaAvatar";
+import { MayaAnchor } from "../MayaOverlay";
 
 interface CommentRow {
   handle: string;
@@ -17,12 +17,12 @@ const COMMENTS: CommentRow[] = [
 ];
 
 interface Props {
-  isActive: boolean;
   igniteProgress: number;
+  anchorRef: React.RefObject<HTMLDivElement>;
 }
 
-export function TikTokSurface({ isActive, igniteProgress }: Props) {
-  const active = isActive;
+export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
+  const active = igniteProgress > 0.15;
   return (
     <div className="absolute inset-0 flex flex-col p-6 pt-12">
       {/* Post header — mimics TikTok floating chrome */}
@@ -50,7 +50,7 @@ export function TikTokSurface({ isActive, igniteProgress }: Props) {
           <CommentBubble key={c.handle} c={c} dim={active} delay={i * 0.05} />
         ))}
 
-        {/* Maya's ignited comment */}
+        {/* Maya's ignited comment — anchor slot replaces the previous avatar */}
         <motion.div
           initial={false}
           animate={{
@@ -69,13 +69,7 @@ export function TikTokSurface({ isActive, igniteProgress }: Props) {
             }}
           />
           <div className="relative flex gap-3 items-start p-2">
-            {isActive ? (
-              <motion.div layoutId="maya-lead" className="shrink-0">
-                <MayaAvatar size={36} />
-              </motion.div>
-            ) : (
-              <MayaAvatar size={36} />
-            )}
+            <MayaAnchor anchorRef={anchorRef} />
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm font-semibold text-text-hi">

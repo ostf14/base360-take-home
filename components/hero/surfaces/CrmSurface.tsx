@@ -1,10 +1,10 @@
 "use client";
 import { motion } from "framer-motion";
-import { MayaAvatar } from "../MayaAvatar";
+import { MayaAnchor } from "../MayaOverlay";
 
 interface Props {
-  isActive: boolean;
   progress: number;
+  anchorRef: React.RefObject<HTMLDivElement>;
 }
 
 const TIMELINE = [
@@ -15,7 +15,7 @@ const TIMELINE = [
   { t: "12:07", label: "Cart link delivered · $32" },
 ];
 
-export function CrmSurface({ isActive, progress }: Props) {
+export function CrmSurface({ progress, anchorRef }: Props) {
   return (
     <div className="absolute inset-0 p-6 pt-12 flex">
       <div
@@ -36,15 +36,9 @@ export function CrmSurface({ isActive, progress }: Props) {
           </div>
         </div>
 
-        {/* Header */}
+        {/* Header — anchor slot reserves space for the overlay Maya */}
         <div className="flex items-start gap-4">
-          {isActive ? (
-            <motion.div layoutId="maya-lead" className="shrink-0">
-              <MayaAvatar size={48} />
-            </motion.div>
-          ) : (
-            <MayaAvatar size={48} />
-          )}
+          <MayaAnchor anchorRef={anchorRef} />
           <div className="flex flex-col gap-1">
             <div className="text-2xl font-display text-text-hi leading-tight">
               Maya R.

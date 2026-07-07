@@ -1,22 +1,24 @@
 "use client";
-import { LayoutGroup, motion, MotionValue, useMotionValueEvent } from "framer-motion";
-import { useState } from "react";
+import {
+  motion,
+  MotionValue,
+  useMotionValueEvent,
+} from "framer-motion";
+import { createRef, useLayoutEffect, useMemo, useState } from "react";
 import { TikTokSurface } from "./surfaces/TikTokSurface";
 import { DmSurface } from "./surfaces/DmSurface";
 import { CrmSurface } from "./surfaces/CrmSurface";
 import { CallSurface } from "./surfaces/CallSurface";
 import { EmailSurface } from "./surfaces/EmailSurface";
 import { SystemSurface } from "./surfaces/SystemSurface";
+import { Anchor, MayaOverlay } from "./MayaOverlay";
 
 interface Props {
   scrollYProgress: MotionValue<number>;
   activeChapter: number;
+  glitching: boolean;
 }
 
-// Each chapter has a "dwell" (surface at full opacity) followed by a "travel"
-// (this surface fading out while the next fades in). Chapter i owns the slot
-// [i/6, (i+1)/6] of the scroll timeline; peak opacity lives on the first half
-// of that slot, crossfade to the next surface fills the second half.
 interface Range {
   fadeInStart: number;
   plateauStart: number;
@@ -54,18 +56,68 @@ function localProgress(t: number, r: Range) {
   return Math.min(1, Math.max(0, (t - r.fadeInStart) / span));
 }
 
-// The right-column stage. Surfaces crossfade on scrollYProgress ranges. Each
-// active surface renders Maya's identity inside a motion.div layoutId="maya-lead";
-// when the active flips, Framer's shared-layout system morphs that element
-// from its outgoing position/size to the incoming one — that morph IS the
-// through-line of the story. No overlay, no floating chip.
-export function Canvas({ scrollYProgress, activeChapter }: Props) {
+// Hand-calibrated fallback anchors as % of canvas. Used when measurement
+// hasn't happened yet (first paint) or if a ref is null.
+const FALLBACK_PCT: Anchor[] = [
+  { x: 12, y: 34 },   // 0 tiktok — Maya's comment row
+  { x: 60, y: 15 },   // 1 dm — header contact avatar
+  { x: 10, y: 20 },   // 2 crm — record header
+  { x: 22, y: 30 },   // 3 call — callee card
+  { x: 78, y: 11 },   // 4 email — recipient chip
+  { x: 55, y: 74 },   // 5 system — closed node
+];
+
+// The right-column stage. Surfaces crossfade on scrollYProgress ranges.
+// One always-mounted MayaOverlay sits above the surface stack; its position
+// is driven from measured anchor centers plus scrollYProgress. Because the
+// overlay never mounts/unmounts, there is no race — it can't disappear.
+export function Canvas({ scrollYProgress, activeChapter, glitching }: Props) {
   const [t, setT] = useState(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => setT(v));
+
+  const [canvasBoxRef] = useState(() => createRef<HTMLDivElement>());
+  const anchorRefs = useMemo(
+    () => Array.from({ length: 6 }, () => createRef<HTMLDivElement>()),
+    []
+  );
+
+  const [anchors, setAnchors] = useState<(Anchor | null)[]>(() =>
+    Array(6).fill(null)
+  );
+  const [fallback, setFallback] = useState<Anchor[]>(() =>
+    // Sensible pre-measurement guess so the overlay doesn't render at 0,0.
+    FALLBACK_PCT.map((p) => ({ x: (p.x / 100) * 800, y: (p.y / 100) * 700 }))
+  );
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const box = canvasBoxRef.current?.getBoundingClientRect();
+      if (!box) return;
+      const measured: (Anchor | null)[] = anchorRefs.map((ref) => {
+        const el = ref.current;
+        if (!el) return null;
+        const b = el.getBoundingClientRect();
+        return {
+          x: b.left + b.width / 2 - box.left,
+          y: b.top + b.height / 2 - box.top,
+        };
+      });
+      const nextFallback = FALLBACK_PCT.map((p) => ({
+        x: (p.x / 100) * box.width,
+        y: (p.y / 100) * box.height,
+      }));
+      setAnchors(measured);
+      setFallback(nextFallback);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [anchorRefs, canvasBoxRef]);
 
   return (
     <div className="relative h-full flex items-stretch justify-stretch p-6">
       <div
+        ref={canvasBoxRef}
         className="relative flex-1 overflow-hidden rounded-2xl"
         style={{
           background: "var(--bg)",
@@ -76,44 +128,50 @@ export function Canvas({ scrollYProgress, activeChapter }: Props) {
       >
         <AmbientGlow activeChapter={activeChapter} />
 
-        <LayoutGroup id="maya-lead-group">
-          <SurfaceSlot opacity={opacityForRange(t, RANGES[0])}>
-            <TikTokSurface
-              isActive={activeChapter === 0}
-              igniteProgress={localProgress(t, RANGES[0])}
-            />
-          </SurfaceSlot>
-          <SurfaceSlot opacity={opacityForRange(t, RANGES[1])}>
-            <DmSurface
-              isActive={activeChapter === 1}
-              progress={localProgress(t, RANGES[1])}
-            />
-          </SurfaceSlot>
-          <SurfaceSlot opacity={opacityForRange(t, RANGES[2])}>
-            <CrmSurface
-              isActive={activeChapter === 2}
-              progress={localProgress(t, RANGES[2])}
-            />
-          </SurfaceSlot>
-          <SurfaceSlot opacity={opacityForRange(t, RANGES[3])}>
-            <CallSurface
-              isActive={activeChapter === 3}
-              progress={localProgress(t, RANGES[3])}
-            />
-          </SurfaceSlot>
-          <SurfaceSlot opacity={opacityForRange(t, RANGES[4])}>
-            <EmailSurface
-              isActive={activeChapter === 4}
-              progress={localProgress(t, RANGES[4])}
-            />
-          </SurfaceSlot>
-          <SurfaceSlot opacity={opacityForRange(t, RANGES[5])}>
-            <SystemSurface
-              isActive={activeChapter === 5}
-              progress={localProgress(t, RANGES[5])}
-            />
-          </SurfaceSlot>
-        </LayoutGroup>
+        <SurfaceSlot opacity={opacityForRange(t, RANGES[0])}>
+          <TikTokSurface
+            igniteProgress={localProgress(t, RANGES[0])}
+            anchorRef={anchorRefs[0]}
+          />
+        </SurfaceSlot>
+        <SurfaceSlot opacity={opacityForRange(t, RANGES[1])}>
+          <DmSurface
+            progress={localProgress(t, RANGES[1])}
+            anchorRef={anchorRefs[1]}
+          />
+        </SurfaceSlot>
+        <SurfaceSlot opacity={opacityForRange(t, RANGES[2])}>
+          <CrmSurface
+            progress={localProgress(t, RANGES[2])}
+            anchorRef={anchorRefs[2]}
+          />
+        </SurfaceSlot>
+        <SurfaceSlot opacity={opacityForRange(t, RANGES[3])}>
+          <CallSurface
+            progress={localProgress(t, RANGES[3])}
+            anchorRef={anchorRefs[3]}
+          />
+        </SurfaceSlot>
+        <SurfaceSlot opacity={opacityForRange(t, RANGES[4])}>
+          <EmailSurface
+            progress={localProgress(t, RANGES[4])}
+            anchorRef={anchorRefs[4]}
+          />
+        </SurfaceSlot>
+        <SurfaceSlot opacity={opacityForRange(t, RANGES[5])}>
+          <SystemSurface
+            progress={localProgress(t, RANGES[5])}
+            anchorRef={anchorRefs[5]}
+          />
+        </SurfaceSlot>
+
+        {/* ONE Maya. Mounted once. Never conditionally rendered. */}
+        <MayaOverlay
+          scrollYProgress={scrollYProgress}
+          anchors={anchors}
+          fallback={fallback}
+          glitching={glitching}
+        />
 
         <CornerChrome activeChapter={activeChapter} />
       </div>
@@ -128,14 +186,15 @@ function SurfaceSlot({
   opacity: number;
   children: React.ReactNode;
 }) {
-  const visible = opacity > 0.02;
+  // NOTE: no `visibility: hidden` here anymore — anchors must stay measurable
+  // even while their surface is invisible. `opacity: 0` still keeps layout,
+  // which is all we need for getBoundingClientRect to return real coords.
   return (
     <div
       className="absolute inset-0 z-10"
       style={{
         opacity,
         pointerEvents: opacity > 0.5 ? "auto" : "none",
-        visibility: visible ? "visible" : "hidden",
       }}
     >
       {children}
@@ -166,8 +225,8 @@ function CornerChrome({ activeChapter }: { activeChapter: number }) {
 }
 
 function AmbientGlow({ activeChapter }: { activeChapter: number }) {
-  const xs = [20, 72, 30, 32, 72, 55];
-  const ys = [48, 25, 32, 45, 15, 75];
+  const xs = [12, 60, 10, 22, 78, 55];
+  const ys = [34, 15, 20, 30, 11, 74];
   const x = xs[activeChapter] ?? 50;
   const y = ys[activeChapter] ?? 50;
   return (

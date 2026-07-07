@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { MayaAvatar } from "../MayaAvatar";
+import { MayaAnchor } from "../MayaOverlay";
 
 interface Msg {
   from: "maya" | "ai";
@@ -17,11 +17,11 @@ const THREAD: Msg[] = [
 ];
 
 interface Props {
-  isActive: boolean;
   progress: number;
+  anchorRef: React.RefObject<HTMLDivElement>;
 }
 
-export function DmSurface({ isActive, progress }: Props) {
+export function DmSurface({ progress, anchorRef }: Props) {
   return (
     <div className="absolute inset-0 flex items-stretch justify-end p-6 pt-12">
       <div
@@ -31,18 +31,13 @@ export function DmSurface({ isActive, progress }: Props) {
           border: "1px solid var(--hairline)",
         }}
       >
-        {/* DM header — Base360's view of the brand's inbox: Maya is the contact */}
+        {/* DM header — Base360's view of the brand's inbox: Maya is the contact.
+            The anchor slot reserves 40×40 for the overlay to land on. */}
         <div
           className="flex items-center gap-3 px-4 py-3 border-b"
           style={{ borderColor: "var(--hairline)" }}
         >
-          {isActive ? (
-            <motion.div layoutId="maya-lead" className="shrink-0">
-              <MayaAvatar size={32} />
-            </motion.div>
-          ) : (
-            <MayaAvatar size={32} />
-          )}
+          <MayaAnchor anchorRef={anchorRef} />
           <div className="flex flex-col leading-tight">
             <span className="text-sm text-text-hi font-semibold">@maya.r</span>
             <span className="text-[10px] font-mono text-text-lo">
@@ -121,7 +116,6 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
           {m.text}
         </div>
       </div>
-      {isMaya && <MayaAvatar size={22} />}
     </motion.div>
   );
 }
