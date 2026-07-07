@@ -4,6 +4,7 @@ import { useScroll, useMotionValueEvent } from "framer-motion";
 import { CHAPTERS } from "@/lib/chapters";
 import { Canvas } from "./Canvas";
 import { CopyColumn } from "./CopyColumn";
+import { Stepper } from "./Stepper";
 
 // The scroll-story hero. Owns the single source of scroll truth
 // (scrollYProgress) and derives the active chapter. Everything downstream —
@@ -43,8 +44,12 @@ export function Hero() {
       style={{ height: `${CHAPTERS.length * 100}vh` }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <div className="relative h-full grid grid-cols-[minmax(420px,42%)_1fr]">
-          <CopyColumn
+        {/* Three-column pinned viewport: copy | vertical stepper rail | canvas.
+            The rail IS the divider between the reading side and the story
+            stage — no separate seam line needed. */}
+        <div className="relative h-full grid grid-cols-[minmax(380px,38%)_64px_1fr]">
+          <CopyColumn activeChapter={activeChapter} />
+          <Stepper
             activeChapter={activeChapter}
             scrollYProgress={scrollYProgress}
           />
@@ -52,13 +57,6 @@ export function Hero() {
             scrollYProgress={scrollYProgress}
             activeChapter={activeChapter}
             glitching={glitching}
-          />
-          {/* Single 1px acid hairline at the seam between copy and canvas —
-              a static, honest continuity marker, no dashed debris. */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute top-16 bottom-16 left-[42%] w-px"
-            style={{ background: "var(--acid)", opacity: 0.2 }}
           />
         </div>
       </div>

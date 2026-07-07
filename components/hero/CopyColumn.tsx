@@ -1,19 +1,16 @@
 "use client";
-import { AnimatePresence, motion, MotionValue } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { CHAPTERS } from "@/lib/chapters";
-import { Stepper } from "./Stepper";
 
 interface Props {
   activeChapter: number;
-  scrollYProgress: MotionValue<number>;
 }
 
-export function CopyColumn({ activeChapter, scrollYProgress }: Props) {
+export function CopyColumn({ activeChapter }: Props) {
   const chapter = CHAPTERS[activeChapter];
 
   return (
-    <div className="relative h-full flex flex-col justify-between py-16 pl-8 pr-6 gap-10">
-      {/* top: kicker + headline + subcopy that swap on active chapter */}
+    <div className="relative h-full flex flex-col justify-center gap-8 pl-10 pr-8">
       <div className="flex flex-col gap-6 max-w-[520px]">
         <AnimatePresence mode="wait">
           <motion.div
@@ -57,9 +54,6 @@ export function CopyColumn({ activeChapter, scrollYProgress }: Props) {
           </a>
         </div>
       </div>
-
-      {/* bottom: persistent vertical stepper */}
-      <Stepper activeChapter={activeChapter} scrollYProgress={scrollYProgress} />
     </div>
   );
 }
