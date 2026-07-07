@@ -1,7 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
+import { MayaAvatar } from "../MayaAvatar";
 
 interface Props {
+  isActive: boolean;
   progress: number;
 }
 
@@ -12,7 +14,7 @@ const TRANSCRIPT = [
   { who: "maya", text: "ok show me" },
 ];
 
-export function CallSurface({ progress }: Props) {
+export function CallSurface({ isActive, progress }: Props) {
   return (
     <div className="absolute inset-0 p-6 pt-12 flex">
       <div
@@ -42,6 +44,13 @@ export function CallSurface({ progress }: Props) {
         <div className="flex-1 grid grid-cols-[220px_1fr] gap-4 p-6 min-h-0">
           {/* Left — callee */}
           <div className="flex flex-col items-center gap-3">
+            {isActive ? (
+              <motion.div layoutId="maya-lead" className="shrink-0">
+                <MayaAvatar size={56} />
+              </motion.div>
+            ) : (
+              <MayaAvatar size={56} />
+            )}
             <div className="text-lg font-display text-text-hi">Maya R.</div>
             <div className="text-[10px] font-mono text-text-lo">+1 · 416 · ●●● ●●●●</div>
             <div className="mt-2 text-[10px] font-mono uppercase text-text-lo">

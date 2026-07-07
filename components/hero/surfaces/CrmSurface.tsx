@@ -1,7 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
+import { MayaAvatar } from "../MayaAvatar";
 
 interface Props {
+  isActive: boolean;
   progress: number;
 }
 
@@ -13,7 +15,7 @@ const TIMELINE = [
   { t: "12:07", label: "Cart link delivered · $32" },
 ];
 
-export function CrmSurface({ progress }: Props) {
+export function CrmSurface({ isActive, progress }: Props) {
   return (
     <div className="absolute inset-0 p-6 pt-12 flex">
       <div
@@ -36,7 +38,14 @@ export function CrmSurface({ progress }: Props) {
 
         {/* Header */}
         <div className="flex items-start gap-4">
-          <div className="ml-16 flex flex-col gap-1">
+          {isActive ? (
+            <motion.div layoutId="maya-lead" className="shrink-0">
+              <MayaAvatar size={48} />
+            </motion.div>
+          ) : (
+            <MayaAvatar size={48} />
+          )}
+          <div className="flex flex-col gap-1">
             <div className="text-2xl font-display text-text-hi leading-tight">
               Maya R.
             </div>

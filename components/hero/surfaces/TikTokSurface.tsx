@@ -17,11 +17,12 @@ const COMMENTS: CommentRow[] = [
 ];
 
 interface Props {
-  active: boolean;
+  isActive: boolean;
   igniteProgress: number;
 }
 
-export function TikTokSurface({ active, igniteProgress }: Props) {
+export function TikTokSurface({ isActive, igniteProgress }: Props) {
+  const active = isActive;
   return (
     <div className="absolute inset-0 flex flex-col p-6 pt-12">
       {/* Post header — mimics TikTok floating chrome */}
@@ -68,7 +69,13 @@ export function TikTokSurface({ active, igniteProgress }: Props) {
             }}
           />
           <div className="relative flex gap-3 items-start p-2">
-            <MayaAvatar size={36} />
+            {isActive ? (
+              <motion.div layoutId="maya-lead" className="shrink-0">
+                <MayaAvatar size={36} />
+              </motion.div>
+            ) : (
+              <MayaAvatar size={36} />
+            )}
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-sm font-semibold text-text-hi">

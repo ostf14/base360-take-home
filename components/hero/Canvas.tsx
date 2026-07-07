@@ -1,5 +1,5 @@
 "use client";
-import { motion, MotionValue, useMotionValueEvent } from "framer-motion";
+import { LayoutGroup, motion, MotionValue, useMotionValueEvent } from "framer-motion";
 import { useState } from "react";
 import { TikTokSurface } from "./surfaces/TikTokSurface";
 import { DmSurface } from "./surfaces/DmSurface";
@@ -7,18 +7,16 @@ import { CrmSurface } from "./surfaces/CrmSurface";
 import { CallSurface } from "./surfaces/CallSurface";
 import { EmailSurface } from "./surfaces/EmailSurface";
 import { SystemSurface } from "./surfaces/SystemSurface";
-import { Puck } from "./Puck";
-import { Thread } from "./Thread";
 
 interface Props {
   scrollYProgress: MotionValue<number>;
   activeChapter: number;
-  glitching: boolean;
 }
 
-// Each chapter has a "dwell" (puck parked, surface at full opacity) followed
-// by a "travel" (puck moving to next dock, this surface fading out while the
-// next fades in). Times align exactly with PUCK_KEYFRAMES.
+// Each chapter has a "dwell" (surface at full opacity) followed by a "travel"
+// (this surface fading out while the next fades in). Chapter i owns the slot
+// [i/6, (i+1)/6] of the scroll timeline; peak opacity lives on the first half
+// of that slot, crossfade to the next surface fills the second half.
 interface Range {
   fadeInStart: number;
   plateauStart: number;
@@ -26,7 +24,7 @@ interface Range {
   fadeOutEnd: number;
 }
 
-const S = 1 / 6; // slot size ≈ 0.1667
+const S = 1 / 6;
 
 const RANGES: Range[] = [
   { fadeInStart: 0.0,        plateauStart: 0.0,        plateauEnd: 0 * S + 0.083, fadeOutEnd: 1 * S },
@@ -56,10 +54,12 @@ function localProgress(t: number, r: Range) {
   return Math.min(1, Math.max(0, (t - r.fadeInStart) / span));
 }
 
-// The right-column stage. Contains the 6 surfaces (behind) whose opacity
-// crossfades on scrollYProgress ranges, and the persistent overlay (front):
-// ONE thread + ONE puck. Nothing here remounts across chapters.
-export function Canvas({ scrollYProgress, activeChapter, glitching }: Props) {
+// The right-column stage. Surfaces crossfade on scrollYProgress ranges. Each
+// active surface renders Maya's identity inside a motion.div layoutId="maya-lead";
+// when the active flips, Framer's shared-layout system morphs that element
+// from its outgoing position/size to the incoming one — that morph IS the
+// through-line of the story. No overlay, no floating chip.
+export function Canvas({ scrollYProgress, activeChapter }: Props) {
   const [t, setT] = useState(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => setT(v));
 
@@ -76,35 +76,44 @@ export function Canvas({ scrollYProgress, activeChapter, glitching }: Props) {
       >
         <AmbientGlow activeChapter={activeChapter} />
 
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[0])}>
-          <TikTokSurface
-            active={activeChapter === 0}
-            igniteProgress={localProgress(t, RANGES[0])}
-          />
-        </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[1])}>
-          <DmSurface progress={localProgress(t, RANGES[1])} />
-        </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[2])}>
-          <CrmSurface progress={localProgress(t, RANGES[2])} />
-        </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[3])}>
-          <CallSurface progress={localProgress(t, RANGES[3])} />
-        </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[4])}>
-          <EmailSurface progress={localProgress(t, RANGES[4])} />
-        </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[5])}>
-          <SystemSurface progress={localProgress(t, RANGES[5])} />
-        </SurfaceSlot>
-
-        {/* Persistent overlay — never remounts */}
-        <Thread scrollYProgress={scrollYProgress} />
-        <Puck
-          scrollYProgress={scrollYProgress}
-          activeChapter={activeChapter}
-          glitching={glitching}
-        />
+        <LayoutGroup id="maya-lead-group">
+          <SurfaceSlot opacity={opacityForRange(t, RANGES[0])}>
+            <TikTokSurface
+              isActive={activeChapter === 0}
+              igniteProgress={localProgress(t, RANGES[0])}
+            />
+          </SurfaceSlot>
+          <SurfaceSlot opacity={opacityForRange(t, RANGES[1])}>
+            <DmSurface
+              isActive={activeChapter === 1}
+              progress={localProgress(t, RANGES[1])}
+            />
+          </SurfaceSlot>
+          <SurfaceSlot opacity={opacityForRange(t, RANGES[2])}>
+            <CrmSurface
+              isActive={activeChapter === 2}
+              progress={localProgress(t, RANGES[2])}
+            />
+          </SurfaceSlot>
+          <SurfaceSlot opacity={opacityForRange(t, RANGES[3])}>
+            <CallSurface
+              isActive={activeChapter === 3}
+              progress={localProgress(t, RANGES[3])}
+            />
+          </SurfaceSlot>
+          <SurfaceSlot opacity={opacityForRange(t, RANGES[4])}>
+            <EmailSurface
+              isActive={activeChapter === 4}
+              progress={localProgress(t, RANGES[4])}
+            />
+          </SurfaceSlot>
+          <SurfaceSlot opacity={opacityForRange(t, RANGES[5])}>
+            <SystemSurface
+              isActive={activeChapter === 5}
+              progress={localProgress(t, RANGES[5])}
+            />
+          </SurfaceSlot>
+        </LayoutGroup>
 
         <CornerChrome activeChapter={activeChapter} />
       </div>
@@ -119,8 +128,6 @@ function SurfaceSlot({
   opacity: number;
   children: React.ReactNode;
 }) {
-  // Plain div. React re-renders on every scroll frame with a fresh opacity
-  // value — we don't want Framer's animate lane fighting the style lane.
   const visible = opacity > 0.02;
   return (
     <div
@@ -154,27 +161,6 @@ function CornerChrome({ activeChapter }: { activeChapter: number }) {
       <div className="pointer-events-none absolute top-4 right-4 z-40 text-[10px] font-mono uppercase tracking-widest text-text-lo">
         base360://maya.r
       </div>
-      <CornerTicks />
-    </>
-  );
-}
-
-function CornerTicks() {
-  const corners = [
-    { className: "top-2 left-2", borders: "border-t border-l" },
-    { className: "top-2 right-2", borders: "border-t border-r" },
-    { className: "bottom-2 left-2", borders: "border-b border-l" },
-    { className: "bottom-2 right-2", borders: "border-b border-r" },
-  ];
-  return (
-    <>
-      {corners.map((c) => (
-        <span
-          key={c.className}
-          className={`pointer-events-none absolute ${c.className} z-40 w-3 h-3 ${c.borders}`}
-          style={{ borderColor: "var(--acid)", opacity: 0.5 }}
-        />
-      ))}
     </>
   );
 }

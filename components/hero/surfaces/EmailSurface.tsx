@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { MayaAvatar } from "../MayaAvatar";
 
 interface Props {
+  isActive: boolean;
   progress: number;
 }
 
@@ -35,7 +36,7 @@ const EMAILS = [
   },
 ];
 
-export function EmailSurface({ progress }: Props) {
+export function EmailSurface({ isActive, progress }: Props) {
   return (
     <div className="absolute inset-0 p-6 pt-12 flex">
       <div
@@ -56,11 +57,17 @@ export function EmailSurface({ progress }: Props) {
           <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-text-lo">
             recipient
             <span
-              className="flex items-center gap-1 px-2 py-0.5 rounded-sm"
+              className="flex items-center gap-2 px-2 py-1 rounded-sm"
               style={{ border: "1px solid var(--hairline)" }}
             >
-              <MayaAvatar size={14} />
-              <span className="text-text-hi">Maya R.</span>
+              {isActive ? (
+                <motion.div layoutId="maya-lead" className="shrink-0">
+                  <MayaAvatar size={24} />
+                </motion.div>
+              ) : (
+                <MayaAvatar size={24} />
+              )}
+              <span className="text-text-hi normal-case">Maya R.</span>
             </span>
           </div>
         </div>

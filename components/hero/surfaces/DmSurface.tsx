@@ -17,10 +17,11 @@ const THREAD: Msg[] = [
 ];
 
 interface Props {
+  isActive: boolean;
   progress: number;
 }
 
-export function DmSurface({ progress }: Props) {
+export function DmSurface({ isActive, progress }: Props) {
   return (
     <div className="absolute inset-0 flex items-stretch justify-end p-6 pt-12">
       <div
@@ -30,14 +31,20 @@ export function DmSurface({ progress }: Props) {
           border: "1px solid var(--hairline)",
         }}
       >
-        {/* DM header */}
+        {/* DM header — Base360's view of the brand's inbox: Maya is the contact */}
         <div
           className="flex items-center gap-3 px-4 py-3 border-b"
           style={{ borderColor: "var(--hairline)" }}
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-600" />
+          {isActive ? (
+            <motion.div layoutId="maya-lead" className="shrink-0">
+              <MayaAvatar size={32} />
+            </motion.div>
+          ) : (
+            <MayaAvatar size={32} />
+          )}
           <div className="flex flex-col leading-tight">
-            <span className="text-sm text-text-hi font-semibold">@northbloom.co</span>
+            <span className="text-sm text-text-hi font-semibold">@maya.r</span>
             <span className="text-[10px] font-mono text-text-lo">
               tiktok · direct message
             </span>
