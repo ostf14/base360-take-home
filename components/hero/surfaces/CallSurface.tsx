@@ -20,8 +20,9 @@ export function CallSurface({ progress, anchorRef }: Props) {
       <div
         className="flex-1 rounded-2xl overflow-hidden flex flex-col"
         style={{
-          background: "var(--surface)",
+          background: "var(--surface-panel)",
           border: "1px solid var(--hairline)",
+          boxShadow: "var(--specimen-shadow)",
         }}
       >
         {/* Header */}
@@ -33,8 +34,11 @@ export function CallSurface({ progress, anchorRef }: Props) {
             base360 / voice / outbound
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-acid live-dot" />
-            <span className="text-[10px] font-mono uppercase text-acid">
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: "var(--text-lo)" }}
+            />
+            <span className="text-[10px] font-mono uppercase text-text-lo">
               connected · 00:47
             </span>
           </div>
@@ -53,9 +57,9 @@ export function CallSurface({ progress, anchorRef }: Props) {
             <div
               className="text-xs font-mono uppercase px-2 py-1 rounded-sm"
               style={{
-                color: "var(--acid)",
-                border: "1px solid var(--acid)",
-                background: "var(--acid-soft)",
+                color: "var(--text-lo)",
+                border: "1px solid var(--hairline)",
+                background: "transparent",
               }}
             >
               AI VOICE
@@ -68,7 +72,7 @@ export function CallSurface({ progress, anchorRef }: Props) {
             <div
               className="flex-1 rounded-xl p-4 overflow-hidden flex flex-col gap-2"
               style={{
-                background: "var(--surface-2)",
+                background: "var(--surface-panel-2)",
                 border: "1px solid var(--hairline)",
               }}
             >
@@ -90,16 +94,13 @@ export function CallSurface({ progress, anchorRef }: Props) {
                     <span
                       className="font-mono uppercase text-[9px] px-1 py-0.5 rounded-sm shrink-0"
                       style={{
-                        color: line.who === "ai" ? "var(--acid)" : "var(--text-lo)",
-                        border:
-                          line.who === "ai"
-                            ? "1px solid var(--acid)"
-                            : "1px solid var(--hairline)",
+                        color: "var(--text-lo)",
+                        border: "1px solid var(--hairline)",
                       }}
                     >
                       {line.who === "ai" ? "AI" : "MAYA"}
                     </span>
-                    <span className="text-text-hi">{line.text}</span>
+                    <span className="text-text-hi/85">{line.text}</span>
                   </motion.div>
                 ))}
               </div>
@@ -117,7 +118,7 @@ function Waveform({ progress }: { progress: number }) {
     <div
       className="rounded-xl p-4 flex items-end justify-between gap-[3px] h-24"
       style={{
-        background: "var(--surface-2)",
+        background: "var(--surface-panel-2)",
         border: "1px solid var(--hairline)",
       }}
     >
@@ -125,13 +126,17 @@ function Waveform({ progress }: { progress: number }) {
         const seed = (i * 9301 + 49297) % 233280;
         const rand = seed / 233280;
         const active = progress > i / bars - 0.05;
-        const h = active ? 20 + rand * 60 : 6;
+        const h = active ? 16 + rand * 50 : 6;
+        // Demoted to a muted white rather than acid — the waveform is
+        // environment, not the star.
         return (
           <motion.span
             key={i}
             animate={{
               height: h,
-              background: active ? "var(--acid)" : "rgba(255,255,255,0.08)",
+              background: active
+                ? "rgba(244,244,245,0.35)"
+                : "rgba(255,255,255,0.06)",
             }}
             transition={{ duration: 0.4 }}
             className="w-[3px] rounded-sm"

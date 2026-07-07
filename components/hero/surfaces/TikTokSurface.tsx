@@ -28,7 +28,7 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
       {/* Post header — mimics TikTok floating chrome */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-600" />
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400/70 to-purple-600/70" />
           <div className="flex flex-col">
             <span className="text-xs font-mono uppercase tracking-widest text-text-lo">
               @northbloom.co
@@ -38,8 +38,11 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
             </span>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs font-mono uppercase text-text-lo">
-          <span className="w-1.5 h-1.5 rounded-full bg-acid live-dot" />
+        <div className="flex items-center gap-2 text-xs font-mono uppercase text-text-lo/70">
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ background: "var(--text-lo)" }}
+          />
           live feed
         </div>
       </div>
@@ -54,17 +57,19 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
         <motion.div
           initial={false}
           animate={{
-            scale: active ? 1.02 : 1,
-            filter: active ? "brightness(1.05)" : "brightness(0.9)",
+            scale: active ? 1.01 : 1,
+            filter: active ? "brightness(1.02)" : "brightness(0.9)",
           }}
           transition={{ duration: 0.4 }}
           className="relative"
         >
+          {/* Demoted glow — used to be full acid, now a whisper so Maya's
+              overlay stays the loudest yellow on the canvas. */}
           <div
             className="absolute -inset-2 rounded-lg pointer-events-none"
             style={{
-              boxShadow: `0 0 40px ${active ? "rgba(223,255,0,0.35)" : "transparent"}`,
-              border: `1px solid ${active ? "rgba(223,255,0,0.6)" : "transparent"}`,
+              boxShadow: `0 0 30px ${active ? "rgba(223,255,0,0.08)" : "transparent"}`,
+              border: `1px solid ${active ? "rgba(223,255,0,0.18)" : "transparent"}`,
               transition: "all 400ms ease",
             }}
           />
@@ -100,7 +105,14 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
           transition={{ duration: 0.3 }}
           className="ml-12 flex items-start gap-2"
         >
-          <div className="w-6 h-6 rounded-full bg-acid text-black flex items-center justify-center text-[10px] font-mono font-bold">
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold"
+            style={{
+              background: "var(--surface-2)",
+              color: "var(--text-hi)",
+              border: "1px solid var(--hairline)",
+            }}
+          >
             N
           </div>
           <div className="flex-1">
@@ -111,16 +123,15 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               <span
                 className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm"
                 style={{
-                  color: "var(--acid)",
-                  background: "var(--acid-soft)",
-                  border: "1px solid var(--acid)",
+                  color: "var(--text-lo)",
+                  border: "1px solid var(--hairline)",
                 }}
               >
                 AI
               </span>
               <span className="text-[10px] font-mono text-text-lo">now</span>
             </div>
-            <div className="text-xs text-text-hi">
+            <div className="text-xs text-text-hi/85">
               <TypedLine text="just slid into your DMs 💌" show={igniteProgress > 0.35} />
             </div>
           </div>
@@ -146,13 +157,13 @@ function CommentBubble({
   return (
     <motion.div
       initial={false}
-      animate={{ opacity: dim ? 0.32 : 0.6 }}
+      animate={{ opacity: dim ? 0.28 : 0.55 }}
       transition={{ duration: 0.4, delay }}
       className="flex gap-3 items-start p-2"
     >
       <div
         className="w-8 h-8 rounded-full shrink-0"
-        style={{ background: c.hue }}
+        style={{ background: c.hue, opacity: 0.7 }}
       />
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">

@@ -42,8 +42,9 @@ export function EmailSurface({ progress, anchorRef }: Props) {
       <div
         className="flex-1 rounded-2xl overflow-hidden flex flex-col"
         style={{
-          background: "var(--surface)",
+          background: "var(--surface-panel)",
           border: "1px solid var(--hairline)",
+          boxShadow: "var(--specimen-shadow)",
         }}
       >
         {/* Header */}
@@ -84,7 +85,7 @@ export function EmailSurface({ progress, anchorRef }: Props) {
                 transition={{ duration: 0.3 }}
                 className="rounded-xl p-4 grid grid-cols-[1fr_auto] gap-4"
                 style={{
-                  background: "var(--surface-2)",
+                  background: "var(--surface-panel-2)",
                   border: "1px solid var(--hairline)",
                 }}
               >
@@ -93,7 +94,10 @@ export function EmailSurface({ progress, anchorRef }: Props) {
                     <span className="text-[10px] font-mono uppercase text-text-lo">
                       email {i + 1}
                     </span>
-                    <span className="w-1 h-1 rounded-full bg-text-lo" />
+                    <span
+                      className="w-1 h-1 rounded-full"
+                      style={{ background: "var(--text-lo)" }}
+                    />
                     <span className="text-[10px] font-mono text-text-lo">
                       {email.events[0]?.t}
                     </span>
@@ -110,35 +114,33 @@ export function EmailSurface({ progress, anchorRef }: Props) {
                     const evP = (j + 1) / email.events.length;
                     const on = localP > evP - 0.1;
                     const isIgnite = ev.ignite && on;
+                    // Purchased ignite is one of the two acid moments in this
+                    // surface — kept, but smaller. Everything else is grey.
                     return (
                       <motion.div
                         key={j}
                         animate={{
-                          opacity: on ? 1 : 0.25,
-                          scale: isIgnite ? 1.05 : 1,
+                          opacity: on ? 1 : 0.3,
+                          scale: isIgnite ? 1.03 : 1,
                         }}
                         className="flex items-center gap-1.5 text-[10px] font-mono uppercase px-2 py-1 rounded-sm"
                         style={{
-                          color: isIgnite ? "#0A0A0B" : "var(--text-hi)",
+                          color: isIgnite ? "#0A0A0B" : "var(--text-lo)",
                           background: isIgnite
                             ? "var(--acid)"
-                            : on
-                            ? "var(--acid-soft)"
                             : "transparent",
                           border: `1px solid ${
-                            isIgnite || on ? "var(--acid)" : "var(--hairline)"
+                            isIgnite ? "var(--acid)" : "var(--hairline)"
                           }`,
                           boxShadow: isIgnite
-                            ? "0 0 24px rgba(223,255,0,0.6)"
+                            ? "0 0 20px rgba(223,255,0,0.45)"
                             : "none",
                         }}
                       >
                         <span
-                          className={`w-1 h-1 rounded-full ${
-                            on && !isIgnite ? "live-dot" : ""
-                          }`}
+                          className="w-1 h-1 rounded-full"
                           style={{
-                            background: isIgnite ? "#0A0A0B" : "var(--acid)",
+                            background: isIgnite ? "#0A0A0B" : "var(--text-lo)",
                           }}
                         />
                         {ev.label}

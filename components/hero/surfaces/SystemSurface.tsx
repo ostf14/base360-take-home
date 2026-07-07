@@ -22,21 +22,25 @@ export function SystemSurface({ progress, anchorRef }: Props) {
       <div
         className="relative flex-1 rounded-2xl overflow-hidden"
         style={{
-          background: "var(--surface)",
+          background: "var(--surface-panel)",
           border: "1px solid var(--hairline)",
+          boxShadow: "var(--specimen-shadow)",
         }}
       >
         <div className="absolute top-4 left-5 text-[10px] font-mono uppercase tracking-widest text-text-lo">
           base360 / system view
         </div>
-        <div className="absolute top-4 right-5 flex items-center gap-2 text-[10px] font-mono uppercase text-text-lo">
-          <span className="w-1.5 h-1.5 rounded-full bg-acid live-dot" />
+        <div className="absolute top-4 right-5 flex items-center gap-2 text-[10px] font-mono uppercase text-text-lo/70">
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ background: "var(--text-lo)" }}
+          />
           maya.r · one thread
         </div>
 
         {/* Grid background */}
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-25"
           style={{
             backgroundImage:
               "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)",
@@ -44,7 +48,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
           }}
         />
 
-        {/* Nodes */}
+        {/* Nodes — waypoints are grey; the closed node is the acid moment */}
         {NODES.map((n, i) => {
           const revealed = progress > i / NODES.length - 0.05;
           const isClosed = n.key === "closed";
@@ -62,13 +66,13 @@ export function SystemSurface({ progress, anchorRef }: Props) {
                 <div
                   className="px-3 py-1.5 rounded-sm text-[10px] font-mono uppercase tracking-wider"
                   style={{
-                    color: isClosed ? "#0A0A0B" : "var(--acid)",
+                    color: isClosed ? "#0A0A0B" : "var(--text-lo)",
                     background: isClosed ? "var(--acid)" : "transparent",
-                    border: "1px solid var(--acid)",
+                    border: `1px solid ${
+                      isClosed ? "var(--acid)" : "var(--hairline)"
+                    }`,
                     boxShadow: isClosed
-                      ? "0 0 32px rgba(223,255,0,0.6)"
-                      : revealed
-                      ? "0 0 12px rgba(223,255,0,0.2)"
+                      ? "0 0 24px rgba(223,255,0,0.45)"
                       : "none",
                   }}
                 >

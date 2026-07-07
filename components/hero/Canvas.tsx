@@ -127,6 +127,7 @@ export function Canvas({ scrollYProgress, activeChapter, glitching }: Props) {
         }}
       >
         <AmbientGlow activeChapter={activeChapter} />
+        <EdgeVignette />
 
         <SurfaceSlot opacity={opacityForRange(t, RANGES[0])}>
           <TikTokSurface
@@ -233,9 +234,25 @@ function AmbientGlow({ activeChapter }: { activeChapter: number }) {
     <motion.div
       className="pointer-events-none absolute inset-0 z-0"
       animate={{
-        background: `radial-gradient(circle at ${x}% ${y}%, rgba(223,255,0,0.09), transparent 55%)`,
+        background: `radial-gradient(circle at ${x}% ${y}%, rgba(223,255,0,0.11), transparent 55%)`,
       }}
       transition={{ duration: 0.6 }}
+    />
+  );
+}
+
+// Darkens the canvas corners so the eye is pulled toward the center where
+// Maya's spotlight lives. Sits ABOVE surfaces (z-10) but BELOW the overlay
+// (z-30), so environments recede while Maya stays clear.
+function EdgeVignette() {
+  return (
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 z-20"
+      style={{
+        background:
+          "radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.5) 100%)",
+      }}
     />
   );
 }

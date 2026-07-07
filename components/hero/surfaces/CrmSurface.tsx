@@ -21,8 +21,9 @@ export function CrmSurface({ progress, anchorRef }: Props) {
       <div
         className="relative flex-1 rounded-2xl p-5 flex flex-col gap-4 overflow-hidden"
         style={{
-          background: "var(--surface)",
+          background: "var(--surface-panel)",
           border: "1px solid var(--hairline)",
+          boxShadow: "var(--specimen-shadow)",
         }}
       >
         {/* Chrome */}
@@ -30,8 +31,11 @@ export function CrmSurface({ progress, anchorRef }: Props) {
           <span className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
             base360 / crm / contact
           </span>
-          <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-text-lo">
-            <span className="w-1.5 h-1.5 rounded-full bg-acid live-dot" />
+          <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-text-lo/70">
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: "var(--text-lo)" }}
+            />
             live record
           </div>
         </div>
@@ -60,7 +64,7 @@ export function CrmSurface({ progress, anchorRef }: Props) {
           <div
             className="rounded-xl p-4 flex flex-col gap-3 overflow-hidden"
             style={{
-              background: "var(--surface-2)",
+              background: "var(--surface-panel-2)",
               border: "1px solid var(--hairline)",
             }}
           >
@@ -82,8 +86,11 @@ export function CrmSurface({ progress, anchorRef }: Props) {
                   <span className="font-mono text-text-lo shrink-0">
                     {row.t}
                   </span>
-                  <span className="w-1 h-1 rounded-full bg-acid mt-1.5 shrink-0" />
-                  <span className="text-text-hi">{row.label}</span>
+                  <span
+                    className="w-1 h-1 rounded-full mt-1.5 shrink-0"
+                    style={{ background: "var(--text-lo)" }}
+                  />
+                  <span className="text-text-hi/85">{row.label}</span>
                 </motion.div>
               ))}
             </div>
@@ -94,48 +101,40 @@ export function CrmSurface({ progress, anchorRef }: Props) {
             <div
               className="rounded-xl p-4 flex flex-col gap-3"
               style={{
-                background: "var(--surface-2)",
+                background: "var(--surface-panel-2)",
                 border: "1px solid var(--hairline)",
               }}
             >
               <div className="text-[10px] font-mono uppercase text-text-lo">
                 automation
               </div>
-              <Toggle
-                label="Surfaced to sales"
-                on={progress > 0.55}
-              />
+              <Toggle label="Surfaced to sales" on={progress > 0.55} />
               <Toggle label="Nurture sequence: Bloom-01" on={progress > 0.7} />
               <Toggle label="AI voice callback on intent spike" on={progress > 0.85} />
             </div>
             <div
               className="rounded-xl p-4"
               style={{
-                background: "var(--surface-2)",
+                background: "var(--surface-panel-2)",
                 border: "1px solid var(--hairline)",
               }}
             >
               <div className="text-[10px] font-mono uppercase text-text-lo mb-2">
                 next best action
               </div>
-              <motion.div
-                initial={false}
-                animate={{
-                  boxShadow:
-                    progress > 0.85
-                      ? "0 0 24px rgba(223,255,0,0.4)"
-                      : "0 0 0 rgba(223,255,0,0)",
-                }}
+              {/* Depicted, not operable: outlined, muted — not the page's CTA. */}
+              <div
                 className="flex items-center justify-between text-xs px-3 py-2 rounded-md"
                 style={{
-                  background: "var(--acid)",
-                  color: "#0A0A0B",
-                  fontWeight: 600,
+                  background: "transparent",
+                  color: "var(--text-hi)",
+                  border: "1px dashed var(--acid-dim)",
+                  fontWeight: 500,
                 }}
               >
                 <span>Trigger AI call</span>
-                <span className="font-mono text-[10px]">→</span>
-              </motion.div>
+                <span className="font-mono text-[10px] text-text-lo">→</span>
+              </div>
             </div>
           </div>
         </div>
@@ -146,13 +145,16 @@ export function CrmSurface({ progress, anchorRef }: Props) {
 
 function IntentBadge({ progress }: { progress: number }) {
   const level = progress > 0.5 ? "High" : progress > 0.25 ? "Medium" : "New";
+  const isHigh = level === "High";
+  // The one acid moment in this surface — the intent going High is a story
+  // beat. Kept smaller than before and only the High state ignites.
   return (
     <motion.span
       className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-sm inline-flex items-center gap-1"
       animate={{
-        color: level === "High" ? "#0A0A0B" : "var(--acid)",
-        background: level === "High" ? "var(--acid)" : "var(--acid-soft)",
-        borderColor: "var(--acid)",
+        color: isHigh ? "#0A0A0B" : "var(--text-lo)",
+        background: isHigh ? "var(--acid)" : "transparent",
+        borderColor: isHigh ? "var(--acid)" : "var(--hairline)",
       }}
       transition={{ duration: 0.4 }}
       style={{ border: "1px solid" }}
@@ -175,9 +177,11 @@ function Badge({ label }: { label: string }) {
 }
 
 function Toggle({ label, on }: { label: string; on: boolean }) {
+  // Kept as an acid moment because a toggle flipping on IS the story beat.
+  // Smaller footprint than the button used to be.
   return (
     <div className="flex items-center justify-between gap-3">
-      <span className="text-xs text-text-hi">{label}</span>
+      <span className="text-xs text-text-hi/85">{label}</span>
       <motion.div
         animate={{
           background: on ? "var(--acid)" : "var(--surface)",

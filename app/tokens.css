@@ -8,4 +8,13 @@
   --hairline:  rgba(255, 255, 255, 0.08);
   --acid-glow: rgba(223, 255, 0, 0.35);
   --acid-soft: rgba(223, 255, 0, 0.12);
+
+  /* Environments recede — surfaces are exhibits, not live UI. */
+  --surface-panel:   rgba(20, 20, 22, 0.9);
+  --surface-panel-2: rgba(28, 28, 31, 0.9);
+  --specimen-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 2px 0 rgba(255, 255, 255, 0.02) inset;
+
+  /* Muted / dim acid — used only for chrome that used to shout. */
+  --acid-dim:  rgba(223, 255, 0, 0.28);
+  --acid-hush: rgba(223, 255, 0, 0.12);
 }

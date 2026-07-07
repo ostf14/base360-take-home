@@ -27,8 +27,9 @@ export function DmSurface({ progress, anchorRef }: Props) {
       <div
         className="relative w-[62%] h-full flex flex-col rounded-2xl overflow-hidden"
         style={{
-          background: "var(--surface)",
+          background: "var(--surface-panel)",
           border: "1px solid var(--hairline)",
+          boxShadow: "var(--specimen-shadow)",
         }}
       >
         {/* DM header — Base360's view of the brand's inbox: Maya is the contact.
@@ -48,9 +49,8 @@ export function DmSurface({ progress, anchorRef }: Props) {
             <span
               className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-sm"
               style={{
-                color: "var(--acid)",
-                background: "var(--acid-soft)",
-                border: "1px solid var(--acid)",
+                color: "var(--text-lo)",
+                border: "1px solid var(--hairline)",
               }}
             >
               AI Agent
@@ -69,7 +69,10 @@ export function DmSurface({ progress, anchorRef }: Props) {
               animate={{ opacity: 1 }}
               className="flex items-center gap-2 text-[10px] font-mono text-text-lo mt-auto"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-acid live-dot" />
+              <span
+                className="w-1.5 h-1.5 rounded-full"
+                style={{ background: "var(--text-lo)" }}
+              />
               agent replying · 2.4s avg
             </motion.div>
           )}
@@ -89,7 +92,14 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
       className={`flex gap-2 items-end ${isMaya ? "justify-end" : "justify-start"}`}
     >
       {!isMaya && (
-        <div className="w-6 h-6 rounded-full bg-acid text-black flex items-center justify-center text-[10px] font-mono font-bold shrink-0">
+        <div
+          className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold shrink-0"
+          style={{
+            background: "var(--surface-2)",
+            color: "var(--text-hi)",
+            border: "1px solid var(--hairline)",
+          }}
+        >
           N
         </div>
       )}
@@ -98,18 +108,24 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
           <div className="flex items-center gap-1 mb-0.5">
             <span
               className="text-[9px] font-mono uppercase px-1 py-0.5 rounded-sm"
-              style={{ color: "var(--acid)", border: "1px solid var(--acid)" }}
+              style={{
+                color: "var(--text-lo)",
+                border: "1px solid var(--hairline)",
+              }}
             >
               AI
             </span>
           </div>
         )}
+        {/* Maya bubbles: light surface with dark text.
+            AI bubbles: dark surface with light text. No acid — the environment
+            stays grey; Maya's identity lives on the overlay. */}
         <div
           className={`px-3 py-2 text-sm rounded-2xl ${
             isMaya ? "rounded-br-sm" : "rounded-bl-sm"
           }`}
           style={{
-            background: isMaya ? "var(--acid)" : "var(--surface-2)",
+            background: isMaya ? "rgba(244,244,245,0.92)" : "var(--surface-2)",
             color: isMaya ? "#0A0A0B" : "var(--text-hi)",
           }}
         >
