@@ -1,0 +1,107 @@
+@import "./tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text-hi);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--acid);
+  color: var(--bg);
+}
+
+/* Custom utilities */
+.font-display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.font-mono {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+.pixel-corners {
+  clip-path: polygon(
+    0 4px, 4px 4px, 4px 0,
+    calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+    100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px),
+    calc(100% - 4px) 100%, 4px 100%, 4px calc(100% - 4px),
+    0 calc(100% - 4px)
+  );
+}
+
+.pixel-edge-top {
+  --pixel-size: 6px;
+  background:
+    linear-gradient(var(--acid), var(--acid));
+  clip-path: polygon(
+    0% 30%, 10% 30%, 10% 20%, 20% 20%, 20% 10%,
+    40% 10%, 40% 0%, 60% 0%, 60% 10%, 80% 10%,
+    80% 20%, 90% 20%, 90% 30%, 100% 30%,
+    100% 100%, 0% 100%
+  );
+}
+
+.dashed-acid {
+  background-image: linear-gradient(90deg, var(--acid) 50%, transparent 50%);
+  background-size: 6px 1px;
+  background-repeat: repeat-x;
+}
+
+.dashed-acid-v {
+  background-image: linear-gradient(0deg, var(--acid) 50%, transparent 50%);
+  background-size: 1px 6px;
+  background-repeat: repeat-y;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes acidPulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 rgba(223,255,0,0); }
+  50%      { opacity: 1; box-shadow: 0 0 16px rgba(223,255,0,0.6); }
+}
+.acid-pulse { animation: acidPulse 1.8s ease-in-out infinite; }
+
+@keyframes liveDot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+.live-dot { animation: liveDot 1.1s ease-in-out infinite; }
+
+@keyframes glitchShift {
+  0%   { transform: translate(0,0); filter: none; }
+  20%  { transform: translate(-1px, 1px); filter: hue-rotate(30deg); }
+  40%  { transform: translate(1px, -1px); }
+  60%  { transform: translate(-2px, 0); }
+  80%  { transform: translate(1px, 1px); }
+  100% { transform: translate(0,0); filter: none; }
+}
+.glitch { animation: glitchShift 200ms steps(4, end) both; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

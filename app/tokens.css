@@ -1,0 +1,11 @@
+:root {
+  --bg:        #0A0A0B;
+  --surface:   #141416;
+  --surface-2: #1C1C1F;
+  --acid:      #DFFF00;
+  --text-hi:   #F4F4F5;
+  --text-lo:   #8A8A8F;
+  --hairline:  rgba(255, 255, 255, 0.08);
+  --acid-glow: rgba(223, 255, 0, 0.35);
+  --acid-soft: rgba(223, 255, 0, 0.12);
+}
