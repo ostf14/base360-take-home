@@ -36,7 +36,6 @@ export function Nav() {
         </div>
         <div className="flex items-center gap-8">
           <NavLink href="#story">The story</NavLink>
-          <NavLink href="#system">The system</NavLink>
           <NavLink href="#waitlist">Access</NavLink>
           <a
             href="#waitlist"

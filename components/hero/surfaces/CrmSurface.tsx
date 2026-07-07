@@ -1,6 +1,5 @@
 "use client";
 import { motion } from "framer-motion";
-import { MayaAvatar } from "../MayaAvatar";
 
 interface Props {
   progress: number;
@@ -42,7 +41,7 @@ export function CrmSurface({ progress }: Props) {
               Maya R.
             </div>
             <div className="text-xs font-mono text-text-lo">
-              maya.r · toronto, ca · new
+              maya.r · toronto, ca
             </div>
             <div className="flex items-center gap-2 mt-2 flex-wrap">
               <IntentBadge progress={progress} />

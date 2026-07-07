@@ -30,7 +30,7 @@ const EMAILS = [
     events: [
       { t: "Day 5", label: "Sent" },
       { t: "Day 5", label: "Opened · Clicked" },
-      { t: "Day 5", label: "Purchased · $128", ignite: true },
+      { t: "Day 5", label: "Purchased · $32", ignite: true },
     ],
   },
 ];

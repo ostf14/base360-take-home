@@ -168,10 +168,10 @@ function TypedLine({ text, show }: { text: string; show: boolean }) {
   if (!show) return null;
   return (
     <motion.span
-      initial={{ width: 0 }}
-      animate={{ width: "auto" }}
-      transition={{ duration: 0.7, ease: "easeOut" }}
-      className="inline-block overflow-hidden whitespace-nowrap align-bottom"
+      initial={{ clipPath: "inset(0 100% 0 0)" }}
+      animate={{ clipPath: "inset(0 0% 0 0)" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="inline-block whitespace-nowrap align-bottom"
     >
       {text}
     </motion.span>

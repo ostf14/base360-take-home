@@ -11,7 +11,7 @@ const NODES = [
   { key: "crm", label: "CRM", x: 52, y: 40, sub: "record" },
   { key: "call", label: "AI CALL", x: 72, y: 20, sub: "voice" },
   { key: "email", label: "EMAIL", x: 82, y: 55, sub: "nurture" },
-  { key: "closed", label: "CLOSED · $128", x: 55, y: 75, sub: "won" },
+  { key: "closed", label: "CLOSED · $32", x: 55, y: 75, sub: "won" },
 ];
 
 export function SystemSurface({ progress }: Props) {

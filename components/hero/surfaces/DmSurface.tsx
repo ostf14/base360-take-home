@@ -9,9 +9,9 @@ interface Msg {
 }
 
 const THREAD: Msg[] = [
-  { from: "ai", text: "hey Maya 👋 saw your comment — the black is our top seller.", delay: 0.15 },
+  { from: "ai", text: "hey Maya 👋 saw your comment — it's the 22oz insulated, $32.", delay: 0.15 },
   { from: "maya", text: "wait, got it in black?", delay: 0.45 },
-  { from: "ai", text: "in stock. 22oz insulated, ships in 24h — $32 with your code MAYA10.", delay: 0.9 },
+  { from: "ai", text: "black's our top seller — in stock, ships in 24h. code MAYA10 for you.", delay: 0.9 },
   { from: "maya", text: "ok send the link 😍", delay: 1.35 },
   { from: "ai", text: "https://northbloom.co/black · saved to your cart 🛒", delay: 1.8 },
 ];
@@ -39,7 +39,7 @@ export function DmSurface({ progress }: Props) {
           <div className="flex flex-col leading-tight">
             <span className="text-sm text-text-hi font-semibold">@northbloom.co</span>
             <span className="text-[10px] font-mono text-text-lo">
-              instagram · direct
+              tiktok · direct message
             </span>
           </div>
           <div className="ml-auto flex items-center gap-2">

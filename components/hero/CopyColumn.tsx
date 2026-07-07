@@ -1,5 +1,5 @@
 "use client";
-import { AnimatePresence, motion, MotionValue, useTransform } from "framer-motion";
+import { AnimatePresence, motion, MotionValue } from "framer-motion";
 import { CHAPTERS } from "@/lib/chapters";
 import { Stepper } from "./Stepper";
 
@@ -10,7 +10,6 @@ interface Props {
 
 export function CopyColumn({ activeChapter, scrollYProgress }: Props) {
   const chapter = CHAPTERS[activeChapter];
-  const progressPct = useTransform(scrollYProgress, (v) => `${Math.round(v * 100)}%`);
 
   return (
     <div className="relative h-full flex flex-col justify-between py-16 pl-8 pr-6 gap-10">
@@ -56,9 +55,6 @@ export function CopyColumn({ activeChapter, scrollYProgress }: Props) {
             Get early access
             <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </a>
-          <span className="text-[10px] font-mono uppercase text-text-lo">
-            <motion.span>{progressPct}</motion.span> journey
-          </span>
         </div>
       </div>
 

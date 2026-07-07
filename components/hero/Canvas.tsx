@@ -139,7 +139,7 @@ function SurfaceSlot({
 function CornerChrome({ activeChapter }: { activeChapter: number }) {
   const label = [
     "TIKTOK · PUBLIC",
-    "INSTAGRAM · DM",
+    "TIKTOK · DM",
     "CRM · RECORD",
     "VOICE · OUTBOUND",
     "MARKETING · SEQUENCE",
