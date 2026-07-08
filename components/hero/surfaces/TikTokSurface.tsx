@@ -10,8 +10,11 @@ interface CommentRow {
   hue: string;
 }
 
+// A single filler comment is enough to give the feed context; adding
+// more pushes Maya's row + the acid-tinted AI reply card past the phone
+// frame's bottom edge and clips them. Keep @leah.mtl and drop @sam.k so
+// the maya → AI-reply pair sits fully inside the shell.
 const COMMENTS: CommentRow[] = [
-  { handle: "sam.k", text: "need this in my life", time: "2m", hue: "#5AD1FF" },
   { handle: "leah.mtl", text: "obsessed 🔥🔥", time: "3m", hue: "#FF8AB4" },
 ];
 

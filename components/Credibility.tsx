@@ -2,13 +2,19 @@ export function Credibility() {
   return (
     <section
       id="pedigree"
-      className="relative py-32 px-8"
+      className="relative py-24 px-8"
       style={{ background: "var(--bg)" }}
     >
-      <div className="max-w-6xl mx-auto flex flex-col gap-16">
+      {/* Compact trust block. No fake investor placeholders — instead the
+          real signal: STR-pedigree line up top, product line under it,
+          and the honest-scarcity cohort row underneath. Spacing is
+          tightened (gap-8 between rows, no big vertical voids) so the
+          section reads as ONE intentional composition, not three
+          floating pieces. */}
+      <div className="max-w-4xl mx-auto flex flex-col gap-8">
         {/* Anchor line — pedigree, no fake customer proof */}
-        <div className="max-w-3xl">
-          <div className="text-xs font-mono uppercase tracking-widest text-acid mb-4">
+        <div>
+          <div className="text-[11px] font-mono uppercase tracking-widest text-acid mb-3">
             &gt; pedigree
           </div>
           <p className="font-display text-3xl leading-tight text-text-hi">
@@ -16,48 +22,19 @@ export function Credibility() {
             <span className="text-acid">8-figure portfolio</span> — on its own
             software.
           </p>
-          <p className="mt-6 text-text-lo text-sm max-w-xl">
+          <p className="mt-4 text-text-lo text-sm max-w-2xl leading-relaxed">
             Base360 is the same architecture, generalized: one system for the
             customer, running the work in the background so the human runs the
             business.
           </p>
         </div>
 
-        {/* Backed by row — placeholder marks intentionally */}
-        <div className="flex flex-col gap-4">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
-            backed by
-          </div>
-          <div className="flex items-center gap-10 flex-wrap">
-            {["ANGEL COLLECTIVE", "FUND 001", "FUND 002", "SEED SYNDICATE"].map(
-              (label) => (
-                <div
-                  key={label}
-                  className="flex items-center gap-2 opacity-40"
-                >
-                  <div
-                    className="w-6 h-6"
-                    style={{
-                      background: "var(--text-lo)",
-                      clipPath:
-                        "polygon(0 3px, 3px 3px, 3px 0, calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px))",
-                    }}
-                  />
-                  <span className="font-mono uppercase text-xs tracking-widest text-text-lo">
-                    {label}
-                  </span>
-                </div>
-              )
-            )}
-            <span className="font-mono uppercase text-[9px] text-text-lo/50 ml-auto">
-              [ placeholder — final logos post-close ]
-            </span>
-          </div>
-        </div>
-
-        {/* Honest scarcity — no fake metrics */}
+        {/* Honest-scarcity cohort row — the only real "trust" beat.
+            Sits directly under the pedigree with no dead vertical space
+            between them. Acid is used only for the live-dot marker; the
+            rest is neutral so the block reads finished, not sold. */}
         <div
-          className="p-6 flex items-center justify-between flex-wrap gap-4"
+          className="p-5 flex items-center justify-between flex-wrap gap-4"
           style={{
             background: "var(--surface)",
             border: "1px solid var(--hairline)",
