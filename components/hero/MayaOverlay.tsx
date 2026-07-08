@@ -72,29 +72,17 @@ export function MayaOverlay({
           left/top drive the CENTER of the avatar, not its top-left corner. */}
       <div style={{ transform: "translate(-50%, -50%)" }}>
         <div className="relative">
-          {/* Wide spotlight — the environment falls off, Maya lights up.
-              This is the biggest saturated-acid moment on the page. */}
+          {/* Tight acid ring hugging the avatar + compact glow. Blur radius
+              matches the avatar (~40px), NOT 2-3× it — the glow used to
+              wash over adjacent text; this stays inside a ~80px footprint. */}
           <div
+            aria-hidden
             className="absolute rounded-full pointer-events-none"
             style={{
-              width: 480,
-              height: 480,
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -50%)",
-              background:
-                "radial-gradient(circle, rgba(223,255,0,0.10) 0%, rgba(223,255,0,0.03) 30%, transparent 65%)",
-            }}
-          />
-          {/* Tight halo close in to Maya. */}
-          <div
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              inset: -14,
+              inset: -3,
+              border: "1px solid rgba(223,255,0,0.85)",
               boxShadow:
-                "0 0 60px rgba(223,255,0,0.55), 0 0 22px rgba(223,255,0,0.7)",
-              background:
-                "radial-gradient(circle, rgba(223,255,0,0.24) 0%, transparent 62%)",
+                "0 0 12px rgba(223,255,0,0.45), 0 0 40px rgba(223,255,0,0.18)",
             }}
           />
           <div className={glitching ? "glitch" : ""}>

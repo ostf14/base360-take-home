@@ -68,21 +68,30 @@ export function CrmSurface({ progress, anchorRef }: Props) {
 
         {/* Record body */}
         <div className="flex flex-col overflow-hidden">
-          {/* Header row */}
+          {/* Header row — 3-column grid with proper gaps so nothing overlaps.
+              Left column reserves 64px for the avatar + its (smaller) glow
+              footprint. Center holds the name + meta stacked with real
+              spacing. Right holds the intent badge + action buttons, all
+              flex-none so a wider row still can't crowd the name. */}
           <div
-            className="grid grid-cols-[auto_1fr_auto] gap-4 items-center px-5 py-4 border-b"
-            style={{ borderColor: "var(--hairline)" }}
+            className="grid items-center px-5 py-4 border-b gap-x-6"
+            style={{
+              borderColor: "var(--hairline)",
+              gridTemplateColumns: "64px minmax(0, 1fr) auto",
+            }}
           >
-            <MayaAnchor anchorRef={anchorRef} />
-            <div className="flex flex-col gap-0.5 min-w-0">
+            <div className="flex items-center justify-center">
+              <MayaAnchor anchorRef={anchorRef} />
+            </div>
+            <div className="flex flex-col gap-1 min-w-0">
               <div className="text-lg font-display text-text-hi leading-tight">
                 Maya R.
               </div>
-              <div className="text-[10px] font-mono text-text-lo whitespace-nowrap">
+              <div className="text-[10px] font-mono text-text-lo truncate">
                 LEAD #001-8412 · maya.r · toronto, ca · updated just now
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 shrink-0">
               <IntentBadge progress={progress} />
               <Btn label="Message" />
               <Btn label="Call" />
