@@ -75,7 +75,6 @@ export function Stepper({ activeChapter, scrollYProgress }: Props) {
 }
 
 function Node({
-  index,
   active,
   past,
   label,
@@ -85,7 +84,6 @@ function Node({
   past: boolean;
   label: string;
 }) {
-  const num = String(index + 1).padStart(2, "0");
   return (
     <div className="relative flex items-center justify-center">
       {/* Label sits to the LEFT of the rail, right-anchored a gap-width
@@ -93,28 +91,22 @@ function Node({
           overflow into the copy column's right padding without widening
           the 64px stepper column or pushing the canvas. Only the ACTIVE
           node's label is opaque; the others sit at opacity 0 so the
-          label follows the current chapter without any label clutter. */}
+          label follows the current chapter without any label clutter.
+          Just the step NAME — the step number is already carried by
+          the kicker in the copy column, no need to repeat it here. */}
       <motion.div
         initial={false}
         animate={{ opacity: active ? 1 : 0 }}
         transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-right font-mono uppercase pointer-events-none text-[10px]"
+        className="absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-right font-mono uppercase pointer-events-none text-[10px] font-bold"
         style={{
           right: "calc(100% + 14px)",
-          letterSpacing: "0.14em",
+          letterSpacing: "0.18em",
+          color: "var(--acid)",
+          textShadow: "0 0 12px rgba(223,255,0,0.32)",
         }}
       >
-        <span style={{ color: "var(--text-lo)" }}>{num}</span>
-        <span style={{ color: "var(--text-lo)", margin: "0 6px" }}>·</span>
-        <span
-          style={{
-            color: "var(--acid)",
-            fontWeight: 700,
-            textShadow: "0 0 12px rgba(223,255,0,0.32)",
-          }}
-        >
-          {label}
-        </span>
+        {label}
       </motion.div>
 
       {/* Node square. Same shape across all six positions — state comes

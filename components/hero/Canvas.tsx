@@ -16,7 +16,6 @@ import { Anchor, MayaOverlay } from "./MayaOverlay";
 interface Props {
   scrollYProgress: MotionValue<number>;
   activeChapter: number;
-  glitching: boolean;
 }
 
 // Six chapters, each occupying an equal 1/6 slice of scrollYProgress.
@@ -130,7 +129,7 @@ const FALLBACK_PCT: Anchor[] = [
 // One always-mounted MayaOverlay sits above the surface stack; its position
 // is driven from measured anchor centers plus scrollYProgress. Because the
 // overlay never mounts/unmounts, there is no race — it can't disappear.
-export function Canvas({ scrollYProgress, activeChapter, glitching }: Props) {
+export function Canvas({ scrollYProgress, activeChapter }: Props) {
   const [t, setT] = useState(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => setT(v));
 
@@ -230,7 +229,6 @@ export function Canvas({ scrollYProgress, activeChapter, glitching }: Props) {
           scrollYProgress={scrollYProgress}
           anchors={anchors}
           fallback={fallback}
-          glitching={glitching}
         />
 
         <CornerChrome activeChapter={activeChapter} />

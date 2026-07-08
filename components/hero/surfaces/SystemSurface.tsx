@@ -81,20 +81,44 @@ export function SystemSurface({ progress, anchorRef }: Props) {
           }}
         />
 
-        {/* Connector polyline — one path through every environment */}
+        {/* Connector polyline — ONE lead path through every
+            environment. This is the payoff frame, so the path is the
+            acid accent: a continuous glowing line that draws in as
+            `progress` advances, ending at the CLOSED node. */}
         <svg
           aria-hidden
           className="absolute inset-0 pointer-events-none"
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
+          style={{
+            overflow: "visible",
+            filter: "drop-shadow(0 0 5px rgba(223, 255, 0, 0.55))",
+          }}
         >
+          {/* Faint full-length base so the route is legible even before
+              the animated stroke has drawn all the way through. */}
           <path
             d={pathD}
             fill="none"
-            stroke="rgba(244,244,245,0.15)"
-            strokeWidth={0.25}
+            stroke="rgba(223, 255, 0, 0.18)"
+            strokeWidth={0.6}
             vectorEffect="non-scaling-stroke"
-            strokeDasharray="1.4 1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <motion.path
+            d={pathD}
+            fill="none"
+            stroke="var(--acid)"
+            strokeWidth={1.1}
+            vectorEffect="non-scaling-stroke"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ pathLength: 0 }}
+            animate={{
+              pathLength: Math.max(0, Math.min(1, progress * 1.2)),
+            }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           />
         </svg>
 
@@ -115,21 +139,23 @@ export function SystemSurface({ progress, anchorRef }: Props) {
                 {isClosed && <MayaAnchor anchorRef={anchorRef} />}
                 {!isClosed && <ShellGlyph shell={n.shell} />}
                 <div
-                  className="px-3 py-1.5 rounded-sm text-[10px] font-mono uppercase tracking-wider"
+                  className="px-3 py-1.5 rounded-sm text-[10px] font-mono uppercase tracking-wider font-medium"
                   style={{
-                    color: isClosed ? "#0A0A0B" : "var(--text-lo)",
-                    background: isClosed ? "var(--acid)" : "transparent",
+                    color: isClosed ? "#0A0A0B" : "var(--text-hi)",
+                    background: isClosed
+                      ? "var(--acid)"
+                      : "rgba(28, 28, 31, 0.92)",
                     border: `1px solid ${
-                      isClosed ? "var(--acid)" : "var(--hairline)"
+                      isClosed ? "var(--acid)" : "rgba(255, 255, 255, 0.22)"
                     }`,
                     boxShadow: isClosed
-                      ? "0 0 24px rgba(223,255,0,0.45)"
-                      : "none",
+                      ? "0 0 26px rgba(223,255,0,0.55)"
+                      : "0 4px 12px rgba(0, 0, 0, 0.45)",
                   }}
                 >
                   {n.label}
                 </div>
-                <div className="text-[9px] font-mono uppercase text-text-lo">
+                <div className="text-[9px] font-mono uppercase text-text-lo/90">
                   {n.sub}
                 </div>
               </div>
@@ -164,8 +190,8 @@ function ShellGlyph({ shell }: { shell: Node["shell"] }) {
           width: 22,
           height: 34,
           borderRadius: 6,
-          border: "1px solid var(--hairline)",
-          background: "var(--surface-panel-2)",
+          border: "1px solid rgba(255, 255, 255, 0.22)",
+          background: "rgba(28, 28, 31, 0.92)",
           position: "relative",
         }}
       >
@@ -192,8 +218,8 @@ function ShellGlyph({ shell }: { shell: Node["shell"] }) {
           width: 42,
           height: 30,
           borderRadius: 4,
-          border: "1px solid var(--hairline)",
-          background: "var(--surface-panel-2)",
+          border: "1px solid rgba(255, 255, 255, 0.22)",
+          background: "rgba(28, 28, 31, 0.92)",
           position: "relative",
         }}
       >
@@ -242,7 +268,7 @@ function ShellGlyph({ shell }: { shell: Node["shell"] }) {
           width: 26,
           height: 26,
           borderRadius: "50%",
-          border: "1px solid var(--hairline)",
+          border: "1px solid rgba(255, 255, 255, 0.22)",
           background: "transparent",
         }}
       />

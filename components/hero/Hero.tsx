@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import { CHAPTERS } from "@/lib/chapters";
 import { Canvas, activeChapterAt } from "./Canvas";
@@ -17,7 +17,6 @@ export function Hero() {
     offset: ["start start", "end end"],
   });
   const [activeChapter, setActiveChapter] = useState(0);
-  const [glitching, setGlitching] = useState(false);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
     // Dominance-based flip: chapter (i+1) becomes "current" when the
@@ -25,17 +24,8 @@ export function Hero() {
     // to fade up (midpoint of the handoff window in Canvas). Fixes the
     // lag where node 01 stayed lit while DM was already on screen.
     const next = activeChapterAt(v, CHAPTERS.length);
-    setActiveChapter((prev) => {
-      if (next !== prev) setGlitching(true);
-      return next;
-    });
+    setActiveChapter((prev) => (next !== prev ? next : prev));
   });
-
-  useEffect(() => {
-    if (!glitching) return;
-    const id = window.setTimeout(() => setGlitching(false), 220);
-    return () => window.clearTimeout(id);
-  }, [glitching]);
 
   return (
     <section
@@ -57,7 +47,6 @@ export function Hero() {
           <Canvas
             scrollYProgress={scrollYProgress}
             activeChapter={activeChapter}
-            glitching={glitching}
           />
         </div>
       </div>

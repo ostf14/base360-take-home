@@ -77,7 +77,10 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               <div className="text-[13px] text-text-hi leading-snug">
                 how much is this? <span>😍</span>
               </div>
-              {/* AI public reply nested */}
+              {/* AI public reply — this is the key beat: the brand
+                  replied to her in public. Reads clearly and distinctly
+                  from the surrounding comments via an acid-tinted card
+                  + acid "AI" chip + full-brightness text. */}
               <motion.div
                 initial={{ opacity: 0, y: -4 }}
                 animate={{
@@ -85,24 +88,32 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
                   y: igniteProgress > 0.35 ? 0 : -4,
                 }}
                 transition={{ duration: 0.3 }}
-                className="mt-2 pl-3 border-l"
-                style={{ borderColor: "var(--hairline)" }}
+                className="mt-2 rounded-md p-2.5"
+                style={{
+                  background: "rgba(223, 255, 0, 0.06)",
+                  border: "1px solid rgba(223, 255, 0, 0.22)",
+                  borderLeft: "2px solid var(--acid)",
+                  boxShadow: "0 0 20px rgba(223, 255, 0, 0.08)",
+                }}
               >
-                <div className="flex items-center gap-1.5 mb-0.5">
+                <div className="flex items-center gap-1.5 mb-1">
                   <span className="text-[12px] font-semibold text-text-hi">
                     @northbloom.co
                   </span>
                   <span
-                    className="text-[8px] font-mono uppercase px-1 py-0.5 rounded-sm"
+                    className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
                     style={{
-                      color: "var(--text-lo)",
-                      border: "1px solid var(--hairline)",
+                      color: "#0A0A0B",
+                      background: "var(--acid)",
                     }}
                   >
                     AI
                   </span>
+                  <span className="text-[10px] font-mono text-text-lo ml-auto">
+                    public reply
+                  </span>
                 </div>
-                <div className="text-[12px] text-text-hi/85">
+                <div className="text-[12px] text-text-hi leading-snug">
                   <TypedLine
                     text="just slid into your DMs 💌"
                     show={igniteProgress > 0.35}
@@ -248,10 +259,12 @@ function CommentRow({
   dim: boolean;
   delay: number;
 }) {
+  // Once Maya's comment ignites, the surrounding feed recedes to ~0.4
+  // so the Maya-comment → AI-reply pair reads as the clear focus.
   return (
     <motion.div
       initial={false}
-      animate={{ opacity: dim ? 0.35 : 0.7 }}
+      animate={{ opacity: dim ? 0.4 : 0.7 }}
       transition={{ duration: 0.4, delay }}
       className="flex gap-2 items-start py-1"
     >

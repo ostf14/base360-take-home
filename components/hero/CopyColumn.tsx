@@ -26,7 +26,13 @@ export function CopyColumn({ activeChapter }: Props) {
 
   return (
     <div className="relative h-full flex flex-col justify-center gap-8 pl-10 pr-8">
-      <div className="flex flex-col gap-6 max-w-[520px]">
+      <div className="flex flex-col max-w-[520px]">
+        {/* The whole kicker/headline/subcopy/CTA block lives in ONE
+            AnimatePresence beat so everything fades together on chapter
+            change. A fixed min-height reserves room for the tallest
+            chapter, and `mt-auto` on the CTA row parks it at the bottom
+            of that reserved space — so the button never translates
+            vertically when the headline shrinks from 3 lines to 2. */}
         <AnimatePresence mode="wait">
           <motion.div
             key={chapter.id}
@@ -35,6 +41,7 @@ export function CopyColumn({ activeChapter }: Props) {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col gap-5"
+            style={{ minHeight: 420 }}
           >
             {/* Kicker in two levels:
                  - counter: small, muted mono — recedes as chrome
@@ -69,25 +76,25 @@ export function CopyColumn({ activeChapter }: Props) {
             <p className="text-lg text-text-lo leading-snug max-w-[440px]">
               {chapter.subcopy}
             </p>
+            <div className="flex items-center gap-4 mt-auto pt-2">
+              <a
+                href="#waitlist"
+                className="group inline-flex items-center gap-2 font-mono uppercase text-xs px-4 py-2.5 tracking-wider"
+                style={{
+                  background: "var(--acid)",
+                  color: "#0A0A0B",
+                  boxShadow: "0 0 24px rgba(223,255,0,0.35)",
+                  fontWeight: 700,
+                }}
+              >
+                Get early access
+                <span className="transition-transform group-hover:translate-x-0.5">
+                  →
+                </span>
+              </a>
+            </div>
           </motion.div>
         </AnimatePresence>
-
-        {/* Persistent CTA — never moves or changes across chapters */}
-        <div className="flex items-center gap-4 mt-2">
-          <a
-            href="#waitlist"
-            className="group inline-flex items-center gap-2 font-mono uppercase text-xs px-4 py-2.5 tracking-wider"
-            style={{
-              background: "var(--acid)",
-              color: "#0A0A0B",
-              boxShadow: "0 0 24px rgba(223,255,0,0.35)",
-              fontWeight: 700,
-            }}
-          >
-            Get early access
-            <span className="transition-transform group-hover:translate-x-0.5">→</span>
-          </a>
-        </div>
       </div>
     </div>
   );

@@ -42,14 +42,12 @@ interface Props {
   scrollYProgress: MotionValue<number>;
   anchors: (Anchor | null)[];
   fallback: Anchor[];
-  glitching: boolean;
 }
 
 export function MayaOverlay({
   scrollYProgress,
   anchors,
   fallback,
-  glitching,
 }: Props) {
   // Resolve: prefer measured anchors, fall back to hand-calibrated positions
   // (px in canvas coords). Always yields exactly 6 non-null positions.
@@ -89,9 +87,7 @@ export function MayaOverlay({
                 "0 0 12px rgba(223,255,0,0.45), 0 0 40px rgba(223,255,0,0.18)",
             }}
           />
-          <div className={glitching ? "glitch" : ""}>
-            <MayaAvatar size={AVATAR_SIZE} />
-          </div>
+          <MayaAvatar size={AVATAR_SIZE} />
         </div>
       </div>
     </motion.div>
