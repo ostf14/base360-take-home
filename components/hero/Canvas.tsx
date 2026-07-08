@@ -19,41 +19,80 @@ interface Props {
   glitching: boolean;
 }
 
-interface Range {
-  fadeInStart: number;
-  plateauStart: number;
-  plateauEnd: number;
-  fadeOutEnd: number;
+// Six chapters, each occupying an equal 1/6 slice of scrollYProgress.
+const TOTAL = 6;
+const S = 1 / TOTAL;
+// Handoff window: last ~15% of each chapter's slot. Everything else is a
+// single-surface DWELL at full opacity — so at any scroll position exactly
+// one surface reads as sharp and legible. Kept in sync with
+// MayaOverlay#OVERLAY_KEYFRAMES so the avatar's travel window matches the
+// surface swap.
+const H = 0.15 * S;
+// Exit-transform strength. Outgoing surface recedes with a slight scale-down
+// and a small blur so its text stops being sharply legible before the
+// incoming surface finishes fading in — no double-exposure of two crisp
+// screens at once.
+const EXIT_SCALE = 0.97;
+const EXIT_BLUR_PX = 3;
+
+interface SurfaceState {
+  opacity: number;
+  scale: number;
+  blur: number;
 }
 
-const S = 1 / 6;
+// Compute the visual state of surface `i` at scroll position `t`.
+//
+// Life of one surface along the scroll axis:
+//   [i*S - H .. i*S]           fade-in from previous chapter's tail
+//   [i*S     .. (i+1)*S - H]   full-opacity dwell (owns the frame)
+//   [(i+1)*S - H .. (i+1)*S]   fade-out into the next chapter
+//
+// Chapter 0 skips the fade-in; chapter (TOTAL-1) skips the fade-out.
+// Hidden phases return an identity transform so anchor measurements
+// (getBoundingClientRect) are never taken through a scale() — the layout
+// stays truthful when the layoutEffect runs on mount.
+function surfaceState(t: number, i: number, total: number): SurfaceState {
+  const slotStart = i * S;
+  const slotEnd = (i + 1) * S;
+  const inStart = slotStart - H;
+  const outStart = slotEnd - H;
+  const isFirst = i === 0;
+  const isLast = i === total - 1;
 
-const RANGES: Range[] = [
-  { fadeInStart: 0.0,        plateauStart: 0.0,        plateauEnd: 0 * S + 0.083, fadeOutEnd: 1 * S },
-  { fadeInStart: 0 * S + 0.083, plateauStart: 1 * S,    plateauEnd: 1 * S + 0.083, fadeOutEnd: 2 * S },
-  { fadeInStart: 1 * S + 0.083, plateauStart: 2 * S,    plateauEnd: 2 * S + 0.083, fadeOutEnd: 3 * S },
-  { fadeInStart: 2 * S + 0.083, plateauStart: 3 * S,    plateauEnd: 3 * S + 0.083, fadeOutEnd: 4 * S },
-  { fadeInStart: 3 * S + 0.083, plateauStart: 4 * S,    plateauEnd: 4 * S + 0.083, fadeOutEnd: 5 * S },
-  { fadeInStart: 4 * S + 0.083, plateauStart: 5 * S,    plateauEnd: 1.0,           fadeOutEnd: 1.01 },
-];
-
-function opacityForRange(t: number, r: Range) {
-  if (t <= r.fadeInStart) return t < r.fadeInStart ? 0 : 1;
-  if (t < r.plateauStart) {
-    const span = r.plateauStart - r.fadeInStart;
-    return span <= 0 ? 1 : (t - r.fadeInStart) / span;
+  if (!isFirst && t < inStart) {
+    return { opacity: 0, scale: 1, blur: 0 };
   }
-  if (t <= r.plateauEnd) return 1;
-  if (t < r.fadeOutEnd) {
-    const span = r.fadeOutEnd - r.plateauEnd;
-    return span <= 0 ? 0 : 1 - (t - r.plateauEnd) / span;
+  if (!isLast && t >= slotEnd) {
+    return { opacity: 0, scale: 1, blur: 0 };
   }
-  return 0;
+  if (!isFirst && t < slotStart) {
+    const u = (t - inStart) / H;
+    return {
+      opacity: u,
+      scale: EXIT_SCALE + (1 - EXIT_SCALE) * u,
+      blur: EXIT_BLUR_PX * (1 - u),
+    };
+  }
+  if (!isLast && t >= outStart) {
+    const u = (t - outStart) / H;
+    return {
+      opacity: 1 - u,
+      scale: 1 - (1 - EXIT_SCALE) * u,
+      blur: EXIT_BLUR_PX * u,
+    };
+  }
+  return { opacity: 1, scale: 1, blur: 0 };
 }
 
-function localProgress(t: number, r: Range) {
-  const span = r.fadeOutEnd - r.fadeInStart;
-  return Math.min(1, Math.max(0, (t - r.fadeInStart) / span));
+// 0 → 1 across the visible lifespan of surface `i` (fade-in + dwell +
+// fade-out). Used to drive per-surface reveal animations.
+function localProgress(t: number, i: number, total: number): number {
+  const lifeStart = i === 0 ? 0 : i * S - H;
+  const lifeEnd = i === total - 1 ? 1 : (i + 1) * S;
+  const span = lifeEnd - lifeStart;
+  if (span <= 0) return 0;
+  return Math.max(0, Math.min(1, (t - lifeStart) / span));
 }
 
 // Hand-calibrated fallback anchors as % of canvas. Used when measurement
@@ -129,39 +168,39 @@ export function Canvas({ scrollYProgress, activeChapter, glitching }: Props) {
         <AmbientGlow activeChapter={activeChapter} />
         <EdgeVignette />
 
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[0])}>
+        <SurfaceSlot state={surfaceState(t, 0, TOTAL)}>
           <TikTokSurface
-            igniteProgress={localProgress(t, RANGES[0])}
+            igniteProgress={localProgress(t, 0, TOTAL)}
             anchorRef={anchorRefs[0]}
           />
         </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[1])}>
+        <SurfaceSlot state={surfaceState(t, 1, TOTAL)}>
           <DmSurface
-            progress={localProgress(t, RANGES[1])}
+            progress={localProgress(t, 1, TOTAL)}
             anchorRef={anchorRefs[1]}
           />
         </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[2])}>
+        <SurfaceSlot state={surfaceState(t, 2, TOTAL)}>
           <CrmSurface
-            progress={localProgress(t, RANGES[2])}
+            progress={localProgress(t, 2, TOTAL)}
             anchorRef={anchorRefs[2]}
           />
         </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[3])}>
+        <SurfaceSlot state={surfaceState(t, 3, TOTAL)}>
           <CallSurface
-            progress={localProgress(t, RANGES[3])}
+            progress={localProgress(t, 3, TOTAL)}
             anchorRef={anchorRefs[3]}
           />
         </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[4])}>
+        <SurfaceSlot state={surfaceState(t, 4, TOTAL)}>
           <EmailSurface
-            progress={localProgress(t, RANGES[4])}
+            progress={localProgress(t, 4, TOTAL)}
             anchorRef={anchorRefs[4]}
           />
         </SurfaceSlot>
-        <SurfaceSlot opacity={opacityForRange(t, RANGES[5])}>
+        <SurfaceSlot state={surfaceState(t, 5, TOTAL)}>
           <SystemSurface
-            progress={localProgress(t, RANGES[5])}
+            progress={localProgress(t, 5, TOTAL)}
             anchorRef={anchorRefs[5]}
           />
         </SurfaceSlot>
@@ -181,21 +220,34 @@ export function Canvas({ scrollYProgress, activeChapter, glitching }: Props) {
 }
 
 function SurfaceSlot({
-  opacity,
+  state,
   children,
 }: {
-  opacity: number;
+  state: SurfaceState;
   children: React.ReactNode;
 }) {
-  // NOTE: no `visibility: hidden` here anymore — anchors must stay measurable
-  // even while their surface is invisible. `opacity: 0` still keeps layout,
-  // which is all we need for getBoundingClientRect to return real coords.
+  const hidden = state.opacity <= 0.001;
+  // Skip transform/filter strings during the dwell — dwell has scale=1 and
+  // blur=0, and emitting undefined lets React drop the property entirely so
+  // no filter stacking context is created and no GPU cost is paid.
+  const transform = state.scale === 1 ? undefined : `scale(${state.scale})`;
+  const filter =
+    state.blur > 0.05 ? `blur(${state.blur.toFixed(2)}px)` : undefined;
   return (
     <div
       className="absolute inset-0 z-10"
       style={{
-        opacity,
-        pointerEvents: opacity > 0.5 ? "auto" : "none",
+        opacity: state.opacity,
+        transform,
+        transformOrigin: "50% 50%",
+        filter,
+        pointerEvents: state.opacity > 0.5 ? "auto" : "none",
+        // Fully-faded surfaces stop drawing. visibility: hidden preserves
+        // layout so the layout-effect measurement of MayaAnchor's
+        // getBoundingClientRect still returns real coords — and hidden
+        // phases return an identity transform above (scale 1) so the
+        // measured position isn't shifted by scale().
+        visibility: hidden ? "hidden" : "visible",
       }}
     >
       {children}

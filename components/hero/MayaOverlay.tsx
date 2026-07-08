@@ -12,18 +12,22 @@ import { MayaAvatar } from "./MayaAvatar";
 // which was the failure mode of the shared-layout approach. Its position is a
 // pure function of scrollYProgress, interpolated across measured anchor centers.
 
-// Dwell/travel cadence — same shape the puck used to have.
-// Each chapter (i) gets a slot [i/6, (i+1)/6]. First half of the slot is a
-// dwell (Maya sits on the current anchor); second half is a travel (Maya
-// interpolates to the next anchor). Repeating each anchor twice at the slot's
-// boundaries is what encodes the dwell.
+// Dwell/travel cadence. Each chapter (i) gets a slot [i/6, (i+1)/6].
+// Maya DWELLS on anchor i for the first ~85% of the slot, then TRAVELS to
+// anchor (i+1) during the last ~15%. That short travel window is aligned
+// with the surface-handoff window in Canvas.tsx (const H there), so the
+// avatar arrives on the incoming surface at the exact moment it becomes
+// fully visible — no floating over an empty chapter, and the swap and the
+// dock happen together.
+const S = 1 / 6;
+const H = 0.15 * S;
 export const OVERLAY_KEYFRAMES = [
-  0.0, 0.083,
-  0.166, 0.25,
-  0.333, 0.416,
-  0.5, 0.583,
-  0.666, 0.75,
-  0.833, 1.0,
+  0.0,        1 * S - H,
+  1 * S,      2 * S - H,
+  2 * S,      3 * S - H,
+  3 * S,      4 * S - H,
+  4 * S,      5 * S - H,
+  5 * S,      1.0,
 ];
 
 // One consistent size across surfaces. Anchor slots are 40×40 to match.
