@@ -22,36 +22,42 @@ interface Props {
 // Six chapters, each occupying an equal 1/6 slice of scrollYProgress.
 const TOTAL = 6;
 const S = 1 / TOTAL;
-// Handoff window: last ~15% of each chapter's slot. Everything else is a
-// single-surface DWELL at full opacity — so at any scroll position exactly
-// one surface reads as sharp and legible. Kept in sync with
-// MayaOverlay#OVERLAY_KEYFRAMES so the avatar's travel window matches the
-// surface swap.
+// Handoff window at each chapter boundary — the last ~15% of each slot.
+// Kept in sync with MayaOverlay#OVERLAY_KEYFRAMES so the avatar's travel
+// window matches the surface swap.
 const H = 0.15 * S;
-// Exit-transform strength. Outgoing surface recedes with a slight scale-down
-// and a small blur so its text stops being sharply legible before the
-// incoming surface finishes fading in — no double-exposure of two crisp
-// screens at once.
-const EXIT_SCALE = 0.97;
-const EXIT_BLUR_PX = 3;
+// Sequential-opacity handoff: within the H-wide window at each boundary,
+// the OUTGOING surface fades to 0 in the FIRST half; only then does the
+// INCOMING surface start fading up in the SECOND half. Consequently no
+// two surfaces are ever both above ~0 at the same scroll position — no
+// double-exposure of two legible screens.
+//
+// At the exact midpoint of every handoff (t = (i+1)*S - H/2) BOTH the
+// outgoing and incoming surfaces are 0. That brief empty moment is
+// deliberate — it's covered by (1) the always-mounted MayaOverlay,
+// which is exactly mid-flight between anchors at that instant, and
+// (2) the stepper acid fill, which keeps advancing. The camera carries
+// the lead across the gap; nothing blinks into void.
+const HALF_H = H / 2;
 
 interface SurfaceState {
   opacity: number;
-  scale: number;
-  blur: number;
 }
 
 // Compute the visual state of surface `i` at scroll position `t`.
 //
 // Life of one surface along the scroll axis:
-//   [i*S - H .. i*S]           fade-in from previous chapter's tail
-//   [i*S     .. (i+1)*S - H]   full-opacity dwell (owns the frame)
-//   [(i+1)*S - H .. (i+1)*S]   fade-out into the next chapter
+//   [i*S - H     .. i*S - H/2]     silent — before its fade-in has begun
+//   [i*S - H/2   .. i*S]            fade-in 0 → 1 (second half of handoff)
+//   [i*S         .. (i+1)*S - H]    full-opacity dwell — owns the frame
+//   [(i+1)*S - H .. (i+1)*S - H/2]  fade-out 1 → 0 (first half of handoff)
+//   [(i+1)*S - H/2 .. (i+1)*S]      silent — after its fade-out has ended
 //
 // Chapter 0 skips the fade-in; chapter (TOTAL-1) skips the fade-out.
-// Hidden phases return an identity transform so anchor measurements
-// (getBoundingClientRect) are never taken through a scale() — the layout
-// stays truthful when the layoutEffect runs on mount.
+// CRITICAL: surfaces are never unmounted and never removed from layout —
+// only their opacity/visibility changes. That way the MayaOverlay anchor
+// measurements (getBoundingClientRect on MayaAnchor) stay valid whether
+// or not a surface is currently visible.
 function surfaceState(t: number, i: number, total: number): SurfaceState {
   const slotStart = i * S;
   const slotEnd = (i + 1) * S;
@@ -60,36 +66,35 @@ function surfaceState(t: number, i: number, total: number): SurfaceState {
   const isFirst = i === 0;
   const isLast = i === total - 1;
 
-  if (!isFirst && t < inStart) {
-    return { opacity: 0, scale: 1, blur: 0 };
-  }
-  if (!isLast && t >= slotEnd) {
-    return { opacity: 0, scale: 1, blur: 0 };
-  }
+  // Fully before this surface's fade-in even begins.
+  if (!isFirst && t < inStart) return { opacity: 0 };
+  // Fully after this surface has left the frame.
+  if (!isLast && t >= slotEnd) return { opacity: 0 };
+
+  // Fade-in: only during the SECOND half of the boundary window.
   if (!isFirst && t < slotStart) {
-    const u = (t - inStart) / H;
-    return {
-      opacity: u,
-      scale: EXIT_SCALE + (1 - EXIT_SCALE) * u,
-      blur: EXIT_BLUR_PX * (1 - u),
-    };
+    const halfStart = inStart + HALF_H;
+    if (t < halfStart) return { opacity: 0 };
+    return { opacity: (t - halfStart) / HALF_H };
   }
+
+  // Fade-out: only during the FIRST half of the boundary window.
   if (!isLast && t >= outStart) {
-    const u = (t - outStart) / H;
-    return {
-      opacity: 1 - u,
-      scale: 1 - (1 - EXIT_SCALE) * u,
-      blur: EXIT_BLUR_PX * u,
-    };
+    const halfEnd = outStart + HALF_H;
+    if (t >= halfEnd) return { opacity: 0 };
+    return { opacity: 1 - (t - outStart) / HALF_H };
   }
-  return { opacity: 1, scale: 1, blur: 0 };
+
+  // Dwell — this surface owns the frame at opacity 1.
+  return { opacity: 1 };
 }
 
-// 0 → 1 across the visible lifespan of surface `i` (fade-in + dwell +
-// fade-out). Used to drive per-surface reveal animations.
+// 0 → 1 across the VISIBLE life of surface `i`. Used to drive per-surface
+// reveal animations (typewriters, ticks, etc.). Anchored to the fade
+// midpoints so progress ~ 0 at fade-in start and ~ 1 at fade-out end.
 function localProgress(t: number, i: number, total: number): number {
-  const lifeStart = i === 0 ? 0 : i * S - H;
-  const lifeEnd = i === total - 1 ? 1 : (i + 1) * S;
+  const lifeStart = i === 0 ? 0 : i * S - HALF_H;
+  const lifeEnd = i === total - 1 ? 1 : (i + 1) * S - HALF_H;
   const span = lifeEnd - lifeStart;
   if (span <= 0) return 0;
   return Math.max(0, Math.min(1, (t - lifeStart) / span));
@@ -227,26 +232,16 @@ function SurfaceSlot({
   children: React.ReactNode;
 }) {
   const hidden = state.opacity <= 0.001;
-  // Skip transform/filter strings during the dwell — dwell has scale=1 and
-  // blur=0, and emitting undefined lets React drop the property entirely so
-  // no filter stacking context is created and no GPU cost is paid.
-  const transform = state.scale === 1 ? undefined : `scale(${state.scale})`;
-  const filter =
-    state.blur > 0.05 ? `blur(${state.blur.toFixed(2)}px)` : undefined;
   return (
     <div
       className="absolute inset-0 z-10"
       style={{
         opacity: state.opacity,
-        transform,
-        transformOrigin: "50% 50%",
-        filter,
         pointerEvents: state.opacity > 0.5 ? "auto" : "none",
-        // Fully-faded surfaces stop drawing. visibility: hidden preserves
-        // layout so the layout-effect measurement of MayaAnchor's
-        // getBoundingClientRect still returns real coords — and hidden
-        // phases return an identity transform above (scale 1) so the
-        // measured position isn't shifted by scale().
+        // Fully-faded surfaces stop drawing. visibility: hidden keeps the
+        // element in layout so MayaAnchor's getBoundingClientRect still
+        // returns real coords — that's how the overlay knows where to
+        // dock on the next chapter's surface even while it's invisible.
         visibility: hidden ? "hidden" : "visible",
       }}
     >
