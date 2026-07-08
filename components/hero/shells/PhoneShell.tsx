@@ -20,9 +20,13 @@ export function PhoneShell({ platform, children }: Props) {
           height: "min(760px, 100%)",
           borderRadius: 44,
           padding: 8,
-          background: "#050506",
-          boxShadow:
-            "var(--specimen-shadow), 0 0 0 1.5px rgba(255,255,255,0.06), inset 0 0 0 1px rgba(255,255,255,0.04)",
+          // Bezel is a step lighter than --bg so the phone silhouette
+          // reads against the near-black canvas. Kept neutral grey — the
+          // Maya avatar stays the brightest thing in the frame.
+          background: "var(--shell-body)",
+          // Rim + separator ring + drop + acid whisper all live in the
+          // shared token; no need for the old ad-hoc overlays.
+          boxShadow: "var(--specimen-shadow)",
         }}
       >
         <div

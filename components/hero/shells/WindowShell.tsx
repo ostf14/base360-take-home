@@ -18,8 +18,14 @@ export function WindowShell({ url, tabs, children }: Props) {
         className="relative flex-1 flex flex-col overflow-hidden"
         style={{
           borderRadius: 14,
-          background: "var(--surface-panel)",
-          border: "1px solid var(--hairline)",
+          // Solid neutral grey, a step lighter than --bg so the window
+          // chrome separates from the near-black canvas instead of
+          // reading as a translucent hole. Matches PhoneShell so all
+          // surfaces float equally.
+          background: "var(--shell-body)",
+          // No explicit border — the 1px separator ring and the
+          // top+left / bottom+right bevel rim are baked into the
+          // shared --specimen-shadow stack.
           boxShadow: "var(--specimen-shadow)",
         }}
       >

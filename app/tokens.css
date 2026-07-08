@@ -12,15 +12,27 @@
   /* Environments recede — surfaces are exhibits, not live UI. */
   --surface-panel:   rgba(20, 20, 22, 0.9);
   --surface-panel-2: rgba(28, 28, 31, 0.9);
-  /* Specimen shadow = dark drop + top rim highlight + a whisper of acid
-     ambient at top and bottom (spread-negative so it only bleeds vertically).
-     Just enough to lift surfaces off the near-black canvas; still quieter
-     than the lead avatar. */
+  /* Shell body: a neutral dark grey a step LIGHTER than --bg (#0A0A0B) so
+     phone bezels and window chrome silhouette against the canvas instead
+     of disappearing into near-black-on-near-black. Kept grey — no acid,
+     no color cast — so the shell reads as an object and the Maya lead
+     stays the brightest accent in the frame. */
+  --shell-body: #1D1E22;
+  /* Specimen shadow: a real lift stack, applied to both PhoneShell and
+     WindowShell. Layers, outer → inner:
+       1. Faint acid warmth beneath the shell (large blur, negative spread
+          so it stays a low pool, not a ring).
+       2. Strong soft dark drop so the shell reads as floating on black.
+       3. 1px separator ring so the exact edge is legible on the dark
+          canvas even when the drop shadow behind it is soft.
+       4. 1px bevel: bright rim at top+left (light-catching), dim rim at
+          bottom+right — a real rim, not a glow. */
   --specimen-shadow:
-    0 30px 70px rgba(0, 0, 0, 0.6),
-    0 -32px 60px -32px rgba(223, 255, 0, 0.07),
-    0 32px 60px -32px rgba(223, 255, 0, 0.07),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 40px 80px -30px rgba(223, 255, 0, 0.05),
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset  1px  1px 0 rgba(255, 255, 255, 0.10),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.04);
 
   /* Muted / dim acid — used only for chrome that used to shout. */
   --acid-dim:  rgba(223, 255, 0, 0.28);
