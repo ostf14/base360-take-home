@@ -100,6 +100,21 @@ function localProgress(t: number, i: number, total: number): number {
   return Math.max(0, Math.min(1, (t - lifeStart) / span));
 }
 
+// Which chapter is currently DOMINANT on the canvas at scroll `v`.
+// Sequential handoff means chapter (i+1) takes over exactly when the
+// outgoing surface hits 0 and the incoming starts fading up — i.e.
+// at t = (i+1)*S - H/2. Offsetting the raw floor(v * total) by +H/2
+// gives that flip point without shifting chapter 0's own entry.
+// Exported so Hero.tsx keeps a single source of truth for the
+// handoff timing (H) and its Stepper active node / CopyColumn text
+// swap stay in sync with the surface actually on screen.
+export function activeChapterAt(v: number, total: number = TOTAL): number {
+  return Math.min(
+    total - 1,
+    Math.max(0, Math.floor((v + HALF_H) * total)),
+  );
+}
+
 // Hand-calibrated fallback anchors as % of canvas. Used when measurement
 // hasn't happened yet (first paint) or if a ref is null.
 const FALLBACK_PCT: Anchor[] = [

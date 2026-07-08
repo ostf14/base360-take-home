@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useScroll, useMotionValueEvent } from "framer-motion";
 import { CHAPTERS } from "@/lib/chapters";
-import { Canvas } from "./Canvas";
+import { Canvas, activeChapterAt } from "./Canvas";
 import { CopyColumn } from "./CopyColumn";
 import { Stepper } from "./Stepper";
 
@@ -20,10 +20,11 @@ export function Hero() {
   const [glitching, setGlitching] = useState(false);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    const next = Math.min(
-      CHAPTERS.length - 1,
-      Math.max(0, Math.floor(v * CHAPTERS.length))
-    );
+    // Dominance-based flip: chapter (i+1) becomes "current" when the
+    // outgoing surface has faded to 0 and the incoming is just starting
+    // to fade up (midpoint of the handoff window in Canvas). Fixes the
+    // lag where node 01 stayed lit while DM was already on screen.
+    const next = activeChapterAt(v, CHAPTERS.length);
     setActiveChapter((prev) => {
       if (next !== prev) setGlitching(true);
       return next;
