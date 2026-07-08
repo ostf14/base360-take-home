@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { MayaAnchor } from "../MayaOverlay";
+import { PhoneShell } from "../shells/PhoneShell";
 
 interface Msg {
   from: "maya" | "ai";
@@ -23,62 +24,76 @@ interface Props {
 
 export function DmSurface({ progress, anchorRef }: Props) {
   return (
-    <div className="absolute inset-0 flex items-stretch justify-end p-6 pt-12">
+    <PhoneShell platform="instagram">
+      {/* DM contact header */}
       <div
-        className="relative w-[62%] h-full flex flex-col rounded-2xl overflow-hidden"
-        style={{
-          background: "var(--surface-panel)",
-          border: "1px solid var(--hairline)",
-          boxShadow: "var(--specimen-shadow)",
-        }}
+        className="flex items-center gap-3 px-4 py-3 border-b"
+        style={{ borderColor: "var(--hairline)" }}
       >
-        {/* DM header — Base360's view of the brand's inbox: Maya is the contact.
-            The anchor slot reserves 40×40 for the overlay to land on. */}
-        <div
-          className="flex items-center gap-3 px-4 py-3 border-b"
-          style={{ borderColor: "var(--hairline)" }}
-        >
-          <MayaAnchor anchorRef={anchorRef} />
-          <div className="flex flex-col leading-tight">
-            <span className="text-sm text-text-hi font-semibold">@maya.r</span>
-            <span className="text-[10px] font-mono text-text-lo">
-              tiktok · direct message
-            </span>
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <span
-              className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-sm"
-              style={{
-                color: "var(--text-lo)",
-                border: "1px solid var(--hairline)",
-              }}
-            >
-              AI Agent
-            </span>
-          </div>
+        <span className="text-[13px] font-mono text-text-lo/70">‹</span>
+        <MayaAnchor anchorRef={anchorRef} />
+        <div className="flex flex-col leading-tight">
+          <span className="text-[13px] text-text-hi font-semibold">@maya.r</span>
+          <span className="text-[9px] font-mono uppercase tracking-widest text-text-lo">
+            tiktok · direct message
+          </span>
         </div>
-
-        {/* Thread */}
-        <div className="flex-1 flex flex-col gap-3 p-4 overflow-hidden">
-          {THREAD.map((m, i) => (
-            <DmBubble key={i} m={m} show={progress > m.delay / 2.2} />
-          ))}
-          {progress > 0.85 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-center gap-2 text-[10px] font-mono text-text-lo mt-auto"
-            >
-              <span
-                className="w-1.5 h-1.5 rounded-full"
-                style={{ background: "var(--text-lo)" }}
-              />
-              agent replying · 2.4s avg
-            </motion.div>
-          )}
+        <div className="ml-auto flex items-center gap-2">
+          <span
+            className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm"
+            style={{
+              color: "var(--text-lo)",
+              border: "1px solid var(--hairline)",
+            }}
+          >
+            AI Agent
+          </span>
         </div>
       </div>
-    </div>
+
+      {/* Thread */}
+      <div className="flex-1 flex flex-col gap-2.5 px-3 py-3 overflow-hidden">
+        {THREAD.map((m, i) => (
+          <DmBubble key={i} m={m} show={progress > m.delay / 2.2} />
+        ))}
+        {progress > 0.85 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-2 text-[9px] font-mono text-text-lo mt-2"
+          >
+            <span
+              className="w-1 h-1 rounded-full"
+              style={{ background: "var(--text-lo)" }}
+            />
+            agent replying · 2.4s avg
+          </motion.div>
+        )}
+      </div>
+
+      {/* Composer */}
+      <div
+        className="flex items-center gap-2 px-3 py-2.5 border-t"
+        style={{ borderColor: "var(--hairline)" }}
+      >
+        <span
+          className="w-7 h-7 flex items-center justify-center rounded-full text-text-lo/80 text-sm"
+          style={{ background: "var(--surface-2)" }}
+        >
+          +
+        </span>
+        <div
+          className="flex-1 px-3 py-1.5 rounded-full text-[11px] text-text-lo/70"
+          style={{
+            background: "var(--surface-2)",
+            border: "1px solid var(--hairline)",
+          }}
+        >
+          Message…
+        </div>
+        <span className="text-[13px] text-text-lo/70">↑</span>
+      </div>
+    </PhoneShell>
   );
 }
 
@@ -86,14 +101,14 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
   const isMaya = m.from === "maya";
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: show ? 1 : 0, y: show ? 0 : 8 }}
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: show ? 1 : 0, y: show ? 0 : 6 }}
       transition={{ duration: 0.25 }}
-      className={`flex gap-2 items-end ${isMaya ? "justify-end" : "justify-start"}`}
+      className={`flex gap-1.5 items-end ${isMaya ? "justify-end" : "justify-start"}`}
     >
       {!isMaya && (
         <div
-          className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold shrink-0"
+          className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-mono font-bold shrink-0"
           style={{
             background: "var(--surface-2)",
             color: "var(--text-hi)",
@@ -103,25 +118,20 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
           N
         </div>
       )}
-      <div className="max-w-[80%]">
+      <div className="max-w-[76%] flex flex-col gap-0.5">
         {!isMaya && (
-          <div className="flex items-center gap-1 mb-0.5">
-            <span
-              className="text-[9px] font-mono uppercase px-1 py-0.5 rounded-sm"
-              style={{
-                color: "var(--text-lo)",
-                border: "1px solid var(--hairline)",
-              }}
-            >
-              AI
-            </span>
-          </div>
+          <span
+            className="text-[8px] font-mono uppercase px-1 py-0.5 rounded-sm w-fit"
+            style={{
+              color: "var(--text-lo)",
+              border: "1px solid var(--hairline)",
+            }}
+          >
+            AI
+          </span>
         )}
-        {/* Maya bubbles: light surface with dark text.
-            AI bubbles: dark surface with light text. No acid — the environment
-            stays grey; Maya's identity lives on the overlay. */}
         <div
-          className={`px-3 py-2 text-sm rounded-2xl ${
+          className={`px-3 py-1.5 text-[12px] leading-snug rounded-2xl ${
             isMaya ? "rounded-br-sm" : "rounded-bl-sm"
           }`}
           style={{
