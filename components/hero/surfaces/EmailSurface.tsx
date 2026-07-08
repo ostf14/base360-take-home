@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { MayaAnchor } from "../MayaOverlay";
+import { WindowShell } from "../shells/WindowShell";
 
 interface Props {
   progress: number;
@@ -9,66 +10,96 @@ interface Props {
 
 const EMAILS = [
   {
+    step: "01",
     subject: "Welcome to Northbloom, Maya",
     preview: "You just joined 12,400 people who are picky about their bottle.",
+    when: "12:12",
     events: [
-      { t: "12:12", label: "Sent" },
-      { t: "12:14", label: "Opened" },
+      { label: "Sent" },
+      { label: "Opened" },
     ],
   },
   {
+    step: "02",
     subject: "The story behind the black finish",
     preview: "One prototype in a garage, three years of iteration.",
+    when: "Day 2",
     events: [
-      { t: "Day 2", label: "Sent" },
-      { t: "Day 2", label: "Opened" },
-      { t: "Day 2", label: "Clicked → PDP" },
+      { label: "Sent" },
+      { label: "Opened" },
+      { label: "Clicked → PDP" },
     ],
   },
   {
+    step: "03",
     subject: "Ready when you are 🖤",
     preview: "Your cart still has the black 22oz. Code MAYA10 saved.",
+    when: "Day 5",
     events: [
-      { t: "Day 5", label: "Sent" },
-      { t: "Day 5", label: "Opened · Clicked" },
-      { t: "Day 5", label: "Purchased · $32", ignite: true },
+      { label: "Sent" },
+      { label: "Opened · Clicked" },
+      { label: "Purchased · $32", ignite: true },
     ],
   },
 ];
 
 export function EmailSurface({ progress, anchorRef }: Props) {
   return (
-    <div className="absolute inset-0 p-6 pt-12 flex">
-      <div
-        className="flex-1 rounded-2xl overflow-hidden flex flex-col"
-        style={{
-          background: "var(--surface-panel)",
-          border: "1px solid var(--hairline)",
-          boxShadow: "var(--specimen-shadow)",
-        }}
-      >
-        {/* Header */}
+    <WindowShell
+      url="base360.app / marketing / sequences / bloom-01"
+      tabs={[
+        { label: "Sequence", active: true },
+        { label: "Audience" },
+        { label: "Analytics" },
+        { label: "Settings" },
+      ]}
+    >
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Sequence meta strip */}
         <div
-          className="flex items-center justify-between px-5 py-3 border-b"
+          className="grid grid-cols-[auto_1fr_auto] gap-4 items-center px-5 py-4 border-b"
           style={{ borderColor: "var(--hairline)" }}
         >
-          <div className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
-            base360 / marketing / sequence bloom-01
+          <div>
+            <div className="text-[9px] font-mono uppercase tracking-widest text-text-lo">
+              sequence
+            </div>
+            <div className="text-base font-display text-text-hi">
+              Bloom-01 · Post-conversation nurture
+            </div>
+            <div className="text-[10px] font-mono text-text-lo mt-0.5">
+              3 steps · avg 47% open · 12% ctr
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-text-lo">
-            recipient
-            <span
+          <div />
+          <div className="flex items-center gap-2">
+            <div
               className="flex items-center gap-2 px-2 py-1 rounded-sm"
               style={{ border: "1px solid var(--hairline)" }}
             >
+              <span className="text-[9px] font-mono uppercase text-text-lo">
+                recipient
+              </span>
               <MayaAnchor anchorRef={anchorRef} />
-              <span className="text-text-hi normal-case">Maya R.</span>
-            </span>
+              <span className="text-[11px] text-text-hi">Maya R.</span>
+            </div>
           </div>
         </div>
 
-        {/* Sequence flow */}
-        <div className="flex-1 p-6 flex flex-col gap-3 min-h-0">
+        {/* Column headers */}
+        <div
+          className="grid grid-cols-[60px_1fr_120px_260px_100px] px-5 py-2 text-[9px] font-mono uppercase tracking-widest text-text-lo border-b"
+          style={{ borderColor: "var(--hairline)" }}
+        >
+          <span>step</span>
+          <span>subject / preview</span>
+          <span>when</span>
+          <span>events</span>
+          <span className="text-right">status</span>
+        </div>
+
+        {/* Rows */}
+        <div className="flex-1 overflow-hidden">
           {EMAILS.map((email, i) => {
             const localStart = i / EMAILS.length;
             const localEnd = (i + 1) / EMAILS.length;
@@ -77,82 +108,96 @@ export function EmailSurface({ progress, anchorRef }: Props) {
               Math.max(0, (progress - localStart) / (localEnd - localStart))
             );
             const revealed = progress > localStart - 0.05;
+            const status =
+              localP >= 1 ? "Complete" : localP > 0.05 ? "Running" : "Queued";
             return (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: revealed ? 1 : 0.1, x: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: revealed ? 1 : 0.15 }}
                 transition={{ duration: 0.3 }}
-                className="rounded-xl p-4 grid grid-cols-[1fr_auto] gap-4"
-                style={{
-                  background: "var(--surface-panel-2)",
-                  border: "1px solid var(--hairline)",
-                }}
+                className="grid grid-cols-[60px_1fr_120px_260px_100px] items-center px-5 py-3 border-b"
+                style={{ borderColor: "var(--hairline)" }}
               >
-                <div className="flex flex-col gap-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] font-mono uppercase text-text-lo">
-                      email {i + 1}
-                    </span>
-                    <span
-                      className="w-1 h-1 rounded-full"
-                      style={{ background: "var(--text-lo)" }}
-                    />
-                    <span className="text-[10px] font-mono text-text-lo">
-                      {email.events[0]?.t}
-                    </span>
-                  </div>
-                  <div className="text-sm text-text-hi font-medium truncate">
+                <span className="font-mono text-[11px] text-text-lo">
+                  {email.step}
+                </span>
+                <div className="flex flex-col gap-0.5 min-w-0 pr-4">
+                  <span className="text-[12px] text-text-hi font-medium truncate">
                     {email.subject}
-                  </div>
-                  <div className="text-xs text-text-lo truncate">
+                  </span>
+                  <span className="text-[10px] text-text-lo truncate">
                     {email.preview}
-                  </div>
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
+                <span className="font-mono text-[10px] text-text-lo">
+                  {email.when}
+                </span>
+                <div className="flex items-center gap-1.5 flex-wrap">
                   {email.events.map((ev, j) => {
                     const evP = (j + 1) / email.events.length;
                     const on = localP > evP - 0.1;
                     const isIgnite = ev.ignite && on;
-                    // Purchased ignite is one of the two acid moments in this
-                    // surface — kept, but smaller. Everything else is grey.
                     return (
-                      <motion.div
+                      <motion.span
                         key={j}
                         animate={{
-                          opacity: on ? 1 : 0.3,
+                          opacity: on ? 1 : 0.28,
                           scale: isIgnite ? 1.03 : 1,
                         }}
-                        className="flex items-center gap-1.5 text-[10px] font-mono uppercase px-2 py-1 rounded-sm"
+                        className="inline-flex items-center gap-1 text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm"
                         style={{
                           color: isIgnite ? "#0A0A0B" : "var(--text-lo)",
-                          background: isIgnite
-                            ? "var(--acid)"
-                            : "transparent",
+                          background: isIgnite ? "var(--acid)" : "transparent",
                           border: `1px solid ${
                             isIgnite ? "var(--acid)" : "var(--hairline)"
                           }`,
                           boxShadow: isIgnite
-                            ? "0 0 20px rgba(223,255,0,0.45)"
+                            ? "0 0 18px rgba(223,255,0,0.45)"
                             : "none",
                         }}
                       >
                         <span
                           className="w-1 h-1 rounded-full"
                           style={{
-                            background: isIgnite ? "#0A0A0B" : "var(--text-lo)",
+                            background: isIgnite
+                              ? "#0A0A0B"
+                              : "var(--text-lo)",
                           }}
                         />
                         {ev.label}
-                      </motion.div>
+                      </motion.span>
                     );
                   })}
                 </div>
+                <span
+                  className="text-right text-[10px] font-mono uppercase tracking-widest"
+                  style={{
+                    color:
+                      status === "Complete"
+                        ? "var(--text-hi)"
+                        : "var(--text-lo)",
+                  }}
+                >
+                  {status}
+                </span>
               </motion.div>
             );
           })}
         </div>
+
+        {/* Footer strip */}
+        <div
+          className="flex items-center justify-between px-5 py-2 border-t text-[9px] font-mono uppercase tracking-widest text-text-lo"
+          style={{
+            borderColor: "var(--hairline)",
+            background: "var(--surface-panel-2)",
+          }}
+        >
+          <span>3 rows · 1 recipient</span>
+          <span>auto-refresh · 10s</span>
+        </div>
       </div>
-    </div>
+    </WindowShell>
   );
 }

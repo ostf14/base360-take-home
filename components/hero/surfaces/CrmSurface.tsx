@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { MayaAnchor } from "../MayaOverlay";
+import { WindowShell } from "../shells/WindowShell";
 
 interface Props {
   progress: number;
@@ -8,146 +9,197 @@ interface Props {
 }
 
 const TIMELINE = [
-  { t: "12:03", label: "Comment ignited · TikTok" },
-  { t: "12:03", label: "AI reply posted · public" },
-  { t: "12:04", label: "DM initiated · @maya.r" },
-  { t: "12:06", label: "Objection handled · size + price" },
-  { t: "12:07", label: "Cart link delivered · $32" },
+  { t: "12:03:11", label: "Comment ignited", src: "TikTok · @northbloom.co" },
+  { t: "12:03:12", label: "AI reply posted", src: "Public reply" },
+  { t: "12:04:02", label: "DM initiated", src: "IG DM · maya.r" },
+  { t: "12:06:41", label: "Objection handled", src: "Size + price" },
+  { t: "12:07:28", label: "Cart link delivered", src: "$32.00" },
+];
+
+const NAV = [
+  { label: "Inbox", count: 214 },
+  { label: "Leads", count: 8_412, active: true },
+  { label: "Customers", count: 12_461 },
+  { label: "Automations", count: 42 },
+  { label: "Reports", count: null },
+  { label: "Settings", count: null },
 ];
 
 export function CrmSurface({ progress, anchorRef }: Props) {
   return (
-    <div className="absolute inset-0 p-6 pt-12 flex">
-      <div
-        className="relative flex-1 rounded-2xl p-5 flex flex-col gap-4 overflow-hidden"
-        style={{
-          background: "var(--surface-panel)",
-          border: "1px solid var(--hairline)",
-          boxShadow: "var(--specimen-shadow)",
-        }}
-      >
-        {/* Chrome */}
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
-            base360 / crm / contact
-          </span>
-          <div className="flex items-center gap-2 text-[10px] font-mono uppercase text-text-lo/70">
-            <span
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ background: "var(--text-lo)" }}
-            />
-            live record
+    <WindowShell
+      url="base360.app / crm / leads / #001-8412"
+      tabs={[
+        { label: "Overview", active: true },
+        { label: "Activity" },
+        { label: "Emails" },
+        { label: "Calls" },
+        { label: "Notes" },
+      ]}
+    >
+      <div className="flex-1 grid grid-cols-[180px_1fr] min-h-0">
+        {/* Left nav rail */}
+        <div
+          className="flex flex-col border-r py-2"
+          style={{ borderColor: "var(--hairline)" }}
+        >
+          <div className="px-4 py-2 text-[9px] font-mono uppercase tracking-widest text-text-lo/70">
+            workspace
           </div>
+          {NAV.map((n) => (
+            <div
+              key={n.label}
+              className="flex items-center justify-between px-4 py-1.5 text-[11px]"
+              style={{
+                color: n.active ? "var(--text-hi)" : "var(--text-lo)",
+                background: n.active ? "rgba(255,255,255,0.03)" : "transparent",
+                borderLeft: `2px solid ${n.active ? "var(--text-hi)" : "transparent"}`,
+              }}
+            >
+              <span>{n.label}</span>
+              {n.count != null && (
+                <span className="font-mono text-[9px] text-text-lo/60">
+                  {n.count.toLocaleString()}
+                </span>
+              )}
+            </div>
+          ))}
         </div>
 
-        {/* Header — anchor slot reserves space for the overlay Maya */}
-        <div className="flex items-start gap-4">
-          <MayaAnchor anchorRef={anchorRef} />
-          <div className="flex flex-col gap-1">
-            <div className="text-2xl font-display text-text-hi leading-tight">
-              Maya R.
-            </div>
-            <div className="text-xs font-mono text-text-lo">
-              maya.r · toronto, ca
-            </div>
-            <div className="flex items-center gap-2 mt-2 flex-wrap">
-              <IntentBadge progress={progress} />
-              <Badge label="Source: TikTok comment" />
-              <Badge label="Channel: DM" />
-            </div>
-          </div>
-        </div>
-
-        {/* Body — 2 col */}
-        <div className="flex-1 grid grid-cols-2 gap-4 min-h-0">
-          {/* Timeline */}
+        {/* Record body */}
+        <div className="flex flex-col overflow-hidden">
+          {/* Header row */}
           <div
-            className="rounded-xl p-4 flex flex-col gap-3 overflow-hidden"
-            style={{
-              background: "var(--surface-panel-2)",
-              border: "1px solid var(--hairline)",
-            }}
+            className="grid grid-cols-[auto_1fr_auto] gap-4 items-center px-5 py-4 border-b"
+            style={{ borderColor: "var(--hairline)" }}
           >
-            <div className="text-[10px] font-mono uppercase text-text-lo">
-              activity
+            <MayaAnchor anchorRef={anchorRef} />
+            <div className="flex flex-col gap-0.5 min-w-0">
+              <div className="text-lg font-display text-text-hi leading-tight">
+                Maya R.
+              </div>
+              <div className="text-[10px] font-mono text-text-lo whitespace-nowrap">
+                LEAD #001-8412 · maya.r · toronto, ca · updated just now
+              </div>
             </div>
-            <div className="flex-1 flex flex-col gap-2 overflow-hidden">
-              {TIMELINE.map((row, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: -6 }}
-                  animate={{
-                    opacity: progress > 0.1 + i * 0.12 ? 1 : 0.15,
-                    x: 0,
-                  }}
-                  transition={{ duration: 0.2 }}
-                  className="flex items-start gap-2 text-xs"
-                >
-                  <span className="font-mono text-text-lo shrink-0">
-                    {row.t}
-                  </span>
-                  <span
-                    className="w-1 h-1 rounded-full mt-1.5 shrink-0"
-                    style={{ background: "var(--text-lo)" }}
-                  />
-                  <span className="text-text-hi/85">{row.label}</span>
-                </motion.div>
-              ))}
+            <div className="flex items-center gap-2">
+              <IntentBadge progress={progress} />
+              <Btn label="Message" />
+              <Btn label="Call" />
+              <Btn label="Assign ▾" />
             </div>
           </div>
 
-          {/* Right column — controls */}
-          <div className="flex flex-col gap-3">
+          {/* Metric strip */}
+          <div
+            className="grid grid-cols-4 gap-0 border-b"
+            style={{ borderColor: "var(--hairline)" }}
+          >
+            <Metric label="Intent score" value="94" unit="/100" />
+            <Metric label="Touchpoints" value="7" unit="" />
+            <Metric label="Time to reply" value="2.4" unit="s avg" />
+            <Metric label="Est. LTV" value="$412" unit="" />
+          </div>
+
+          {/* Body split */}
+          <div className="flex-1 grid grid-cols-[1.6fr_1fr] min-h-0">
+            {/* Activity table */}
             <div
-              className="rounded-xl p-4 flex flex-col gap-3"
-              style={{
-                background: "var(--surface-panel-2)",
-                border: "1px solid var(--hairline)",
-              }}
+              className="flex flex-col border-r overflow-hidden"
+              style={{ borderColor: "var(--hairline)" }}
             >
-              <div className="text-[10px] font-mono uppercase text-text-lo">
-                automation
-              </div>
-              <Toggle label="Surfaced to sales" on={progress > 0.55} />
-              <Toggle label="Nurture sequence: Bloom-01" on={progress > 0.7} />
-              <Toggle label="AI voice callback on intent spike" on={progress > 0.85} />
-            </div>
-            <div
-              className="rounded-xl p-4"
-              style={{
-                background: "var(--surface-panel-2)",
-                border: "1px solid var(--hairline)",
-              }}
-            >
-              <div className="text-[10px] font-mono uppercase text-text-lo mb-2">
-                next best action
-              </div>
-              {/* Depicted, not operable: outlined, muted — not the page's CTA. */}
               <div
-                className="flex items-center justify-between text-xs px-3 py-2 rounded-md"
-                style={{
-                  background: "transparent",
-                  color: "var(--text-hi)",
-                  border: "1px dashed var(--acid-dim)",
-                  fontWeight: 500,
-                }}
+                className="grid grid-cols-[80px_1fr_auto] px-5 py-2 text-[9px] font-mono uppercase tracking-widest text-text-lo border-b"
+                style={{ borderColor: "var(--hairline)" }}
               >
-                <span>Trigger AI call</span>
-                <span className="font-mono text-[10px] text-text-lo">→</span>
+                <span>timestamp</span>
+                <span>event</span>
+                <span>source</span>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                {TIMELINE.map((row, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -4 }}
+                    animate={{
+                      opacity: progress > 0.1 + i * 0.12 ? 1 : 0.2,
+                      x: 0,
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className="grid grid-cols-[80px_1fr_auto] px-5 py-2 text-[11px] items-center border-b"
+                    style={{ borderColor: "var(--hairline)" }}
+                  >
+                    <span className="font-mono text-text-lo">{row.t}</span>
+                    <span className="text-text-hi/85 flex items-center gap-2">
+                      <span
+                        className="w-1 h-1 rounded-full"
+                        style={{ background: "var(--text-lo)" }}
+                      />
+                      {row.label}
+                    </span>
+                    <span className="font-mono text-[10px] text-text-lo">
+                      {row.src}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right rail: automation + next best action */}
+            <div className="flex flex-col p-4 gap-3 overflow-hidden">
+              <div>
+                <div className="text-[9px] font-mono uppercase tracking-widest text-text-lo mb-2">
+                  automations
+                </div>
+                <Toggle label="Surfaced to sales" on={progress > 0.55} />
+                <Toggle label="Nurture · Bloom-01" on={progress > 0.7} />
+                <Toggle label="Voice callback on intent" on={progress > 0.85} />
+              </div>
+              <div className="mt-2">
+                <div className="text-[9px] font-mono uppercase tracking-widest text-text-lo mb-2">
+                  next best action
+                </div>
+                <div
+                  className="flex items-center justify-between text-[11px] px-3 py-2 rounded"
+                  style={{
+                    background: "transparent",
+                    color: "var(--text-hi)",
+                    border: "1px dashed var(--acid-dim)",
+                  }}
+                >
+                  <span>Trigger AI voice call</span>
+                  <span className="font-mono text-[10px] text-text-lo">→</span>
+                </div>
+              </div>
+              <div className="mt-2">
+                <div className="text-[9px] font-mono uppercase tracking-widest text-text-lo mb-2">
+                  attribution
+                </div>
+                <div
+                  className="rounded p-3 text-[10px] font-mono text-text-lo/85 leading-relaxed"
+                  style={{
+                    background: "var(--surface-panel-2)",
+                    border: "1px solid var(--hairline)",
+                  }}
+                >
+                  Source · TikTok comment
+                  <br />
+                  Channel · IG DM
+                  <br />
+                  Campaign · organic
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </WindowShell>
   );
 }
 
 function IntentBadge({ progress }: { progress: number }) {
   const level = progress > 0.5 ? "High" : progress > 0.25 ? "Medium" : "New";
   const isHigh = level === "High";
-  // The one acid moment in this surface — the intent going High is a story
-  // beat. Kept smaller than before and only the High state ignites.
   return (
     <motion.span
       className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-sm inline-flex items-center gap-1"
@@ -165,36 +217,62 @@ function IntentBadge({ progress }: { progress: number }) {
   );
 }
 
-function Badge({ label }: { label: string }) {
+function Btn({ label }: { label: string }) {
   return (
     <span
-      className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-sm text-text-lo"
-      style={{ border: "1px solid var(--hairline)" }}
+      className="text-[10px] font-mono uppercase px-2 py-1 rounded-sm text-text-lo"
+      style={{
+        border: "1px solid var(--hairline)",
+        background: "var(--surface-panel-2)",
+      }}
     >
       {label}
     </span>
   );
 }
 
-function Toggle({ label, on }: { label: string; on: boolean }) {
-  // Kept as an acid moment because a toggle flipping on IS the story beat.
-  // Smaller footprint than the button used to be.
+function Metric({
+  label,
+  value,
+  unit,
+}: {
+  label: string;
+  value: string;
+  unit: string;
+}) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <span className="text-xs text-text-hi/85">{label}</span>
+    <div
+      className="flex flex-col gap-0.5 px-5 py-3 border-r"
+      style={{ borderColor: "var(--hairline)" }}
+    >
+      <span className="text-[9px] font-mono uppercase tracking-widest text-text-lo">
+        {label}
+      </span>
+      <span className="text-lg font-display text-text-hi">
+        {value}
+        <span className="text-[10px] font-mono text-text-lo ml-1">{unit}</span>
+      </span>
+    </div>
+  );
+}
+
+function Toggle({ label, on }: { label: string; on: boolean }) {
+  return (
+    <div className="flex items-center justify-between gap-3 py-1">
+      <span className="text-[11px] text-text-hi/85">{label}</span>
       <motion.div
         animate={{
           background: on ? "var(--acid)" : "var(--surface)",
           borderColor: on ? "var(--acid)" : "var(--hairline)",
         }}
         transition={{ duration: 0.25 }}
-        className="w-8 h-4 rounded-full relative shrink-0"
+        className="w-7 h-3.5 rounded-full relative shrink-0"
         style={{ border: "1px solid" }}
       >
         <motion.div
-          animate={{ x: on ? 16 : 2 }}
+          animate={{ x: on ? 14 : 2 }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="absolute top-0.5 w-3 h-3 rounded-full"
+          className="absolute top-0.5 w-2.5 h-2.5 rounded-full"
           style={{ background: on ? "#0A0A0B" : "var(--text-lo)" }}
         />
       </motion.div>
