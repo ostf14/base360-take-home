@@ -3,21 +3,6 @@ import { motion } from "framer-motion";
 import { MayaAnchor } from "../MayaOverlay";
 import { PhoneShell } from "../shells/PhoneShell";
 
-interface CommentRow {
-  handle: string;
-  text: string;
-  time: string;
-  hue: string;
-}
-
-// A single filler comment is enough to give the feed context; adding
-// more pushes Maya's row + the acid-tinted AI reply card past the phone
-// frame's bottom edge and clips them. Keep @leah.mtl and drop @sam.k so
-// the maya → AI-reply pair sits fully inside the shell.
-const COMMENTS: CommentRow[] = [
-  { handle: "leah.mtl", text: "obsessed 🔥🔥", time: "3m", hue: "#FF8AB4" },
-];
-
 interface Props {
   igniteProgress: number;
   anchorRef: React.RefObject<HTMLDivElement>;
@@ -27,16 +12,22 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
   const active = igniteProgress > 0.15;
   return (
     <PhoneShell platform="tiktok">
-      {/* Video area — takes upper portion of phone */}
-      <div className="relative flex-[1.15] overflow-hidden">
+      {/* Video area — kept lean for the hero: video + @northbloom.co
+          caption line only. No right-rail icons, no filler chrome —
+          the eye should track down to Maya's comment. */}
+      <div className="relative flex-[1] overflow-hidden">
         <VideoBackdrop />
         <BrandOverlay />
-        <RightRail />
       </div>
 
-      {/* Comments drawer — slides up over the video's bottom */}
+      {/* Comments drawer — equal flex share with the video so it has
+          real vertical space. Header pinned at top; Maya's comment
+          vertically centered in the remaining space via a flex-1
+          middle track. That keeps her row in the BODY of the phone
+          with clear air above and below, well clear of the bottom
+          crop. Nothing else: no filler comments, no composer. */}
       <div
-        className="relative flex flex-col gap-2 px-4 pt-3 pb-4 flex-[0.85] overflow-hidden"
+        className="relative flex flex-col px-4 pt-3 pb-4 flex-[1] overflow-hidden"
         style={{
           background: "var(--surface)",
           borderTop: "1px solid var(--hairline)",
@@ -49,16 +40,12 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
           <span className="text-[10px] font-mono text-text-lo">latest</span>
         </div>
 
-        {/* Maya's ignited comment sits FIRST — pinned right under the
-            "128 comments" header so it stays high on-screen in the hero
-            (directly beneath the video area) and the hand-drawn acid
-            circle lands on it cleanly without waiting for lower rows
-            to scroll into view. */}
+        <div className="flex-1 flex items-center">
         <motion.div
           initial={false}
           animate={{ filter: active ? "brightness(1.02)" : "brightness(0.9)" }}
           transition={{ duration: 0.4 }}
-          className="relative"
+          className="relative w-full"
         >
           <div
             className="absolute -inset-1.5 rounded-lg pointer-events-none"
@@ -143,23 +130,6 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
             </div>
           </div>
         </motion.div>
-
-        {/* Other feed comments live BELOW Maya's — surrounding chatter
-            that recedes once her comment ignites. */}
-        {COMMENTS.map((c, i) => (
-          <CommentRow key={c.handle} c={c} dim={active} delay={i * 0.05} />
-        ))}
-
-        {/* Composer */}
-        <div
-          className="mt-auto flex items-center gap-2 px-3 py-2 rounded-full"
-          style={{
-            background: "var(--surface-2)",
-            border: "1px solid var(--hairline)",
-          }}
-        >
-          <span className="text-[11px] text-text-lo/70">Add comment…</span>
-          <span className="ml-auto text-[12px] text-text-lo">😊</span>
         </div>
       </div>
     </PhoneShell>
@@ -243,73 +213,6 @@ function BrandOverlay() {
   );
 }
 
-function RightRail() {
-  const actions: Array<{ icon: string; label: string; count: string }> = [
-    { icon: "♡", label: "like", count: "12.4K" },
-    { icon: "💬", label: "comments", count: "128" },
-    { icon: "↗", label: "share", count: "share" },
-    { icon: "⋯", label: "more", count: "" },
-  ];
-  return (
-    <div className="absolute right-2 bottom-24 flex flex-col items-center gap-4">
-      {actions.map((a) => (
-        <div key={a.label} className="flex flex-col items-center gap-0.5">
-          <span
-            className="w-9 h-9 flex items-center justify-center rounded-full text-lg text-text-hi"
-            style={{
-              background: "rgba(0,0,0,0.35)",
-              backdropFilter: "blur(4px)",
-              border: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            {a.icon}
-          </span>
-          {a.count && (
-            <span className="text-[9px] font-mono text-text-hi/80">
-              {a.count}
-            </span>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function CommentRow({
-  c,
-  dim,
-  delay,
-}: {
-  c: CommentRow;
-  dim: boolean;
-  delay: number;
-}) {
-  // Once Maya's comment ignites, the surrounding feed recedes to ~0.4
-  // so the Maya-comment → AI-reply pair reads as the clear focus.
-  return (
-    <motion.div
-      initial={false}
-      animate={{ opacity: dim ? 0.4 : 0.7 }}
-      transition={{ duration: 0.4, delay }}
-      className="flex gap-2 items-start py-1"
-    >
-      <div
-        className="w-7 h-7 rounded-full shrink-0"
-        style={{ background: c.hue, opacity: 0.7 }}
-      />
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <span className="text-[12px] font-medium text-text-hi/85">
-            @{c.handle}
-          </span>
-          <span className="text-[9px] font-mono text-text-lo">{c.time}</span>
-        </div>
-        <div className="text-[12px] text-text-hi/70 truncate">{c.text}</div>
-      </div>
-    </motion.div>
-  );
-}
-
 function TypedLine({ text, show }: { text: string; show: boolean }) {
   if (!show) return null;
   return (
@@ -324,58 +227,51 @@ function TypedLine({ text, show }: { text: string; show: boolean }) {
   );
 }
 
-// The "system noticed this" annotation. A CLOSED, neat-but-slightly-
-// irregular ellipse traced in acid — same path d as before. The
-// wrapper sits around Maya's comment (avatar + name + text) via a
-// negative inset so the loop goes AROUND the outside; the SVG keeps
-// its natural aspect (no preserveAspectRatio="none") so the ellipse
-// stays an ellipse and doesn't get squashed flat-and-wide across the
-// row. Layer-wise the whole overlay sits BEHIND the comment content
-// (content gets zIndex: 2 in the parent) so the stroke never runs
-// through the letters. Fades out once igniteProgress > 0.15.
+// The "system noticed this" annotation. Chalk-style acid ellipse with
+// a small open gap between the end (~34,70) and the start (60,104) so
+// it reads as a hand-drawn marker circle, not a CSS oval. Direct SVG
+// (no wrapper), positioned with inset:-10px -16px + explicit width/
+// height so it extends past the comment on every side. No
+// preserveAspectRatio="none" — the ellipse keeps its natural shape.
+// Layered BEHIND the comment content via zIndex on the parent (the
+// content row carries zIndex: 2), so the stroke goes AROUND the text,
+// never through it. Draw-in via motion.path pathLength; fades to 0
+// once igniteProgress > 0.15 so it doesn't stack with the highlight.
 function HandDrawnCircle({ active }: { active: boolean }) {
   return (
-    <div
+    <motion.svg
       aria-hidden
+      viewBox="0 0 320 130"
       style={{
         position: "absolute",
-        // Negative inset extends the overlay beyond the comment box on
-        // all sides so the loop wraps loosely AROUND the comment
-        // instead of hugging the text edges.
-        inset: "-14px -20px",
+        top: -10,
+        right: -16,
+        bottom: -10,
+        left: -16,
+        width: "calc(100% + 32px)",
+        height: "calc(100% + 20px)",
+        overflow: "visible",
         pointerEvents: "none",
         zIndex: 1,
-        transform: "rotate(-1.2deg)",
       }}
+      initial={{ opacity: 1 }}
+      animate={{ opacity: active ? 0 : 1 }}
+      transition={{ duration: 0.35 }}
     >
-      <motion.svg
-        viewBox="0 0 200 60"
+      <motion.path
+        d="M60,104 C30,98 20,74 22,58 C25,36 78,22 168,22 C258,22 306,36 302,62 C299,86 250,106 150,107 C86,107 40,96 34,70"
+        fill="none"
+        stroke="var(--acid)"
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{
-          width: "100%",
-          height: "100%",
-          overflow: "visible",
-          display: "block",
+          filter: "drop-shadow(0 0 6px rgba(223, 255, 0, 0.5))",
         }}
-        initial={{ opacity: 1 }}
-        animate={{ opacity: active ? 0 : 1 }}
-        transition={{ duration: 0.35 }}
-      >
-        <motion.path
-          d="M 10 32 C 6 14, 44 4, 100 4 C 158 3, 194 12, 190 32 C 195 50, 150 56, 100 54 C 44 56, 6 46, 10 32 Z"
-          fill="none"
-          stroke="var(--acid)"
-          strokeWidth={2.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          style={{
-            filter: "drop-shadow(0 0 5px rgba(223, 255, 0, 0.5))",
-          }}
-        />
-      </motion.svg>
-    </div>
+      />
+    </motion.svg>
   );
 }

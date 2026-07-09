@@ -169,51 +169,24 @@ export function Hero() {
           </div>
         </div>
 
-        {/* SOLUTION LINE. Sits centered, floating in the gap between the
-            headline and the top of the rising phone — bridges the pain
-            statement above with the phone below. Rendered AFTER the phone
-            in JSX so it paints in front, never buried behind the device.
-            A subtle dark scrim + backdrop-blur keeps the text legible
-            even when the vertical band crosses the phone's bezel/screen. */}
+        {/* Single acid ↓ scroll cue, centered near the bottom. Only
+            scroll hint in the hero — no plaque, no text, just the
+            arrow. Fades with the rest of the hero. */}
         <motion.div
-          className="absolute inset-x-0 pointer-events-none flex justify-center px-6"
-          style={{
-            top: "29vh",
-            opacity: heroOpacity,
-            zIndex: 20,
-          }}
+          className="absolute inset-x-0 flex justify-center pointer-events-none"
+          style={{ bottom: 34, opacity: heroOpacity, zIndex: 20 }}
+          aria-hidden
         >
-          <div
-            className="rounded-lg px-6 py-3 flex flex-col items-center gap-1.5"
+          <span
+            className="font-mono leading-none"
             style={{
-              background: "rgba(10, 10, 11, 0.55)",
-              backdropFilter: "blur(6px)",
-              WebkitBackdropFilter: "blur(6px)",
-              border: "1px solid rgba(255, 255, 255, 0.06)",
+              color: "var(--acid)",
+              fontSize: 26,
+              textShadow: "0 0 12px rgba(223, 255, 0, 0.5)",
             }}
           >
-            <div
-              className="font-display font-medium text-center leading-tight whitespace-nowrap"
-              style={{
-                color: "var(--text-hi)",
-                fontSize: "clamp(18px, 1.8vw, 24px)",
-                letterSpacing: "-0.005em",
-              }}
-            >
-              Base360 catches every comment
-            </div>
-            <div
-              className="font-mono uppercase text-center font-bold"
-              style={{
-                color: "var(--acid)",
-                fontSize: "clamp(10px, 0.95vw, 12px)",
-                letterSpacing: "0.22em",
-                textShadow: "0 0 12px rgba(223, 255, 0, 0.4)",
-              }}
-            >
-              Watch ↓
-            </div>
-          </div>
+            ↓
+          </span>
         </motion.div>
 
         {/* Bottom corner marks — no text, just two 12 × 12 outlined
