@@ -27,7 +27,7 @@ export function CallSurface({ progress, anchorRef }: Props) {
           identity block. */}
 
       {/* Callee identity block: Maya + name + phone. */}
-      <div className="flex flex-col items-center gap-3 mb-10">
+      <div className="flex flex-col items-center gap-3 mb-6">
         <MayaAnchor anchorRef={anchorRef} />
         <div className="text-2xl font-display text-text-hi">Maya R.</div>
         <div className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
@@ -48,7 +48,7 @@ export function CallSurface({ progress, anchorRef }: Props) {
           near-white so the back-and-forth rhythm is legible, not a
           bright line answered by an invisible one. gap-6 (24 px)
           gives every turn a clear vertical beat of air. */}
-      <div className="mt-10 w-full max-w-2xl flex flex-col gap-6 min-h-[110px]">
+      <div className="mt-6 w-full max-w-2xl flex flex-col gap-6 min-h-[110px]">
         {TRANSCRIPT.map((line, i) => {
           const isAI = line.who === "ai";
           return (
@@ -143,7 +143,7 @@ function BigWaveform({ progress }: { progress: number }) {
   return (
     <div
       className="w-full max-w-xl flex items-center justify-center gap-[3px]"
-      style={{ height: 120 }}
+      style={{ height: 56 }}
     >
       {Array.from({ length: bars }).map((_, i) => {
         // Deterministic pseudo-random per-bar heights
@@ -153,7 +153,12 @@ function BigWaveform({ progress }: { progress: number }) {
         const distFromCenter = Math.abs(i - bars / 2) / (bars / 2);
         const envelope = 1 - distFromCenter * 0.7;
         const active = progress > i / bars - 0.05;
-        const h = active ? 12 + rand * 90 * envelope : 4;
+        // Halved from the earlier 12 + 90-envelope spec so the
+        // waveform occupies ~half the vertical room it did before,
+        // freeing space so the full four-turn transcript below
+        // fits above the call-controls foot without clipping the
+        // last "ok show me" line.
+        const h = active ? 6 + rand * 44 * envelope : 3;
         return (
           <motion.span
             key={i}
@@ -165,7 +170,7 @@ function BigWaveform({ progress }: { progress: number }) {
             }}
             transition={{ duration: 0.35 }}
             className="w-[3px] rounded-sm"
-            style={{ height: 4 }}
+            style={{ height: 3 }}
           />
         );
       })}
