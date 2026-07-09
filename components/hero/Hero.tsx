@@ -76,15 +76,15 @@ export function Hero() {
     [0, HERO_END - HERO_HANDOFF, HERO_END],
     ["-21vw", "-21vw", "0vw"],
   );
-  // Hero phoneY pushes the phone deep into the lower half of the
-  // viewport — its top starts roughly at the second headline line
-  // and the shell extends past the viewport foot. The gradient
-  // below dissolves whatever falls into the last ~20 vh so there's
-  // no hard cropped bottom edge.
+  // Hero phoneY: phone sits in the middle of the viewport, low
+  // enough to feel like it's rising but high enough that Maya's
+  // comment lands around the middle band — clearly ABOVE the
+  // bottom fade start (~78 vh) so the acid rectangle stays fully
+  // solid and never touches the plaque area below.
   const phoneY = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["30vh", "30vh", "0vh"],
+    ["8vh", "8vh", "0vh"],
   );
 
   // Chapter tracking. -1 during hero means Stepper renders every node as
