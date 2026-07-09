@@ -76,15 +76,15 @@ export function Hero() {
     [0, HERO_END - HERO_HANDOFF, HERO_END],
     ["-21vw", "-21vw", "0vw"],
   );
-  // Hero phoneY pushes the phone visibly lower in the hero viewport
-  // so it sits in the lower half — the pain headline reads at the
-  // top and the phone (with Maya's comment fully solid in its upper
-  // portion) drops beneath it, with room at the very bottom for the
-  // "Watch ↓" plaque.
+  // Hero phoneY pushes the phone deep into the lower half of the
+  // viewport — its top starts roughly at the second headline line
+  // and the shell extends past the viewport foot. The gradient
+  // below dissolves whatever falls into the last ~20 vh so there's
+  // no hard cropped bottom edge.
   const phoneY = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["12vh", "12vh", "0vh"],
+    ["30vh", "30vh", "0vh"],
   );
 
   // Chapter tracking. -1 during hero means Stepper renders every node as
@@ -174,13 +174,16 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Phone bottom fade. Kept SHORT so only the very bottom edge
-            of the phone melts into the page background — Maya's
-            comment and the acid rectangle above stay fully solid and
-            untouched. The gradient starts around 78 vh (well below
-            the comment) and reaches solid #0A0A0B by ~93 vh, so only
-            the phone's last ~15–20% dissolves. zIndex 15 sits above
-            the Canvas but below the plaque. */}
+        {/* Phone bottom fade. The phone now extends past the viewport
+            foot; without this the viewport bottom would read as a
+            hard flat cut across the phone shell. The gradient starts
+            at ~78 vh (well below Maya's comment + its acid rectangle,
+            which stay fully solid), reaches SOLID #0A0A0B by ~93 vh,
+            and stays solid down to 100 vh — so whatever the phone
+            has going on in the last ~20 vh melts smoothly into the
+            page background and the viewport bottom is fully black.
+            zIndex 15 keeps the fade above the Canvas but below the
+            plaque. */}
         <motion.div
           aria-hidden
           className="absolute inset-x-0 bottom-0 pointer-events-none"
@@ -188,7 +191,7 @@ export function Hero() {
             opacity: heroOpacity,
             height: "22vh",
             background:
-              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,0.6) 40%, rgba(10,10,11,1) 70%)",
+              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,1) 70%)",
             zIndex: 15,
           }}
         />
