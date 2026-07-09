@@ -7,29 +7,41 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { CHAPTERS } from "@/lib/chapters";
+import { CHAPTERS, Surface } from "@/lib/chapters";
 import { Canvas, activeChapterAt } from "./Canvas";
-import { CopyColumn } from "./CopyColumn";
+import { ChapterPlaque } from "./ChapterPlaque";
 import { Stepper } from "./Stepper";
 
-// The pinned scroll stage now has 7 frames: a NEW chapter-00 hero
-// prepended in front of the existing 6 story chapters. The single
-// scrollYProgress is remapped so all downstream story math
-// (surfaceState, MayaOverlay keyframes, stepper fill, activeChapter)
-// keeps its original S = 1/6 basis unchanged — we just feed it a
-// story-local time that stays at 0 while the hero is on screen.
+// 7-frame pinned scroll stage: one hero frame + six story chapters.
+// A single scrollYProgress feeds everything downstream; storyT is
+// scrollYProgress remapped so that all six-chapter math (surfaceState,
+// MayaOverlay keyframes, stepper fill, activeChapter) keeps its
+// original S = 1/6 basis unchanged — storyT stays at 0 while the hero
+// is on screen and animates [0, 1] across the six chapters after.
 const STORY_FRAMES = CHAPTERS.length; // 6
 const TOTAL_FRAMES = STORY_FRAMES + 1; // 7
 const HERO_END = 1 / TOTAL_FRAMES;
-// Width of the hero → story handoff window (as a fraction of full
-// scrollYProgress). Short so the giant headline fades cleanly and the
-// phone slides to its story dock without a long tween.
 const HERO_HANDOFF = 0.04;
 
-// The scroll-story hero. Owns the single source of scroll truth
-// (scrollYProgress) and derives the active chapter. Everything downstream —
-// surfaces, copy, stepper, and the single always-mounted Maya overlay — is
-// driven off this one value, remapped for the +1 hero frame.
+// Corner label copy per surface — top-left chip renders as
+// "■ {SURFACE} · {CONTEXT}". Matches the tone from the old CornerChrome.
+const SURFACE_LABELS: Record<Surface, { surface: string; context: string }> = {
+  tiktok: { surface: "TIKTOK", context: "PUBLIC" },
+  dm: { surface: "TIKTOK", context: "DM" },
+  crm: { surface: "CRM", context: "RECORD" },
+  call: { surface: "VOICE", context: "OUTBOUND" },
+  email: { surface: "MARKETING", context: "SEQUENCE" },
+  system: { surface: "SYSTEM", context: "MAP" },
+};
+
+// Centered-surface + headline-plaque template. Every chapter uses the
+// same shape: surface centered horizontally (same position as the hero
+// phone), bottom melting into the page-bg via a persistent fade, and a
+// semi-transparent plaque lying over the lower part of the surface with
+// kicker + moderate headline + subcopy + Get-early-access CTA. Stepper
+// pinned to the left edge; corner mono labels at the top. Hero →
+// chapter-01 is pure vertical continuity — no horizontal jump — because
+// both frames render the phone at viewport-center.
 export function Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -37,12 +49,8 @@ export function Hero() {
     offset: ["start start", "end end"],
   });
 
-  // Story-local time: 0 during hero, then linearly [0, 1] across the
-  // six story chapters. Everything story-side receives storyT, not
-  // scrollYProgress, so their S = 1/6 constants stay honest.
   const storyT = useTransform(scrollYProgress, [0, HERO_END, 1], [0, 0, 1]);
 
-  // Hero opacity/scale — fade + slight shrink at the boundary.
   const heroOpacity = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
@@ -53,44 +61,26 @@ export function Hero() {
     [0, HERO_END - HERO_HANDOFF, HERO_END],
     [1, 1, 0.92],
   );
-  // Story chrome (copy col + stepper) and canvas frame chrome fade IN
-  // over the same window so the two swap in one beat.
+  // Story chrome (stepper, corner labels, chapter plaque) fades IN
+  // over the hero → ch01 handoff window.
   const storyChromeOpacity = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
     [0, 0, 1],
   );
 
-  // Phone transform. Its NATURAL position is the story dock (right canvas
-  // column). During hero it's translated left toward viewport-center and
-  // a smaller amount down so its TOP sits higher and the full TikTok feed
-  // — video + brand caption + comments row including Maya — is visible
-  // above the bottom crop.
-  //   -21vw is roughly viewport-center minus canvas-col-center on desktop
-  //   widths (1024–1920); +22vh raises the phone (was +40vh) so Maya's
-  //   comment sits clearly on-screen, with the very bottom of the shell
-  //   still cropping past the viewport foot for the rising-out-of-black
-  //   read.
-  const phoneX = useTransform(
-    scrollYProgress,
-    [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["-21vw", "-21vw", "0vw"],
-  );
-  // Hero phoneY: middle position — phone drops far enough that its
-  // shell melts into the bottom fade, but Maya's comment lands
-  // around ~76 vh (right at the fade edge) so the acid rectangle
-  // is barely dimmed and stays legible. The plaque sits ~10 vh
-  // below the rectangle on the fade-darkened area — no giant
-  // empty band between them, no hidden comment.
+  // Phone stays horizontally centered in both hero and story — the
+  // Canvas box is centered on the viewport (max-w mx-auto), so no x
+  // translation is needed. Only the vertical rise-from-below during
+  // hero remains: the phone starts translated 18 vh DOWN, rises to
+  // 0 vh (natural position) as we cross into ch01.
   const phoneY = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["26vh", "26vh", "0vh"],
+    ["18vh", "18vh", "0vh"],
   );
 
-  // Chapter tracking. -1 during hero means Stepper renders every node as
-  // future (no active) and no copy is fed to CopyColumn's animation key
-  // change. From chapter 01 onward the dominance-based derivation
+  // -1 during hero. From ch01 onward the dominance-based derivation
   // matches the surface actually on screen.
   const [activeChapter, setActiveChapter] = useState<number>(-1);
 
@@ -104,6 +94,10 @@ export function Hero() {
     setActiveChapter((prev) => (next !== prev ? next : prev));
   });
 
+  const activeIdx = Math.max(0, activeChapter);
+  const chapter = CHAPTERS[activeIdx];
+  const label = SURFACE_LABELS[chapter.surface];
+
   return (
     <section
       ref={stageRef}
@@ -112,36 +106,14 @@ export function Hero() {
       style={{ height: `${TOTAL_FRAMES * 100}vh` }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* Story chrome layer (copy col + stepper). Grid layout matches
-            the persistent canvas grid below so alignment is identical
-            when the chrome fades in. */}
-        <motion.div
-          className="absolute inset-0"
-          style={{ opacity: storyChromeOpacity }}
-        >
-          <div className="relative h-full grid grid-cols-[minmax(380px,38%)_64px_1fr]">
-            <CopyColumn activeChapter={Math.max(0, activeChapter)} />
-            <Stepper
-              activeChapter={activeChapter}
-              scrollYProgress={storyT}
-            />
-            <div />
-          </div>
-        </motion.div>
-
-        {/* Hero radial glow — soft violet → acid pool behind the phone,
-            large blur, low opacity. Reads as light spilling from the
-            screen; fades out with the rest of the hero. */}
+        {/* Hero radial glow — soft violet → acid pool behind the phone.
+            Fades out with the rest of the hero. */}
         <HeroGlow heroOpacity={heroOpacity} />
 
-        {/* GIANT HEADLINE. Sits near the TOP of the viewport just below
-            the nav — not vertically centered — so the phone can rise
-            below it without competing for the same vertical band.
-            Fades and shrinks slightly at the boundary. Rendered BEFORE
-            the phone in JSX so the phone paints on top if any overlap
-            occurs at compact viewport heights. */}
+        {/* GIANT HEADLINE — hero only, near the top of the viewport.
+            Fades and shrinks slightly at the boundary. */}
         <motion.div
-          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-24"
+          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-24 z-10"
           style={{
             opacity: heroOpacity,
             scale: heroScale,
@@ -151,62 +123,68 @@ export function Hero() {
           <GiantHeadline />
         </motion.div>
 
-        {/* PERSISTENT PHONE. The Canvas contains all six story surfaces
-            but only chapter 0 (TikTok) is visible at storyT=0. It slides
-            from its hero position (viewport-center, rising from bottom)
-            into its story dock (right canvas column) at the 00 → 01
-            boundary — one continuous element, never remounted. Canvas
-            frame chrome is faded via chromeOpacity so during hero the
-            phone reads as a floating device, not a boxed panel. */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="relative h-full grid grid-cols-[minmax(380px,38%)_64px_1fr]">
-            <div />
-            <div />
-            <motion.div
-              style={{ x: phoneX, y: phoneY }}
-              className="relative h-full pointer-events-auto"
-            >
-              <Canvas
-                scrollYProgress={storyT}
-                activeChapter={Math.max(0, activeChapter)}
-                chromeOpacity={storyChromeOpacity}
-              />
-            </motion.div>
-          </div>
+        {/* PERSISTENT CENTERED SURFACE STACK. Canvas holds all six
+            surfaces layered inside a max-w-720 mx-auto box, so the
+            active surface is always at viewport center regardless of
+            chapter. The motion.div's y translation animates the phone
+            "rising from below" during hero, reaching 0 at ch01 —
+            because the horizontal position is already correct in both
+            frames, the hero → ch01 handoff is pure vertical
+            continuity, never a jump. */}
+        <div className="absolute inset-0 z-10 pointer-events-none">
+          <motion.div
+            style={{ y: phoneY }}
+            className="relative h-full pointer-events-auto"
+          >
+            <Canvas
+              scrollYProgress={storyT}
+              activeChapter={activeIdx}
+            />
+          </motion.div>
         </div>
 
-        {/* Phone bottom fade. The phone now extends past the viewport
-            foot; without this the viewport bottom would read as a
-            hard flat cut across the phone shell. The gradient starts
-            at ~78 vh (well below Maya's comment + its acid rectangle,
-            which stay fully solid), reaches SOLID #0A0A0B by ~93 vh,
-            and stays solid down to 100 vh — so whatever the phone
-            has going on in the last ~20 vh melts smoothly into the
-            page background and the viewport bottom is fully black.
-            zIndex 15 keeps the fade above the Canvas but below the
-            plaque. */}
-        <motion.div
+        {/* Persistent bottom fade. Dissolves any surface's bottom edge
+            into the page background so no surface — phone or window —
+            ever shows a hard bottom crop. Same treatment as the hero
+            phone fade; kept always-on so the visual is continuous
+            across the hero → story handoff. */}
+        <div
           aria-hidden
           className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{
-            opacity: heroOpacity,
-            height: "10vh",
+            height: "24vh",
             background:
-              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,1) 60%)",
+              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,1) 62%)",
             zIndex: 15,
           }}
         />
 
-        {/* Solution plaque BELOW the phone, in the black area the
-            fade creates. Two lines centered:
-              "Base360 catches every comment" — quiet white statement.
-              "WATCH ↓"                       — acid scroll cue.
-            The arrow lives HERE now, not floating near the comment
-            rectangle. zIndex: 20 keeps it above the phone-bottom
-            gradient (zIndex: 15) so it reads on solid black. */}
+        {/* STEPPER — left edge, vertical rail. Fades in with story
+            chrome. Fixed 72 px column so the rail sits comfortably
+            past the left viewport gutter without crowding the
+            centered surface. */}
         <motion.div
-          className="absolute inset-x-0 flex justify-center pointer-events-none"
-          style={{ bottom: 50, opacity: heroOpacity, zIndex: 20 }}
+          className="absolute left-0 top-0 bottom-0 z-20 pointer-events-none"
+          style={{ opacity: storyChromeOpacity, width: 240 }}
+        >
+          <Stepper activeChapter={activeChapter} scrollYProgress={storyT} />
+        </motion.div>
+
+        {/* CORNER LABELS — top-left "■ SURFACE · CONTEXT",
+            top-right "BASE360://MAYA.R". Fade in with story chrome.
+            Top offset clears the fixed nav (which is ~64 px tall). */}
+        <motion.div
+          className="absolute inset-x-0 top-0 z-20 pointer-events-none"
+          style={{ opacity: storyChromeOpacity }}
+        >
+          <CornerLabels label={label} />
+        </motion.div>
+
+        {/* HERO plaque — "Base360 catches every comment / WATCH ↓".
+            Two-line lower cue. Fades out with the rest of the hero. */}
+        <motion.div
+          className="absolute inset-x-0 flex justify-center pointer-events-none z-30"
+          style={{ bottom: 40, opacity: heroOpacity }}
         >
           <div className="flex flex-col items-center gap-1.5 text-center">
             <div
@@ -233,40 +211,42 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* Bottom corner marks — no text, just two 12 × 12 outlined
-            squares that mirror the inactive-stepper node style. Purely
-            visual balance for the corners; the pain-and-solution
-            copy already lives in the headline + solution line above. */}
+        {/* STORY plaque — chapter kicker + moderate headline (with acid
+            accent) + one-line subcopy + Get-early-access CTA. Lies
+            OVER the lower part of the centered surface, emerging from
+            the fade. Semi-transparent dark card, ~560 px wide. */}
         <motion.div
-          className="absolute bottom-8 left-0 right-0 flex items-center justify-between px-10 pointer-events-none"
-          style={{ opacity: heroOpacity }}
+          className="absolute inset-x-0 flex justify-center z-30"
+          style={{ bottom: 48, opacity: storyChromeOpacity }}
         >
-          <CornerSquare />
-          <CornerSquare />
+          <ChapterPlaque activeChapter={activeIdx} />
         </motion.div>
       </div>
     </section>
   );
 }
 
-function CornerSquare() {
+function CornerLabels({
+  label,
+}: {
+  label: { surface: string; context: string };
+}) {
   return (
-    <div
-      aria-hidden
-      style={{
-        width: 12,
-        height: 12,
-        background: "var(--bg)",
-        border: "1px solid var(--hairline)",
-      }}
-    />
+    <div className="flex items-center justify-between px-8 pt-20">
+      <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-text-lo">
+        <span className="w-1.5 h-1.5 bg-acid live-dot" />
+        <span>
+          {label.surface} · {label.context}
+        </span>
+      </div>
+      <div className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
+        base360://maya.r
+      </div>
+    </div>
   );
 }
 
-// Two-line heavy uppercase grotesk, tight leading, on ONE line each.
-// clamp(48, 7vw, 104) keeps the size dramatic across desktop widths.
-// The acid textShadow gives line 1 a subtle screen-lit halo without
-// resorting to a fill on line 2 (which stays clean white).
+// Two-line heavy uppercase grotesk, tight leading, one word per line.
 function GiantHeadline() {
   return (
     <div

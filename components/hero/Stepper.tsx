@@ -40,7 +40,7 @@ export function Stepper({ activeChapter, scrollYProgress }: Props) {
   const fillHeight = useTransform(scrollYProgress, FILL_INPUT, FILL_OUTPUT);
 
   return (
-    <div className="relative h-full w-full flex justify-center py-20">
+    <div className="relative h-full w-full flex justify-start pl-8 py-20">
       <div className="relative h-full flex flex-col justify-between items-center">
         {/* Faint hairline running the full node range. Rendered behind
             the nodes (default z-index) so each square's own background
@@ -86,21 +86,21 @@ function Node({
 }) {
   return (
     <div className="relative flex items-center justify-center">
-      {/* Label sits to the LEFT of the rail, right-anchored a gap-width
-          past the square's left edge. Absolute positioning lets it
-          overflow into the copy column's right padding without widening
-          the 64px stepper column or pushing the canvas. Only the ACTIVE
-          node's label is opaque; the others sit at opacity 0 so the
-          label follows the current chapter without any label clutter.
-          Just the step NAME — the step number is already carried by
-          the kicker in the copy column, no need to repeat it here. */}
+      {/* Label sits to the RIGHT of the rail, left-anchored a gap-width
+          past the square's right edge. In the new centered-surface
+          layout the rail lives at the viewport left edge, so labels
+          flow inward (to the right) and never leak off-screen. Only
+          the ACTIVE node's label is opaque; the others sit at
+          opacity 0 so the label follows the current chapter without
+          any clutter. Just the step NAME — the step number is
+          already carried by the kicker in the plaque. */}
       <motion.div
         initial={false}
         animate={{ opacity: active ? 1 : 0 }}
         transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-right font-mono uppercase pointer-events-none text-[10px] font-bold"
+        className="absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-left font-mono uppercase pointer-events-none text-[10px] font-bold"
         style={{
-          right: "calc(100% + 14px)",
+          left: "calc(100% + 14px)",
           letterSpacing: "0.18em",
           color: "var(--acid)",
           textShadow: "0 0 12px rgba(223,255,0,0.32)",
