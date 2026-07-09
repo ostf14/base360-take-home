@@ -16,6 +16,13 @@ import { Anchor, MayaOverlay } from "./MayaOverlay";
 interface Props {
   scrollYProgress: MotionValue<number>;
   activeChapter: number;
+  // Fades the canvas frame (background, border, drop shadow, ambient glow,
+  // edge vignette, corner labels) in / out. Left undefined = always fully
+  // visible (story-only usage). During the chapter-00 hero the persistent
+  // phone is transformed to viewport-center and this fades to 0 so the
+  // phone reads as a floating object, not a boxed panel; fades back to 1
+  // as the story enters at scrollYProgress ≈ 1/7.
+  chromeOpacity?: MotionValue<number>;
 }
 
 // Six chapters, each occupying an equal 1/6 slice of scrollYProgress.
@@ -129,7 +136,11 @@ const FALLBACK_PCT: Anchor[] = [
 // One always-mounted MayaOverlay sits above the surface stack; its position
 // is driven from measured anchor centers plus scrollYProgress. Because the
 // overlay never mounts/unmounts, there is no race — it can't disappear.
-export function Canvas({ scrollYProgress, activeChapter }: Props) {
+export function Canvas({
+  scrollYProgress,
+  activeChapter,
+  chromeOpacity,
+}: Props) {
   const [t, setT] = useState(0);
   useMotionValueEvent(scrollYProgress, "change", (v) => setT(v));
 
@@ -177,15 +188,30 @@ export function Canvas({ scrollYProgress, activeChapter }: Props) {
       <div
         ref={canvasBoxRef}
         className="relative flex-1 overflow-hidden rounded-2xl"
-        style={{
-          background: "var(--bg)",
-          border: "1px solid var(--hairline)",
-          boxShadow:
-            "inset 0 0 120px rgba(0,0,0,0.6), 0 40px 80px rgba(0,0,0,0.6)",
-        }}
       >
-        <AmbientGlow activeChapter={activeChapter} />
-        <EdgeVignette />
+        {/* Frame chrome: background, border, drop shadow. Rendered as
+            a separate absolute layer so its opacity can fade with
+            chromeOpacity independently of the surfaces underneath. */}
+        <motion.div
+          aria-hidden
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          style={{
+            background: "var(--bg)",
+            border: "1px solid var(--hairline)",
+            boxShadow:
+              "inset 0 0 120px rgba(0,0,0,0.6), 0 40px 80px rgba(0,0,0,0.6)",
+            opacity: chromeOpacity ?? 1,
+          }}
+        />
+        {/* Ambient glow + vignette also part of the frame; fade with it. */}
+        <motion.div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{ opacity: chromeOpacity ?? 1 }}
+        >
+          <AmbientGlow activeChapter={activeChapter} />
+          <EdgeVignette />
+        </motion.div>
 
         <SurfaceSlot state={surfaceState(t, 0, TOTAL)}>
           <TikTokSurface
@@ -231,7 +257,14 @@ export function Canvas({ scrollYProgress, activeChapter }: Props) {
           fallback={fallback}
         />
 
-        <CornerChrome activeChapter={activeChapter} />
+        {/* Corner chrome labels fade with the rest of the frame — during
+            hero the surface reads as a floating phone, no dashboard chrome. */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          style={{ opacity: chromeOpacity ?? 1 }}
+        >
+          <CornerChrome activeChapter={activeChapter} />
+        </motion.div>
       </div>
     </div>
   );

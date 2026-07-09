@@ -1,29 +1,98 @@
 "use client";
 import { useRef, useState } from "react";
-import { useScroll, useMotionValueEvent } from "framer-motion";
+import {
+  motion,
+  MotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import { CHAPTERS } from "@/lib/chapters";
 import { Canvas, activeChapterAt } from "./Canvas";
 import { CopyColumn } from "./CopyColumn";
 import { Stepper } from "./Stepper";
 
+// The pinned scroll stage now has 7 frames: a NEW chapter-00 hero
+// prepended in front of the existing 6 story chapters. The single
+// scrollYProgress is remapped so all downstream story math
+// (surfaceState, MayaOverlay keyframes, stepper fill, activeChapter)
+// keeps its original S = 1/6 basis unchanged — we just feed it a
+// story-local time that stays at 0 while the hero is on screen.
+const STORY_FRAMES = CHAPTERS.length; // 6
+const TOTAL_FRAMES = STORY_FRAMES + 1; // 7
+const HERO_END = 1 / TOTAL_FRAMES;
+// Width of the hero → story handoff window (as a fraction of full
+// scrollYProgress). Short so the giant headline fades cleanly and the
+// phone slides to its story dock without a long tween.
+const HERO_HANDOFF = 0.04;
+
 // The scroll-story hero. Owns the single source of scroll truth
 // (scrollYProgress) and derives the active chapter. Everything downstream —
 // surfaces, copy, stepper, and the single always-mounted Maya overlay — is
-// driven off this one value.
+// driven off this one value, remapped for the +1 hero frame.
 export function Hero() {
   const stageRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: stageRef,
     offset: ["start start", "end end"],
   });
-  const [activeChapter, setActiveChapter] = useState(0);
+
+  // Story-local time: 0 during hero, then linearly [0, 1] across the
+  // six story chapters. Everything story-side receives storyT, not
+  // scrollYProgress, so their S = 1/6 constants stay honest.
+  const storyT = useTransform(scrollYProgress, [0, HERO_END, 1], [0, 0, 1]);
+
+  // Hero opacity/scale — fade + slight shrink at the boundary.
+  const heroOpacity = useTransform(
+    scrollYProgress,
+    [0, HERO_END - HERO_HANDOFF, HERO_END],
+    [1, 1, 0],
+  );
+  const heroScale = useTransform(
+    scrollYProgress,
+    [0, HERO_END - HERO_HANDOFF, HERO_END],
+    [1, 1, 0.92],
+  );
+  // Story chrome (copy col + stepper) and canvas frame chrome fade IN
+  // over the same window so the two swap in one beat.
+  const storyChromeOpacity = useTransform(
+    scrollYProgress,
+    [0, HERO_END - HERO_HANDOFF, HERO_END],
+    [0, 0, 1],
+  );
+
+  // Phone transform. Its NATURAL position is the story dock (right canvas
+  // column). During hero it's translated left toward viewport-center and
+  // down so it rises out of the bottom edge, overlapping the lower part
+  // of the giant headline's second line.
+  //   -21vw is roughly viewport-center minus canvas-col-center on desktop
+  //   widths (1024–1920); +40vh pushes the phone down so its top lands on
+  //   the lower half of line 2 ("Nobody replied.") and its bottom crops
+  //   past the viewport foot.
+  const phoneX = useTransform(
+    scrollYProgress,
+    [0, HERO_END - HERO_HANDOFF, HERO_END],
+    ["-21vw", "-21vw", "0vw"],
+  );
+  const phoneY = useTransform(
+    scrollYProgress,
+    [0, HERO_END - HERO_HANDOFF, HERO_END],
+    ["40vh", "40vh", "0vh"],
+  );
+
+  // Chapter tracking. -1 during hero means Stepper renders every node as
+  // future (no active) and no copy is fed to CopyColumn's animation key
+  // change. From chapter 01 onward the dominance-based derivation
+  // matches the surface actually on screen.
+  const [activeChapter, setActiveChapter] = useState<number>(-1);
 
   useMotionValueEvent(scrollYProgress, "change", (v) => {
-    // Dominance-based flip: chapter (i+1) becomes "current" when the
-    // outgoing surface has faded to 0 and the incoming is just starting
-    // to fade up (midpoint of the handoff window in Canvas). Fixes the
-    // lag where node 01 stayed lit while DM was already on screen.
-    const next = activeChapterAt(v, CHAPTERS.length);
+    if (v < HERO_END - 0.002) {
+      setActiveChapter((prev) => (prev !== -1 ? -1 : prev));
+      return;
+    }
+    const local = (v - HERO_END) / (1 - HERO_END);
+    const next = activeChapterAt(local, STORY_FRAMES);
     setActiveChapter((prev) => (next !== prev ? next : prev));
   });
 
@@ -32,24 +101,140 @@ export function Hero() {
       ref={stageRef}
       aria-label="Base360 product story"
       className="relative"
-      style={{ height: `${CHAPTERS.length * 100}vh` }}
+      style={{ height: `${TOTAL_FRAMES * 100}vh` }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        {/* Three-column pinned viewport: copy | vertical stepper rail | canvas.
-            The rail IS the divider between the reading side and the story
-            stage — no separate seam line needed. */}
-        <div className="relative h-full grid grid-cols-[minmax(380px,38%)_64px_1fr]">
-          <CopyColumn activeChapter={activeChapter} />
-          <Stepper
-            activeChapter={activeChapter}
-            scrollYProgress={scrollYProgress}
-          />
-          <Canvas
-            scrollYProgress={scrollYProgress}
-            activeChapter={activeChapter}
-          />
+        {/* Story chrome layer (copy col + stepper). Grid layout matches
+            the persistent canvas grid below so alignment is identical
+            when the chrome fades in. */}
+        <motion.div
+          className="absolute inset-0"
+          style={{ opacity: storyChromeOpacity }}
+        >
+          <div className="relative h-full grid grid-cols-[minmax(380px,38%)_64px_1fr]">
+            <CopyColumn activeChapter={Math.max(0, activeChapter)} />
+            <Stepper
+              activeChapter={activeChapter}
+              scrollYProgress={storyT}
+            />
+            <div />
+          </div>
+        </motion.div>
+
+        {/* Hero radial glow — soft violet → acid pool behind the phone,
+            large blur, low opacity. Reads as light spilling from the
+            screen; fades out with the rest of the hero. */}
+        <HeroGlow heroOpacity={heroOpacity} />
+
+        {/* GIANT HEADLINE. Fades and shrinks slightly at the boundary.
+            Rendered BEFORE the phone in JSX so the phone (later in JSX)
+            visually overlaps it, covering only the lower part of line 2. */}
+        <motion.div
+          className="absolute inset-0 pointer-events-none flex items-center justify-center px-6"
+          style={{ opacity: heroOpacity, scale: heroScale }}
+        >
+          <GiantHeadline />
+        </motion.div>
+
+        {/* PERSISTENT PHONE. The Canvas contains all six story surfaces
+            but only chapter 0 (TikTok) is visible at storyT=0. It slides
+            from its hero position (viewport-center, rising from bottom)
+            into its story dock (right canvas column) at the 00 → 01
+            boundary — one continuous element, never remounted. Canvas
+            frame chrome is faded via chromeOpacity so during hero the
+            phone reads as a floating device, not a boxed panel. */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="relative h-full grid grid-cols-[minmax(380px,38%)_64px_1fr]">
+            <div />
+            <div />
+            <motion.div
+              style={{ x: phoneX, y: phoneY }}
+              className="relative h-full pointer-events-auto"
+            >
+              <Canvas
+                scrollYProgress={storyT}
+                activeChapter={Math.max(0, activeChapter)}
+                chromeOpacity={storyChromeOpacity}
+              />
+            </motion.div>
+          </div>
         </div>
+
+        {/* Bottom captions — pinned to the viewport corners, fade with hero. */}
+        <motion.div
+          className="absolute bottom-8 left-0 right-0 flex items-center justify-between px-10 pointer-events-none"
+          style={{ opacity: heroOpacity }}
+        >
+          <span className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
+            one system · every conversation
+          </span>
+          <span
+            className="text-[10px] font-mono uppercase tracking-widest font-bold"
+            style={{
+              color: "var(--acid)",
+              textShadow: "0 0 12px rgba(223,255,0,0.32)",
+            }}
+          >
+            see what should&apos;ve happened ↓
+          </span>
+        </motion.div>
       </div>
     </section>
+  );
+}
+
+// Two-line heavy uppercase grotesk, tight leading, on ONE line each.
+// clamp(48, 7vw, 104) keeps the size dramatic across desktop widths.
+// The acid textShadow gives line 1 a subtle screen-lit halo without
+// resorting to a fill on line 2 (which stays clean white).
+function GiantHeadline() {
+  return (
+    <div
+      className="flex flex-col items-center gap-1 font-display font-bold uppercase"
+      style={{
+        fontSize: "clamp(48px, 7vw, 104px)",
+        lineHeight: 0.9,
+        letterSpacing: "-0.02em",
+      }}
+    >
+      <div
+        className="whitespace-nowrap"
+        style={{
+          color: "var(--acid)",
+          textShadow: "0 0 40px rgba(223,255,0,0.32)",
+        }}
+      >
+        Next buyer commented.
+      </div>
+      <div
+        className="whitespace-nowrap"
+        style={{ color: "var(--text-hi)" }}
+      >
+        Nobody replied.
+      </div>
+    </div>
+  );
+}
+
+function HeroGlow({ heroOpacity }: { heroOpacity: MotionValue<number> }) {
+  return (
+    <motion.div
+      aria-hidden
+      className="absolute inset-0 pointer-events-none"
+      style={{ opacity: heroOpacity }}
+    >
+      <div
+        className="absolute left-1/2"
+        style={{
+          bottom: "-18%",
+          width: 900,
+          height: 900,
+          transform: "translateX(-50%)",
+          background:
+            "radial-gradient(circle at center, rgba(155,90,220,0.24) 0%, rgba(223,255,0,0.10) 34%, transparent 70%)",
+          filter: "blur(80px)",
+        }}
+      />
+    </motion.div>
   );
 }

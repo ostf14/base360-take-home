@@ -150,8 +150,11 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
 }
 
 function VideoBackdrop() {
-  // Stylized "video paused on a still" — a soft gradient with a subtle noise
-  // grid so it reads as a paused clip, not a placeholder color block.
+  // Real looping product video fills the TikTok "for you" area. The
+  // dark gradient sits behind as a fallback so the surface never reads
+  // as blank while the file is loading (or if /Hero-video.mp4 hasn't
+  // been added yet). A soft bottom-to-nothing dark gradient on top of
+  // the video keeps the BrandOverlay copy legible.
   return (
     <>
       <div
@@ -162,26 +165,23 @@ function VideoBackdrop() {
             "linear-gradient(160deg, #1a0f24 0%, #0f1a24 55%, #050506 100%)",
         }}
       />
+      <video
+        src="/Hero-video.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        aria-hidden
+        className="absolute inset-0 w-full h-full object-cover"
+      />
       <div
         aria-hidden
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage:
-            "radial-gradient(circle at 30% 40%, rgba(255,200,120,0.25) 0%, transparent 45%), radial-gradient(circle at 70% 70%, rgba(120,60,200,0.25) 0%, transparent 40%)",
+          background:
+            "linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.55) 100%)",
         }}
       />
-      {/* Play/pause icon center to hint "video" */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <svg
-          width="34"
-          height="34"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="text-text-hi/60"
-        >
-          <path d="M8 5v14l11-7z" />
-        </svg>
-      </div>
     </>
   );
 }
