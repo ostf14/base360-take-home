@@ -49,11 +49,11 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
           <span className="text-[10px] font-mono text-text-lo">latest</span>
         </div>
 
-        {COMMENTS.map((c, i) => (
-          <CommentRow key={c.handle} c={c} dim={active} delay={i * 0.05} />
-        ))}
-
-        {/* Maya's ignited comment */}
+        {/* Maya's ignited comment sits FIRST — pinned right under the
+            "128 comments" header so it stays high on-screen in the hero
+            (directly beneath the video area) and the hand-drawn acid
+            circle lands on it cleanly without waiting for lower rows
+            to scroll into view. */}
         <motion.div
           initial={false}
           animate={{ filter: active ? "brightness(1.02)" : "brightness(0.9)" }}
@@ -137,6 +137,12 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
             </div>
           </div>
         </motion.div>
+
+        {/* Other feed comments live BELOW Maya's — surrounding chatter
+            that recedes once her comment ignites. */}
+        {COMMENTS.map((c, i) => (
+          <CommentRow key={c.handle} c={c} dim={active} delay={i * 0.05} />
+        ))}
 
         {/* Composer */}
         <div
