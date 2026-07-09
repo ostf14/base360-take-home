@@ -85,7 +85,7 @@ export function Hero() {
   const phoneY = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["18vh", "18vh", "0vh"],
+    ["26vh", "26vh", "0vh"],
   );
 
   // Chapter tracking. -1 during hero means Stepper renders every node as
@@ -190,9 +190,9 @@ export function Hero() {
           className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{
             opacity: heroOpacity,
-            height: "22vh",
+            height: "10vh",
             background:
-              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,1) 70%)",
+              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,1) 60%)",
             zIndex: 15,
           }}
         />
