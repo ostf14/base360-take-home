@@ -76,15 +76,16 @@ export function Hero() {
     [0, HERO_END - HERO_HANDOFF, HERO_END],
     ["-21vw", "-21vw", "0vw"],
   );
-  // Hero phoneY: phone sits in the middle of the viewport, low
-  // enough to feel like it's rising but high enough that Maya's
-  // comment lands around the middle band — clearly ABOVE the
-  // bottom fade start (~78 vh) so the acid rectangle stays fully
-  // solid and never touches the plaque area below.
+  // Hero phoneY: middle position — phone drops far enough that its
+  // shell melts into the bottom fade, but Maya's comment lands
+  // around ~76 vh (right at the fade edge) so the acid rectangle
+  // is barely dimmed and stays legible. The plaque sits ~10 vh
+  // below the rectangle on the fade-darkened area — no giant
+  // empty band between them, no hidden comment.
   const phoneY = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["8vh", "8vh", "0vh"],
+    ["18vh", "18vh", "0vh"],
   );
 
   // Chapter tracking. -1 during hero means Stepper renders every node as
@@ -205,7 +206,7 @@ export function Hero() {
             gradient (zIndex: 15) so it reads on solid black. */}
         <motion.div
           className="absolute inset-x-0 flex justify-center pointer-events-none"
-          style={{ bottom: 10, opacity: heroOpacity, zIndex: 20 }}
+          style={{ bottom: 50, opacity: heroOpacity, zIndex: 20 }}
         >
           <div className="flex flex-col items-center gap-1.5 text-center">
             <div
