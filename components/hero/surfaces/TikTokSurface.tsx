@@ -20,32 +20,31 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
         <BrandOverlay />
       </div>
 
-      {/* Comments drawer — equal flex share with the video so it has
-          real vertical space. Header pinned at top; Maya's comment
-          vertically centered in the remaining space via a flex-1
-          middle track. That keeps her row in the BODY of the phone
-          with clear air above and below, well clear of the bottom
-          crop. Nothing else: no filler comments, no composer. */}
+      {/* Comments drawer. Header pinned at top; Maya's comment sits
+          right underneath — NOT vertically centered — so her row and
+          the acid rectangle around it live in the UPPER half of the
+          drawer with a big empty band beneath. That guarantees the
+          rectangle stays fully inside the phone's solid area and
+          never bleeds into the bottom fade. */}
       <div
-        className="relative flex flex-col px-4 pt-3 pb-4 flex-[1] overflow-hidden"
+        className="relative flex flex-col gap-4 px-4 pt-3 pb-4 flex-[1] overflow-hidden"
         style={{
           background: "var(--surface)",
           borderTop: "1px solid var(--hairline)",
         }}
       >
-        <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center justify-between">
           <span className="text-[11px] font-mono uppercase tracking-widest text-text-hi">
             128 comments
           </span>
           <span className="text-[10px] font-mono text-text-lo">latest</span>
         </div>
 
-        <div className="flex-1 flex items-center">
         <motion.div
           initial={false}
           animate={{ filter: active ? "brightness(1.02)" : "brightness(0.9)" }}
           transition={{ duration: 0.4 }}
-          className="relative w-full"
+          className="relative"
         >
           <div
             className="absolute -inset-1.5 rounded-lg pointer-events-none"
@@ -131,7 +130,6 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
             </div>
           </div>
         </motion.div>
-        </div>
       </div>
     </PhoneShell>
   );

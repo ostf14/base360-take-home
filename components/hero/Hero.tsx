@@ -76,10 +76,15 @@ export function Hero() {
     [0, HERO_END - HERO_HANDOFF, HERO_END],
     ["-21vw", "-21vw", "0vw"],
   );
+  // Hero phoneY reduced from 22vh so the phone's bottom edge stays
+  // inside the viewport instead of being cropped by it. That leaves a
+  // clear band beneath the phone shell for the plaque + arrow to live
+  // in, and it also puts Maya's comment + the acid rectangle around
+  // it fully in the solid, non-cropped part of the phone.
   const phoneY = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["22vh", "22vh", "0vh"],
+    ["4vh", "4vh", "0vh"],
   );
 
   // Chapter tracking. -1 during hero means Stepper renders every node as
@@ -169,24 +174,40 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Single acid ↓ scroll cue, centered near the bottom. Only
-            scroll hint in the hero — no plaque, no text, just the
-            arrow. Fades with the rest of the hero. */}
+        {/* Solution plaque BELOW the phone. Two lines centered:
+              "Base360 catches every comment" — quiet white statement.
+              "WATCH ↓"                       — acid scroll cue.
+            The arrow lives HERE now, not floating near the comment
+            rectangle. Absolute-positioned above the corner squares,
+            fades with hero opacity, sits above the phone Canvas via
+            zIndex so it never gets buried when the phone slides. */}
         <motion.div
           className="absolute inset-x-0 flex justify-center pointer-events-none"
-          style={{ bottom: 34, opacity: heroOpacity, zIndex: 20 }}
-          aria-hidden
+          style={{ bottom: 72, opacity: heroOpacity, zIndex: 20 }}
         >
-          <span
-            className="font-mono leading-none"
-            style={{
-              color: "var(--acid)",
-              fontSize: 26,
-              textShadow: "0 0 12px rgba(223, 255, 0, 0.5)",
-            }}
-          >
-            ↓
-          </span>
+          <div className="flex flex-col items-center gap-1.5 text-center">
+            <div
+              className="font-display font-medium"
+              style={{
+                color: "var(--text-hi)",
+                fontSize: 16,
+                letterSpacing: "-0.005em",
+              }}
+            >
+              Base360 catches every comment
+            </div>
+            <div
+              className="font-mono uppercase font-bold"
+              style={{
+                color: "var(--acid)",
+                fontSize: 11,
+                letterSpacing: "0.22em",
+                textShadow: "0 0 12px rgba(223, 255, 0, 0.5)",
+              }}
+            >
+              Watch ↓
+            </div>
+          </div>
         </motion.div>
 
         {/* Bottom corner marks — no text, just two 12 × 12 outlined
