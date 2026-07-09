@@ -25,25 +25,31 @@ interface Props {
 export function DmSurface({ progress, anchorRef }: Props) {
   return (
     <PhoneShell platform="instagram">
-      {/* DM contact header */}
+      {/* DM contact header — reads as the AI operator's inbox row:
+          the LEAD (@maya.r + panda avatar) on the left, and the
+          "AI AGENT" acid chip on the right saying "this thread is
+          being handled by the AI". Extra vertical gap between the
+          handle and the subtitle so they don't cramp into one line. */}
       <div
         className="flex items-center gap-3 px-4 py-3 border-b"
         style={{ borderColor: "var(--hairline)" }}
       >
         <span className="text-[13px] font-mono text-text-lo/70">‹</span>
         <MayaAnchor anchorRef={anchorRef} />
-        <div className="flex flex-col leading-tight">
-          <span className="text-[13px] text-text-hi font-semibold">@maya.r</span>
-          <span className="text-[9px] font-mono uppercase tracking-widest text-text-lo">
+        <div className="flex flex-col gap-1">
+          <span className="text-[13px] text-text-hi font-semibold leading-none">
+            @maya.r
+          </span>
+          <span className="text-[9px] font-mono uppercase tracking-widest text-text-lo leading-none">
             tiktok · direct message
           </span>
         </div>
         <div className="ml-auto flex items-center gap-2">
           <span
-            className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm"
+            className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
             style={{
-              color: "var(--text-lo)",
-              border: "1px solid var(--hairline)",
+              color: "#0A0A0B",
+              background: "var(--acid)",
             }}
           >
             AI Agent
@@ -98,33 +104,31 @@ export function DmSurface({ progress, anchorRef }: Props) {
 }
 
 function DmBubble({ m, show }: { m: Msg; show: boolean }) {
-  const isMaya = m.from === "maya";
+  // AI operator's inbox view: Maya's messages come IN on the LEFT
+  // (neutral off-white bubble); the AI's replies go OUT on the RIGHT
+  // with acid emphasis — acid AI tag over an acid-tinted, acid-bordered
+  // bubble, so the eye tracks what the agent is doing.
+  const isIncoming = m.from === "maya";
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: show ? 1 : 0, y: show ? 0 : 6 }}
       transition={{ duration: 0.25 }}
-      className={`flex gap-1.5 items-end ${isMaya ? "justify-end" : "justify-start"}`}
+      className={`flex gap-1.5 items-end ${
+        isIncoming ? "justify-start" : "justify-end"
+      }`}
     >
-      {!isMaya && (
-        <div
-          className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-mono font-bold shrink-0"
-          style={{
-            background: "var(--surface-2)",
-            color: "var(--text-hi)",
-            border: "1px solid var(--hairline)",
-          }}
-        >
-          N
-        </div>
-      )}
-      <div className="max-w-[76%] flex flex-col gap-0.5">
-        {!isMaya && (
+      <div
+        className={`max-w-[76%] flex flex-col gap-0.5 ${
+          isIncoming ? "items-start" : "items-end"
+        }`}
+      >
+        {!isIncoming && (
           <span
-            className="text-[8px] font-mono uppercase px-1 py-0.5 rounded-sm w-fit"
+            className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
             style={{
-              color: "var(--text-lo)",
-              border: "1px solid var(--hairline)",
+              color: "#0A0A0B",
+              background: "var(--acid)",
             }}
           >
             AI
@@ -132,12 +136,21 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
         )}
         <div
           className={`px-3 py-1.5 text-[12px] leading-snug rounded-2xl ${
-            isMaya ? "rounded-br-sm" : "rounded-bl-sm"
+            isIncoming ? "rounded-bl-sm" : "rounded-br-sm"
           }`}
-          style={{
-            background: isMaya ? "rgba(244,244,245,0.92)" : "var(--surface-2)",
-            color: isMaya ? "#0A0A0B" : "var(--text-hi)",
-          }}
+          style={
+            isIncoming
+              ? {
+                  background: "rgba(244, 244, 245, 0.92)",
+                  color: "#0A0A0B",
+                }
+              : {
+                  background: "rgba(223, 255, 0, 0.10)",
+                  color: "var(--text-hi)",
+                  border: "1px solid rgba(223, 255, 0, 0.32)",
+                  boxShadow: "0 0 16px rgba(223, 255, 0, 0.08)",
+                }
+          }
         >
           {m.text}
         </div>

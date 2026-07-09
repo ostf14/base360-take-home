@@ -29,10 +29,42 @@ const NODES: Node[] = [
   { key: "closed", label: "CLOSED · $32", x: 55, y: 76, sub: "won", shell: "closed" },
 ];
 
+// Approximate label footprint in viewBox units (viewBox is 100×100 with
+// preserveAspectRatio="none" so x units are ~% of container width and y
+// units are ~% of container height). The label box is roughly 60×22 CSS
+// px on a typical 800×500 map, i.e. ~3.75 x-units by ~2.2 y-units around
+// the center. Rounded up a hair for gap: rx=5, ry=3.
+const NODE_RX = 5;
+const NODE_RY = 3;
+
 export function SystemSurface({ progress, anchorRef }: Props) {
-  const pathD = NODES.map(
-    (n, i) => `${i === 0 ? "M" : "L"} ${n.x} ${n.y}`
-  ).join(" ");
+  // Draw FIVE independent segments (one per adjacent-node pair) instead
+  // of a single continuous polyline through node centers. Each segment
+  // ends at the ellipse-boundary approximation around each node, so the
+  // acid line meets every label at its edge cleanly — no stray tails
+  // poking past the boxes, no line disappearing into label centers only
+  // to re-emerge on the other side. Written into ONE motion.path so the
+  // pathLength draw-in animation still runs sequentially through the
+  // whole route from TikTok → Closed.
+  const pathD = NODES.slice(0, -1)
+    .map((a, i) => {
+      const b = NODES[i + 1];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const len = Math.hypot(dx, dy);
+      if (len === 0) return "";
+      const ux = dx / len;
+      const uy = dy / len;
+      // Distance from center to ellipse boundary along (ux, uy).
+      const inv = Math.sqrt((ux / NODE_RX) ** 2 + (uy / NODE_RY) ** 2);
+      const t = inv === 0 ? 0 : 1 / inv;
+      const x1 = a.x + ux * t;
+      const y1 = a.y + uy * t;
+      const x2 = b.x - ux * t;
+      const y2 = b.y - uy * t;
+      return `M ${x1.toFixed(2)} ${y1.toFixed(2)} L ${x2.toFixed(2)} ${y2.toFixed(2)}`;
+    })
+    .join(" ");
 
   return (
     <div className="absolute inset-0 p-6 pt-12 flex">
@@ -122,25 +154,35 @@ export function SystemSurface({ progress, anchorRef }: Props) {
           />
         </svg>
 
-        {/* Nodes — each carries a mini shell echo behind the label */}
+        {/* Nodes. The LABEL is the primary element and sits dead-center
+            on (n.x, n.y) so the connector path meets each node exactly
+            at its opaque box. The shell-glyph echo and the sub caption
+            are absolute-positioned above / below the label so they
+            don't shift the label off center. */}
         {NODES.map((n, i) => {
           const revealed = progress > i / NODES.length - 0.05;
           const isClosed = n.key === "closed";
           return (
-            <motion.div
+            <div
               key={n.key}
-              initial={{ opacity: 0, scale: 0.92 }}
-              animate={{ opacity: revealed ? 1 : 0.15, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="absolute -translate-x-1/2 -translate-y-1/2"
+              className="absolute"
               style={{ left: `${n.x}%`, top: `${n.y}%` }}
             >
-              <div className="flex flex-col items-center gap-2">
-                {isClosed && <MayaAnchor anchorRef={anchorRef} />}
-                {!isClosed && <ShellGlyph shell={n.shell} />}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: revealed ? 1 : 0.15, scale: 1 }}
+                transition={{ duration: 0.3 }}
+                className="relative"
+                style={{ transformOrigin: "50% 50%" }}
+              >
                 <div
-                  className="px-3 py-1.5 rounded-sm text-[10px] font-mono uppercase tracking-wider font-medium"
+                  className="relative px-3 py-1.5 rounded-sm text-[10px] font-mono uppercase tracking-wider font-medium whitespace-nowrap"
                   style={{
+                    // Center the label on (n.x, n.y). All the shell /
+                    // anchor / sub siblings position themselves relative
+                    // to THIS label, so the label is the sole thing at
+                    // the node's canonical coordinate.
+                    transform: "translate(-50%, -50%)",
                     color: isClosed ? "#0A0A0B" : "var(--text-hi)",
                     background: isClosed
                       ? "var(--acid)"
@@ -154,12 +196,37 @@ export function SystemSurface({ progress, anchorRef }: Props) {
                   }}
                 >
                   {n.label}
+                  {/* Shell glyph echo — absolute-positioned above the
+                      label so it visually sits ON the node stack but
+                      doesn't shift the label center. */}
+                  {!isClosed && (
+                    <div
+                      className="absolute left-1/2 -translate-x-1/2"
+                      style={{ bottom: "calc(100% + 8px)" }}
+                    >
+                      <ShellGlyph shell={n.shell} />
+                    </div>
+                  )}
+                  {/* MayaAnchor above the CLOSED label — the overlay
+                      docks here so 🐼 lands at the end of the funnel. */}
+                  {isClosed && (
+                    <div
+                      className="absolute left-1/2 -translate-x-1/2"
+                      style={{ bottom: "calc(100% + 8px)" }}
+                    >
+                      <MayaAnchor anchorRef={anchorRef} />
+                    </div>
+                  )}
+                  {/* Sub caption below the label. */}
+                  <div
+                    className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap text-[9px] font-mono uppercase text-text-lo/90"
+                    style={{ top: "calc(100% + 6px)" }}
+                  >
+                    {n.sub}
+                  </div>
                 </div>
-                <div className="text-[9px] font-mono uppercase text-text-lo/90">
-                  {n.sub}
-                </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
           );
         })}
 

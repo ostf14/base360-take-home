@@ -16,32 +16,32 @@ export function MayaAvatar({ size = 40, square = false, ring = false }: Props) {
       } ${ring ? "ring-2 ring-acid" : ""}`}
       style={style}
     >
+      {/* Neutral light-grey fill (a step darker than the panda's
+          white face) so the 🐼 silhouette contrasts. A subtle dark
+          inset border traces the circle edge — the panda is white +
+          black on white belly, so without a border the head can
+          bleed into a plain light-grey fill. Same avatar across
+          overlay, DM header, CRM header, closed system node. */}
       <div
         className="absolute inset-0"
         style={{
-          background:
-            "linear-gradient(135deg, #F5A9D0 0%, #B37AE8 55%, #4A2B7A 100%)",
+          background: "#B4B4B9",
+          boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.22)",
         }}
       />
-      {/* Girl emoji sits centered on the pink→purple gradient. Sized
-          a step larger than the old "M" glyph so its detail reads at
-          40px, and shifted very slightly up so its face — not its
-          hair — sits at the optical center of the circle. Same emoji
-          everywhere Maya is rendered so she stays recognizable as
-          one person across surfaces. */}
       <div
         className="absolute inset-0 flex items-center justify-center"
         style={{
-          fontSize: size * 0.7,
+          fontSize: size * 0.72,
           lineHeight: 1,
-          // Font family override matches the OS emoji fonts on the
-          // main desktop targets so we don't get a monochrome fallback.
+          // OS color-emoji font stack — otherwise 🐼 can render as a
+          // monochrome glyph and lose the black-eye-patches contrast.
           fontFamily:
             "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif",
         }}
         aria-hidden
       >
-        👧
+        🐼
       </div>
     </div>
   );

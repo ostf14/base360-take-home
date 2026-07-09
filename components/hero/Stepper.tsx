@@ -112,7 +112,11 @@ function Node({
       {/* Node square. Same shape across all six positions — state comes
           through fill / border / scale / glow only. Future nodes use
           --bg (same as canvas) as background so the rail behind them is
-          hidden while the border reads as a clean hairline outline. */}
+          hidden while the border reads as a clean hairline outline.
+          PAST nodes use a solid opaque dim-acid — the previous
+          --acid-dim was 28% alpha, which let the hairline rail bleed
+          through and read as a translucent, half-empty square. Solid
+          fill keeps the traveled path fully visible. */}
       <motion.div
         initial={false}
         animate={{
@@ -120,12 +124,12 @@ function Node({
           background: active
             ? "var(--acid)"
             : past
-            ? "var(--acid-dim)"
+            ? "#6D7C00"
             : "var(--bg)",
           borderColor: active
             ? "var(--acid)"
             : past
-            ? "var(--acid-dim)"
+            ? "#6D7C00"
             : "var(--hairline)",
           boxShadow: active
             ? "0 0 14px rgba(223,255,0,0.65)"
