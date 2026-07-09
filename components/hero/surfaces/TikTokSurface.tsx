@@ -55,14 +55,15 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               transition: "all 400ms ease",
             }}
           />
-          {/* Hand-drawn acid circle around Maya's comment — the "the
-              system noticed THIS one" hook for the hero. Fades out as
-              the chapter-01 ignite takes over so it doesn't compete
-              with the acid highlight border above. */}
-          <HandDrawnCircle active={active} />
+          {/* Animated acid rectangle highlight around Maya's comment
+              — the "the system noticed THIS one" hook for the hero.
+              Draws its outline in from one corner, sits BEHIND the
+              text via zIndex layering, fades out once the chapter-01
+              ignite border takes over so the two don't stack. */}
+          <AcidRectHighlight active={active} />
           {/* zIndex: 2 keeps the comment content painted ON TOP of the
-              acid ellipse; the loop wraps around the outside, letters
-              stay fully legible. */}
+              acid rectangle; the outline traces the outside of the
+              text, letters stay fully legible. */}
           <div
             className="relative flex gap-2 items-start py-1.5"
             style={{ zIndex: 2 }}
@@ -227,51 +228,62 @@ function TypedLine({ text, show }: { text: string; show: boolean }) {
   );
 }
 
-// The "system noticed this" annotation. Chalk-style acid ellipse with
-// a small open gap between the end (~34,70) and the start (60,104) so
-// it reads as a hand-drawn marker circle, not a CSS oval. Direct SVG
-// (no wrapper), positioned with inset:-10px -16px + explicit width/
-// height so it extends past the comment on every side. No
-// preserveAspectRatio="none" — the ellipse keeps its natural shape.
-// Layered BEHIND the comment content via zIndex on the parent (the
-// content row carries zIndex: 2), so the stroke goes AROUND the text,
-// never through it. Draw-in via motion.path pathLength; fades to 0
-// once igniteProgress > 0.15 so it doesn't stack with the highlight.
-function HandDrawnCircle({ active }: { active: boolean }) {
+// The "system noticed this" annotation. A rounded-rect acid outline
+// that draws its stroke around Maya's comment from one corner and
+// travels the perimeter. Implemented as an SVG <rect> (not a CSS
+// border) so we can animate the outline via stroke-dashoffset —
+// pathLength="100" normalises the perimeter so the same 100 →
+// 0 offset works at any comment dimensions. Positioned with inset
+// -10 px + width/height calc so the rect sits just outside the text
+// with a small padding gap. The whole SVG carries a drop-shadow
+// filter so the drawn stroke itself glows. Content row (parent
+// zIndex: 2) sits ON TOP — the outline is BEHIND the letters.
+// Fades to 0 once igniteProgress > 0.15 so it doesn't stack with
+// the chapter-01 highlight border above.
+function AcidRectHighlight({ active }: { active: boolean }) {
   return (
     <motion.svg
       aria-hidden
-      viewBox="0 0 320 130"
       style={{
         position: "absolute",
-        top: -10,
-        right: -16,
-        bottom: -10,
-        left: -16,
-        width: "calc(100% + 32px)",
+        inset: "-10px",
+        width: "calc(100% + 20px)",
         height: "calc(100% + 20px)",
         overflow: "visible",
         pointerEvents: "none",
+        filter:
+          "drop-shadow(0 0 6px rgba(223,255,0,0.7)) drop-shadow(0 0 14px rgba(223,255,0,0.35))",
         zIndex: 1,
       }}
       initial={{ opacity: 1 }}
       animate={{ opacity: active ? 0 : 1 }}
       transition={{ duration: 0.35 }}
     >
-      <motion.path
-        d="M60,104 C30,98 20,74 22,58 C25,36 78,22 168,22 C258,22 306,36 302,62 C299,86 250,106 150,107 C86,107 40,96 34,70"
+      <rect
+        x="2"
+        y="2"
+        rx="10"
+        ry="10"
         fill="none"
-        stroke="var(--acid)"
-        strokeWidth={3}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        stroke="#DFFF00"
+        strokeWidth={2}
+        pathLength={100}
+        strokeDasharray="100"
+        strokeDashoffset="100"
         style={{
-          filter: "drop-shadow(0 0 6px rgba(223, 255, 0, 0.5))",
+          width: "calc(100% - 4px)",
+          height: "calc(100% - 4px)",
         }}
-      />
+      >
+        <animate
+          attributeName="stroke-dashoffset"
+          from="100"
+          to="0"
+          dur="0.8s"
+          fill="freeze"
+          begin="0.3s"
+        />
+      </rect>
     </motion.svg>
   );
 }
