@@ -42,12 +42,19 @@ interface Props {
   scrollYProgress: MotionValue<number>;
   anchors: (Anchor | null)[];
   fallback: Anchor[];
+  // Flips to true after the first useLayoutEffect measurement pass in
+  // Canvas has read every anchor's real getBoundingClientRect. Until
+  // then the overlay stays fully transparent — it must never paint at
+  // the (0,0) / server-HTML fallback pose and then teleport to its
+  // measured spot when hydration kicks in.
+  measured: boolean;
 }
 
 export function MayaOverlay({
   scrollYProgress,
   anchors,
   fallback,
+  measured,
 }: Props) {
   // Resolve: prefer measured anchors, fall back to hand-calibrated positions
   // (px in canvas coords). Always yields exactly 6 non-null positions.
@@ -68,6 +75,9 @@ export function MayaOverlay({
     <motion.div
       className="pointer-events-none absolute z-30"
       style={{ left, top }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: measured ? 1 : 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
       aria-hidden
     >
       {/* Second wrapper hosts the -50% centering so the outer motion.div's

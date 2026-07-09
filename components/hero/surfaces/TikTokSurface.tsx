@@ -201,11 +201,16 @@ function BrandOverlay() {
   return (
     <div className="absolute bottom-3 left-3 right-16 flex flex-col gap-1 text-text-hi">
       <div className="flex items-center gap-2">
+        {/* @northbloom.co brand avatar — warm orange that ties to the
+            hoodie in the /Hero-video.mp4 clip. Kept as a soft gradient
+            (top-highlight → deep orange) so it reads as a real avatar
+            disc, not a flat swatch. Only the BRAND avatar — Maya keeps
+            the fox on deep-black. */}
         <div
           className="w-8 h-8 rounded-full"
           style={{
             background:
-              "linear-gradient(135deg, rgba(244,182,196,0.9), rgba(155,90,220,0.9))",
+              "linear-gradient(135deg, #FF8B4A 0%, #FF5F1F 100%)",
           }}
         />
         <div className="flex flex-col leading-tight">
@@ -314,24 +319,30 @@ function TypedLine({ text, show }: { text: string; show: boolean }) {
 }
 
 // The "system noticed this" annotation. An intentionally-imperfect
-// ellipse — asymmetric Bezier control points, slight tilt — traced in
-// acid, drawn in over ~1.2s shortly after mount via pathLength.
-// vector-effect keeps the stroke at 2.5 CSS px regardless of how much
-// the SVG stretches to fit Maya's row. Fades to 0 once the chapter-01
-// ignite kicks in so it doesn't stack with the acid highlight border
-// that appears above.
+// ellipse — asymmetric Bezier control points, slight tilt, path arcs
+// pushed WELL past the SVG viewBox so the loop sweeps loosely around
+// Maya's row with real air on every side. The path finishes past its
+// start point with a small sweeping tail — reads like a marker circle
+// where the artist over-shot the closing stroke on purpose. Traced in
+// acid, 3 CSS px non-scaling-stroke, drop-shadow glow, drawn in over
+// ~1.4 s via pathLength shortly after mount. Fades to 0 once the
+// chapter-01 ignite kicks in so it doesn't stack with the highlight
+// border that appears above.
 function HandDrawnCircle({ active }: { active: boolean }) {
   return (
     <motion.svg
       aria-hidden
       className="absolute pointer-events-none"
       style={{
-        top: -6,
-        left: -8,
-        right: -10,
-        bottom: -4,
+        // Push the SVG bounds well past the row — the path itself then
+        // arcs even further past those bounds thanks to overflow: visible,
+        // so the loop reads as a big loose sweep instead of hugging text.
+        top: -18,
+        left: -26,
+        right: -28,
+        bottom: -14,
         overflow: "visible",
-        transform: "rotate(-1.2deg)",
+        transform: "rotate(-1.6deg)",
       }}
       viewBox="0 0 200 60"
       preserveAspectRatio="none"
@@ -340,18 +351,18 @@ function HandDrawnCircle({ active }: { active: boolean }) {
       transition={{ duration: 0.35 }}
     >
       <motion.path
-        d="M 12 32 C 6 15, 46 4, 100 5 C 158 3, 195 13, 190 32 C 195 49, 148 55, 100 52 C 42 55, 6 46, 12 32 Z"
+        d="M 6 34 C -10 12, 42 -8, 100 -7 C 172 -10, 216 8, 208 30 C 220 56, 148 66, 100 60 C 34 68, -14 52, 6 34 C 4 30, 14 24, 30 26"
         fill="none"
         stroke="var(--acid)"
-        strokeWidth={2.5}
+        strokeWidth={3}
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
-        transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.4, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{
-          filter: "drop-shadow(0 0 5px rgba(223, 255, 0, 0.5))",
+          filter: "drop-shadow(0 0 6px rgba(223, 255, 0, 0.55))",
         }}
       />
     </motion.svg>

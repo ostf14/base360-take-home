@@ -157,12 +157,18 @@ export function Canvas({
     // Sensible pre-measurement guess so the overlay doesn't render at 0,0.
     FALLBACK_PCT.map((p) => ({ x: (p.x / 100) * 800, y: (p.y / 100) * 700 }))
   );
+  // Gates MayaOverlay's visibility. Stays false until the first
+  // useLayoutEffect pass has read a real bounding rect for the canvas
+  // box — so the overlay never paints at the assumed 800×700 fallback
+  // (which is almost never where the real anchor lives) and then jumps
+  // to its measured spot on hydration.
+  const [measured, setMeasured] = useState(false);
 
   useLayoutEffect(() => {
     const measure = () => {
       const box = canvasBoxRef.current?.getBoundingClientRect();
       if (!box) return;
-      const measured: (Anchor | null)[] = anchorRefs.map((ref) => {
+      const nextAnchors: (Anchor | null)[] = anchorRefs.map((ref) => {
         const el = ref.current;
         if (!el) return null;
         const b = el.getBoundingClientRect();
@@ -175,8 +181,9 @@ export function Canvas({
         x: (p.x / 100) * box.width,
         y: (p.y / 100) * box.height,
       }));
-      setAnchors(measured);
+      setAnchors(nextAnchors);
       setFallback(nextFallback);
+      setMeasured(true);
     };
     measure();
     window.addEventListener("resize", measure);
@@ -250,11 +257,13 @@ export function Canvas({
           />
         </SurfaceSlot>
 
-        {/* ONE Maya. Mounted once. Never conditionally rendered. */}
+        {/* ONE Maya. Mounted once. Never conditionally rendered. Kept
+            invisible until `measured` flips so no first-paint teleport. */}
         <MayaOverlay
           scrollYProgress={scrollYProgress}
           anchors={anchors}
           fallback={fallback}
+          measured={measured}
         />
 
         {/* Corner chrome labels fade with the rest of the frame — during
