@@ -20,22 +20,11 @@ const TRANSCRIPT = [
 // hand-off to the enterprise Email view feel bigger.
 export function CallSurface({ progress, anchorRef }: Props) {
   return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center px-8 pt-16 pb-12">
-      {/* Small telephony HUD in the top corner — mono, static, feels like an
-          in-call OS overlay, not a dashboard. */}
-      <div className="absolute top-6 left-6 right-6 flex items-center justify-between text-[10px] font-mono uppercase tracking-widest text-text-lo/70">
-        <div className="flex items-center gap-2">
-          <span
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ background: "var(--text-lo)" }}
-          />
-          in call
-        </div>
-        <span className="text-text-lo">
-          base360 · ai voice · outbound
-        </span>
-        <span className="text-text-hi/80">00:47</span>
-      </div>
+    <div className="absolute inset-0 flex flex-col items-center justify-center px-8 pt-24 pb-16">
+      {/* HUD row (IN CALL / status / 00:47 timer) removed — it lived
+          at navbar height and read as noise stacked on top of the
+          nav links. The frame now leads straight with the callee
+          identity block. */}
 
       {/* Callee identity block: Maya + name + phone. */}
       <div className="flex flex-col items-center gap-3 mb-10">

@@ -29,49 +29,38 @@ const NODES: MapNode[] = [
   { key: "closed", label: "CLOSED · $32", x: 55, y: 76, sub: "won", shell: "closed" },
 ];
 
-// Catmull-Rom → cubic-Bezier conversion. Produces ONE continuous
-// smooth path through every node in order — no sharp joints, no
-// zig-zag polyline. Endpoint tangents are computed by duplicating
-// the outer points so the first and last curves ease-out cleanly.
-// Tension divisor 6 gives a gentle winding shape; smaller values
-// produce tighter loops, larger values a straighter line.
-function smoothPath(points: [number, number][]): string {
-  const n = points.length;
-  if (n < 2) return "";
-  const T = 6;
-  const cmds: string[] = [
-    `M ${points[0][0].toFixed(2)} ${points[0][1].toFixed(2)}`,
-  ];
-  for (let i = 0; i < n - 1; i++) {
-    const p0 = points[Math.max(i - 1, 0)];
-    const p1 = points[i];
-    const p2 = points[i + 1];
-    const p3 = points[Math.min(i + 2, n - 1)];
-    const cp1x = p1[0] + (p2[0] - p0[0]) / T;
-    const cp1y = p1[1] + (p2[1] - p0[1]) / T;
-    const cp2x = p2[0] - (p3[0] - p1[0]) / T;
-    const cp2y = p2[1] - (p3[1] - p1[1]) / T;
-    cmds.push(
-      `C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`,
-    );
-  }
-  return cmds.join(" ");
+// Straight polyline through every node center in order. One
+// continuous path — no separate segments — so the reveal mask
+// below can draw it monotonically from TikTok to CLOSED as scroll
+// progress advances. Straight-but-accurate beats curved-but-
+// missing: with the earlier Catmull-Rom pass the curve was
+// wandering past the labels between nodes; a polyline lands each
+// endpoint exactly on the node center, and the labels' opaque
+// backgrounds cover the segment of line that crosses beneath them.
+function polylinePath(points: [number, number][]): string {
+  if (points.length < 2) return "";
+  return points
+    .map(
+      (p, i) =>
+        `${i === 0 ? "M" : "L"} ${p[0].toFixed(2)} ${p[1].toFixed(2)}`,
+    )
+    .join(" ");
 }
 
 export function SystemSurface({ progress, anchorRef }: Props) {
-  // One continuous smooth curve threading every node in order.
-  // Because it's a single path, the mask below can reveal it from
-  // start to finish as a single monotonic operation tied to the
-  // chapter's scroll progress — the lead's path traces through
-  // TikTok → DM → CRM → AI Call → Email → CLOSED in order.
-  const pathD = smoothPath(NODES.map((n) => [n.x, n.y] as [number, number]));
+  // Straight-line polyline threading every node in order. Because
+  // it's one continuous path, the mask below reveals it from start
+  // to finish as a single monotonic operation tied to the chapter's
+  // scroll progress — the lead's path draws through TikTok → DM →
+  // CRM → AI Call → Email → CLOSED in order.
+  const pathD = polylinePath(NODES.map((n) => [n.x, n.y] as [number, number]));
   // Reveal 0 → 1 across the chapter. Slight *1.1 so the last
   // stretch completes just before the chapter boundary — feels
   // more decisive than trailing to the very last frame.
   const revealOffset = 1 - Math.min(1, Math.max(0, progress * 1.1));
 
   return (
-    <div className="absolute inset-0 p-6 pt-12 flex">
+    <div className="absolute inset-0 px-6 pt-24 pb-16 flex">
       <div
         className="relative flex-1 rounded-2xl overflow-hidden"
         style={{

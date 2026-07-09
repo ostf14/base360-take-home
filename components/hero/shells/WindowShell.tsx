@@ -13,7 +13,7 @@ interface Props {
 // contrast against the phone shells is the point.
 export function WindowShell({ url, tabs, children }: Props) {
   return (
-    <div className="absolute inset-0 p-6 pt-12 flex items-stretch">
+    <div className="absolute inset-0 px-6 pt-24 pb-16 flex items-stretch">
       <div
         className="relative flex-1 flex flex-col overflow-hidden"
         style={{
