@@ -1,41 +1,50 @@
-// The four-pillar section names the product's scope AFTER the scroll-story
-// showed the mechanic on a single lead. Reads like a scope sheet, not a
-// feature dump: mono numbers, grotesk titles, muted body copy, acid as a
-// thin top-rule per column (accent only, no fills). The four column
-// glyphs visually echo the surfaces from the story (inbox / agent / crm
-// / marketing) without re-rendering them.
+import { Bot, Inbox, IdCard, Mail } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+// Four connected pillar cards on dark. Neste-style: bordered dark
+// cards in a row of four, a single dashed acid line running through
+// their middles (behind the cards) as a visual "these are one
+// system" thread, and tiny acid L-brackets at the outermost corners
+// framing the group. Icons are Lucide, tinted acid at a thin
+// strokeWidth so they read as diagram symbols rather than filled UI
+// buttons — echoes the acid-line story vocabulary without stealing
+// contrast from the copy.
 
 interface Pillar {
   n: string;
   title: string;
   body: string;
-  glyph: "inbox" | "agent" | "crm" | "marketing";
+  Icon: LucideIcon;
 }
 
 const PILLARS: Pillar[] = [
   {
     n: "01",
     title: "One unified inbox",
-    body: "Every social comment, DM, WhatsApp, SMS, call, and email in one place. Reply without logging into a single platform.",
-    glyph: "inbox",
+    body:
+      "Every social comment, DM, call, and email in one place — no logging into six platforms.",
+    Icon: Inbox,
   },
   {
     n: "02",
-    title: "AI agents that do the work",
-    body: "Agents reply, answer, qualify, follow up — even call with an AI voice. Your team stops doing the repetitive work.",
-    glyph: "agent",
+    title: "AI agents do the work",
+    body:
+      "Agents reply, qualify, and follow up — even call with an AI voice. Your team stops handling the repetitive.",
+    Icon: Bot,
   },
   {
     n: "03",
     title: "A built-in CRM",
-    body: "Every conversation becomes a lead. High-intent leads surface straight to sales, so nothing gets missed.",
-    glyph: "crm",
+    body:
+      "Every conversation becomes a lead. High-intent surfaces straight to sales, nothing slips.",
+    Icon: IdCard,
   },
   {
     n: "04",
     title: "Marketing & subscribers",
-    body: "Capture subscribers, send campaigns, and track sign-ups, opens, and clicks — tied to the same customer record.",
-    glyph: "marketing",
+    body:
+      "Capture subscribers, send campaigns, track opens and clicks — tied to the same customer record.",
+    Icon: Mail,
   },
 ];
 
@@ -44,26 +53,48 @@ export function Pillars() {
     <section
       id="pillars"
       className="relative py-28 px-8"
-      style={{ background: "var(--bg)" }}
+      style={{ background: "#0A0A0B" }}
     >
-      <div className="max-w-6xl mx-auto flex flex-col gap-12">
-        {/* Header: kicker + optional short section headline */}
+      <div className="max-w-6xl mx-auto flex flex-col gap-14">
+        {/* Section header — kicker + headline + subcopy tying the
+            pillars back to Maya's journey through the scroll story. */}
         <div className="flex flex-col gap-4 max-w-2xl">
           <div className="text-xs font-mono uppercase tracking-widest text-acid">
             &gt; WHAT BASE360 DOES
           </div>
-          <h2 className="font-display text-4xl leading-[1.05] font-bold text-text-hi tracking-tight">
+          <h2
+            className="font-display font-bold tracking-tight"
+            style={{
+              color: "var(--text-hi)",
+              fontSize: 34,
+              lineHeight: 1.1,
+              letterSpacing: "-0.015em",
+            }}
+          >
             One system. Four jobs.
           </h2>
+          <p
+            className="text-base leading-relaxed"
+            style={{ color: "var(--text-lo)" }}
+          >
+            Every comment Maya sent traveled through all four —
+            automatically.
+          </p>
         </div>
 
-        {/* Four columns. Each has a 1px acid top rule as the only accent,
-            then a monochrome glyph, mono number, grotesk title, muted body.
-            Even spacing across all four so the scope reads as one set. */}
-        <div className="grid grid-cols-4 gap-8">
-          {PILLARS.map((p) => (
-            <PillarCard key={p.n} pillar={p} />
-          ))}
+        {/* Cards + connector. The dashed acid line is absolute-
+            positioned across the whole grid at card mid-height so
+            it visually threads through every card (behind them).
+            The corner brackets sit at the OUTERMOST corners of the
+            first and last card, framing the group as one unit. */}
+        <div className="relative">
+          <DashedConnector />
+          <CornerBrackets />
+          <div className="relative grid grid-cols-4 gap-4">
+            {PILLARS.map((p) => (
+              <PillarCard key={p.n} pillar={p} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -71,80 +102,163 @@ export function Pillars() {
 }
 
 function PillarCard({ pillar }: { pillar: Pillar }) {
+  const { Icon } = pillar;
   return (
-    <div className="relative flex flex-col gap-4 pt-5">
-      {/* Thin acid rule — the sole accent per card */}
-      <div
-        aria-hidden
-        className="absolute top-0 left-0"
-        style={{
-          width: 28,
-          height: 2,
-          background: "var(--acid)",
-          boxShadow: "0 0 8px rgba(223,255,0,0.35)",
-        }}
-      />
-      <div className="flex items-center justify-between">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-acid">
+    <div
+      className="relative flex flex-col gap-5 h-full"
+      style={{
+        background: "#111114",
+        border: "1px solid rgba(255,255,255,0.09)",
+        borderRadius: 14,
+        padding: "20px 22px 24px",
+      }}
+    >
+      {/* Header row — acid mono number left, acid Lucide icon right.
+          zIndex 1 lifts the row above the dashed connector so both
+          the number and the icon read cleanly on the card. */}
+      <div className="relative flex items-center justify-between" style={{ zIndex: 1 }}>
+        <span
+          className="text-[11px] font-mono uppercase tracking-widest font-bold"
+          style={{
+            color: "var(--acid)",
+            textShadow: "0 0 10px rgba(223,255,0,0.28)",
+          }}
+        >
           {pillar.n}
         </span>
-        <PillarGlyph kind={pillar.glyph} />
+        <Icon
+          size={24}
+          strokeWidth={1.2}
+          color="#DFFF00"
+          style={{
+            filter:
+              "drop-shadow(0 0 6px rgba(223,255,0,0.55)) drop-shadow(0 0 14px rgba(223,255,0,0.22))",
+          }}
+          aria-hidden
+        />
       </div>
-      <h3 className="font-display text-xl leading-tight font-bold text-text-hi tracking-tight">
-        {pillar.title}
-      </h3>
-      <p className="text-sm text-text-lo leading-relaxed">
-        {pillar.body}
-      </p>
+      <div className="flex flex-col gap-2">
+        <h3
+          className="font-display font-bold whitespace-nowrap"
+          style={{
+            color: "var(--text-hi)",
+            fontSize: 16,
+            lineHeight: 1.25,
+            letterSpacing: "-0.005em",
+          }}
+        >
+          {pillar.title}
+        </h3>
+        <p
+          className="text-[13px] leading-snug"
+          style={{ color: "var(--text-lo)" }}
+        >
+          {pillar.body}
+        </p>
+      </div>
     </div>
   );
 }
 
-// Small monochrome outline glyphs — subtle, no colour cast, no acid.
-// Each one is a visual rhyme with the corresponding surface from the
-// scroll-story: inbox row / agent node / crm record / marketing funnel.
-function PillarGlyph({ kind }: { kind: Pillar["glyph"] }) {
-  const stroke = "rgba(255, 255, 255, 0.35)";
-  const strokeWidth = 1.25;
-  const size = 26;
-  switch (kind) {
-    case "inbox":
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-          <rect x="3" y="4" width="18" height="16" rx="2" stroke={stroke} strokeWidth={strokeWidth} />
-          <path d="M3 12 L9 12 L11 15 L13 15 L15 12 L21 12" stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round" />
-        </svg>
-      );
-    case "agent":
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-          <circle cx="12" cy="12" r="3.5" stroke={stroke} strokeWidth={strokeWidth} />
-          <circle cx="12" cy="12" r="8.5" stroke={stroke} strokeWidth={strokeWidth} strokeDasharray="1.5 2.2" />
-          <circle cx="12" cy="3" r="1" fill={stroke} />
-          <circle cx="21" cy="12" r="1" fill={stroke} />
-          <circle cx="12" cy="21" r="1" fill={stroke} />
-          <circle cx="3" cy="12" r="1" fill={stroke} />
-        </svg>
-      );
-    case "crm":
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-          <rect x="3" y="4" width="18" height="16" rx="2" stroke={stroke} strokeWidth={strokeWidth} />
-          <path d="M3 9 L21 9" stroke={stroke} strokeWidth={strokeWidth} />
-          <path d="M7 13 L17 13" stroke={stroke} strokeWidth={strokeWidth} />
-          <path d="M7 16.5 L14 16.5" stroke={stroke} strokeWidth={strokeWidth} />
-          <circle cx="5" cy="14.5" r="1.1" fill={stroke} />
-        </svg>
-      );
-    case "marketing":
-      return (
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
-          <path d="M4 20 L4 12" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" />
-          <path d="M9 20 L9 8" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" />
-          <path d="M14 20 L14 14" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" />
-          <path d="M19 20 L19 5" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" />
-          <path d="M3 4 L21 4" stroke={stroke} strokeWidth={strokeWidth} strokeDasharray="1.4 1.4" opacity={0.6} />
-        </svg>
-      );
-  }
+// Dashed acid connector line — absolute, spans the full grid width,
+// sits at the card header's vertical middle so it threads visually
+// through every icon row. Uses a repeating-linear-gradient (rather
+// than SVG dash) so the dash pattern renders at any width without
+// aliasing. Half-opacity acid so it doesn't compete with the icons
+// themselves, subtle glow so it still reads as "live" acid.
+function DashedConnector() {
+  return (
+    <div
+      aria-hidden
+      className="absolute left-0 right-0 pointer-events-none"
+      style={{
+        top: 42,
+        height: 1,
+        background:
+          "repeating-linear-gradient(to right, rgba(223,255,0,0.5) 0 8px, transparent 8px 16px)",
+        boxShadow: "0 0 8px rgba(223,255,0,0.22)",
+        zIndex: 0,
+      }}
+    />
+  );
+}
+
+// Small acid L-brackets on the four outermost corners of the group
+// (top-left of card-1, top-right of card-4, bottom-left of card-1,
+// bottom-right of card-4). Purely framing chrome — signals "this is
+// one unit" without adding weight. 7 px arms, 1 px thick.
+function CornerBrackets() {
+  const arm = 8;
+  const thick = 1;
+  const offset = -6;
+  const acid = "#DFFF00";
+  const glow = "0 0 6px rgba(223,255,0,0.5)";
+  return (
+    <>
+      <Bracket
+        style={{ top: offset, left: offset }}
+        lines={[
+          { top: 0, left: 0, width: arm, height: thick },
+          { top: 0, left: 0, width: thick, height: arm },
+        ]}
+        color={acid}
+        glow={glow}
+      />
+      <Bracket
+        style={{ top: offset, right: offset }}
+        lines={[
+          { top: 0, right: 0, width: arm, height: thick },
+          { top: 0, right: 0, width: thick, height: arm },
+        ]}
+        color={acid}
+        glow={glow}
+      />
+      <Bracket
+        style={{ bottom: offset, left: offset }}
+        lines={[
+          { bottom: 0, left: 0, width: arm, height: thick },
+          { bottom: 0, left: 0, width: thick, height: arm },
+        ]}
+        color={acid}
+        glow={glow}
+      />
+      <Bracket
+        style={{ bottom: offset, right: offset }}
+        lines={[
+          { bottom: 0, right: 0, width: arm, height: thick },
+          { bottom: 0, right: 0, width: thick, height: arm },
+        ]}
+        color={acid}
+        glow={glow}
+      />
+    </>
+  );
+}
+
+function Bracket({
+  style,
+  lines,
+  color,
+  glow,
+}: {
+  style: React.CSSProperties;
+  lines: React.CSSProperties[];
+  color: string;
+  glow: string;
+}) {
+  return (
+    <div
+      aria-hidden
+      className="absolute pointer-events-none"
+      style={{ ...style, width: 10, height: 10, zIndex: 2 }}
+    >
+      {lines.map((l, i) => (
+        <div
+          key={i}
+          className="absolute"
+          style={{ ...l, background: color, boxShadow: glow }}
+        />
+      ))}
+    </div>
+  );
 }
