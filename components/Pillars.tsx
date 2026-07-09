@@ -68,7 +68,7 @@ export function Pillars() {
               letterSpacing: "-0.015em",
             }}
           >
-            One system. Four jobs.
+            What Base360 runs.
           </h2>
           <p
             className="text-base leading-relaxed"

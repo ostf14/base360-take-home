@@ -14,15 +14,12 @@ export function CtaClose() {
       <div className="max-w-6xl mx-auto grid grid-cols-2 gap-16 items-center relative z-10">
         <div className="flex flex-col gap-6">
           <h2 className="font-display text-6xl leading-[0.98] font-bold text-text-hi tracking-tight">
-            One comment.
+            Closed —
             <br />
-            <span className="text-acid">Every channel.</span>
-            <br />
-            Closed — automatically.
+            <span className="text-acid">automatically.</span>
           </h2>
           <p className="text-text-lo text-lg max-w-md">
-            Join the waitlist for Base360. We're onboarding design partners now
-            — first customers pay the first-customer price.
+            Join the waitlist — design partners get first-customer pricing.
           </p>
         </div>
 

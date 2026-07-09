@@ -54,7 +54,7 @@ export function Comparison() {
               letterSpacing: "-0.015em",
             }}
           >
-            Not five tools. One system.
+            Ten tools, or one.
           </h2>
         </div>
 

@@ -1,5 +1,4 @@
 import { Nav } from "@/components/Nav";
-import { Problem } from "@/components/Problem";
 import { Hero } from "@/components/hero/Hero";
 import { Pillars } from "@/components/Pillars";
 import { Comparison } from "@/components/Comparison";
@@ -16,7 +15,6 @@ export default function Page() {
         <div id="story">
           <Hero />
         </div>
-        <Problem />
         <Pillars />
         <Comparison />
         <Credibility />

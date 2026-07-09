@@ -28,7 +28,7 @@ export function Credibility() {
       className="relative py-24 px-8"
       style={{ background: "var(--bg)" }}
     >
-      <div className="max-w-4xl mx-auto flex flex-col gap-14">
+      <div className="max-w-6xl mx-auto flex flex-col gap-14">
         {/* Honest placeholder note — top-right corner. Very small,
             very muted, mono — a signal that these logos and portraits
             are intentional stand-ins, not broken assets. */}
