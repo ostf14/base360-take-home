@@ -146,17 +146,20 @@ export function Canvas({
 
   return (
     <div className="relative h-full w-full">
-      {/* Centered canvas box — same horizontal center as the hero phone
-          so the hero → ch01 slide is pure vertical continuity. Width is
-          capped so the wider window surfaces (CRM, Call, Email, System)
-          center at viewport-middle instead of filling the entire right
-          side. Phone surfaces (PhoneShell = 320 px) center themselves
-          within this same box; the phone visually sits at viewport
-          center regardless of which surface owns the frame. */}
+      {/* Centered canvas box — same horizontal center as the hero
+          phone so the hero → ch01 slide is pure vertical continuity.
+          Width bumped to 1080 px so the wide window surfaces (CRM,
+          Call, Email, System) have room for their labels on one
+          line each — the previous 720 px was forcing "Maya R." /
+          "Voice callback on intent" / "Source · TikTok comment" /
+          "Cart link delivered" to wrap. Phone surfaces
+          (PhoneShell = 320 px) still center themselves inside this
+          box, so the phone visually sits at viewport center
+          regardless of which surface owns the frame. */}
       <div
         ref={canvasBoxRef}
         className="relative h-full mx-auto"
-        style={{ maxWidth: 720, width: "100%" }}
+        style={{ maxWidth: 1080, width: "100%" }}
       >
         <SurfaceSlot state={surfaceState(t, 0, TOTAL)}>
           <TikTokSurface

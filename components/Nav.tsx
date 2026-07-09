@@ -1,25 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
 
+// Transparent floating nav. No background plate and no bottom border,
+// even when the page is scrolled — the story surfaces slide beneath
+// the nav row (BASE360 wordmark, links, CTA) without ever being
+// clipped by a nav strip. The nav still holds z-50 so its content
+// stays clickable above the sticky story frame.
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 32);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "backdrop-blur-md" : ""
-      }`}
-      style={{
-        background: scrolled ? "rgba(10,10,11,0.6)" : "transparent",
-        borderBottom: scrolled ? "1px solid var(--hairline)" : "1px solid transparent",
-      }}
+      className="fixed top-0 left-0 right-0 z-50"
+      style={{ background: "transparent" }}
     >
       <div className="flex items-center justify-between px-8 py-4">
         <div className="flex items-center gap-3">

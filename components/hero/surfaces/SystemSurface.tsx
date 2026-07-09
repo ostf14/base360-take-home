@@ -7,7 +7,7 @@ interface Props {
   anchorRef: React.RefObject<HTMLDivElement>;
 }
 
-interface Node {
+interface MapNode {
   key: string;
   label: string;
   x: number;
@@ -20,7 +20,7 @@ interface Node {
 // through, now laid out flat on one map. Each node echoes its surface's shell
 // (phone silhouette / window silhouette / naked call ring) so the eye reads
 // "these five environments become one thread."
-const NODES: Node[] = [
+const NODES: MapNode[] = [
   { key: "tiktok", label: "TIKTOK", x: 15, y: 30, sub: "comment", shell: "phone" },
   { key: "dm",     label: "DM",     x: 34, y: 15, sub: "conversation", shell: "phone" },
   { key: "crm",    label: "CRM",    x: 52, y: 42, sub: "record", shell: "window" },
@@ -29,42 +29,46 @@ const NODES: Node[] = [
   { key: "closed", label: "CLOSED · $32", x: 55, y: 76, sub: "won", shell: "closed" },
 ];
 
-// Approximate label footprint in viewBox units (viewBox is 100×100 with
-// preserveAspectRatio="none" so x units are ~% of container width and y
-// units are ~% of container height). The label box is roughly 60×22 CSS
-// px on a typical 800×500 map, i.e. ~3.75 x-units by ~2.2 y-units around
-// the center. Rounded up a hair for gap: rx=5, ry=3.
-const NODE_RX = 5;
-const NODE_RY = 3;
+// Catmull-Rom → cubic-Bezier conversion. Produces ONE continuous
+// smooth path through every node in order — no sharp joints, no
+// zig-zag polyline. Endpoint tangents are computed by duplicating
+// the outer points so the first and last curves ease-out cleanly.
+// Tension divisor 6 gives a gentle winding shape; smaller values
+// produce tighter loops, larger values a straighter line.
+function smoothPath(points: [number, number][]): string {
+  const n = points.length;
+  if (n < 2) return "";
+  const T = 6;
+  const cmds: string[] = [
+    `M ${points[0][0].toFixed(2)} ${points[0][1].toFixed(2)}`,
+  ];
+  for (let i = 0; i < n - 1; i++) {
+    const p0 = points[Math.max(i - 1, 0)];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[Math.min(i + 2, n - 1)];
+    const cp1x = p1[0] + (p2[0] - p0[0]) / T;
+    const cp1y = p1[1] + (p2[1] - p0[1]) / T;
+    const cp2x = p2[0] - (p3[0] - p1[0]) / T;
+    const cp2y = p2[1] - (p3[1] - p1[1]) / T;
+    cmds.push(
+      `C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`,
+    );
+  }
+  return cmds.join(" ");
+}
 
 export function SystemSurface({ progress, anchorRef }: Props) {
-  // Draw FIVE independent segments (one per adjacent-node pair) instead
-  // of a single continuous polyline through node centers. Each segment
-  // ends at the ellipse-boundary approximation around each node, so the
-  // acid line meets every label at its edge cleanly — no stray tails
-  // poking past the boxes, no line disappearing into label centers only
-  // to re-emerge on the other side. Written into ONE motion.path so the
-  // pathLength draw-in animation still runs sequentially through the
-  // whole route from TikTok → Closed.
-  const pathD = NODES.slice(0, -1)
-    .map((a, i) => {
-      const b = NODES[i + 1];
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const len = Math.hypot(dx, dy);
-      if (len === 0) return "";
-      const ux = dx / len;
-      const uy = dy / len;
-      // Distance from center to ellipse boundary along (ux, uy).
-      const inv = Math.sqrt((ux / NODE_RX) ** 2 + (uy / NODE_RY) ** 2);
-      const t = inv === 0 ? 0 : 1 / inv;
-      const x1 = a.x + ux * t;
-      const y1 = a.y + uy * t;
-      const x2 = b.x - ux * t;
-      const y2 = b.y - uy * t;
-      return `M ${x1.toFixed(2)} ${y1.toFixed(2)} L ${x2.toFixed(2)} ${y2.toFixed(2)}`;
-    })
-    .join(" ");
+  // One continuous smooth curve threading every node in order.
+  // Because it's a single path, the mask below can reveal it from
+  // start to finish as a single monotonic operation tied to the
+  // chapter's scroll progress — the lead's path traces through
+  // TikTok → DM → CRM → AI Call → Email → CLOSED in order.
+  const pathD = smoothPath(NODES.map((n) => [n.x, n.y] as [number, number]));
+  // Reveal 0 → 1 across the chapter. Slight *1.1 so the last
+  // stretch completes just before the chapter boundary — feels
+  // more decisive than trailing to the very last frame.
+  const revealOffset = 1 - Math.min(1, Math.max(0, progress * 1.1));
 
   return (
     <div className="absolute inset-0 p-6 pt-12 flex">
@@ -113,10 +117,16 @@ export function SystemSurface({ progress, anchorRef }: Props) {
           }}
         />
 
-        {/* Connector polyline — ONE lead path through every
-            environment. This is the payoff frame, so the path is the
-            acid accent: a continuous glowing line that draws in as
-            `progress` advances, ending at the CLOSED node. */}
+        {/* Smooth winding funnel — ONE continuous curve threading
+            every environment in order. Two layers, both dashed:
+              (1) faint full-length base — always visible so the
+                  route reads even before the reveal has drawn.
+              (2) bright reveal — dashed acid stroke unmasked
+                  progressively via a growing white mask stroke.
+            The mask stroke uses pathLength=1 + strokeDasharray "1 1"
+            so its offset animates 1 → 0 to reveal the visible dashed
+            path from the first node to the last, tied to the
+            chapter's own scroll progress. */}
         <svg
           aria-hidden
           className="absolute inset-0 pointer-events-none"
@@ -127,30 +137,55 @@ export function SystemSurface({ progress, anchorRef }: Props) {
             filter: "drop-shadow(0 0 5px rgba(223, 255, 0, 0.55))",
           }}
         >
-          {/* Faint full-length base so the route is legible even before
-              the animated stroke has drawn all the way through. */}
+          <defs>
+            <mask
+              id="funnel-reveal"
+              maskUnits="userSpaceOnUse"
+              maskContentUnits="userSpaceOnUse"
+              x="-10"
+              y="-10"
+              width="120"
+              height="120"
+            >
+              <rect x="-10" y="-10" width="120" height="120" fill="black" />
+              <path
+                d={pathD}
+                fill="none"
+                stroke="white"
+                strokeWidth={5}
+                pathLength={1}
+                strokeDasharray="1 1"
+                strokeDashoffset={revealOffset}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+            </mask>
+          </defs>
+          {/* Faint dashed base — always visible so the eye reads the
+              full path before the reveal has drawn through it. */}
           <path
             d={pathD}
             fill="none"
-            stroke="rgba(223, 255, 0, 0.18)"
-            strokeWidth={0.6}
+            stroke="rgba(223, 255, 0, 0.2)"
+            strokeWidth={0.7}
+            strokeDasharray="1.6 1.6"
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          <motion.path
+          {/* Bright dashed reveal — visible only where the mask stroke
+              draws white, which grows monotonically with `progress`. */}
+          <path
             d={pathD}
             fill="none"
             stroke="var(--acid)"
-            strokeWidth={1.1}
+            strokeWidth={1.4}
+            strokeDasharray="2.2 2.2"
             vectorEffect="non-scaling-stroke"
             strokeLinecap="round"
             strokeLinejoin="round"
-            initial={{ pathLength: 0 }}
-            animate={{
-              pathLength: Math.max(0, Math.min(1, progress * 1.2)),
-            }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
+            mask="url(#funnel-reveal)"
           />
         </svg>
 
@@ -248,7 +283,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
 
 // Little grey silhouette that echoes the shell used on that node's surface.
 // Not clickable, not styled as a control — just a visual rhyme.
-function ShellGlyph({ shell }: { shell: Node["shell"] }) {
+function ShellGlyph({ shell }: { shell: MapNode["shell"] }) {
   if (shell === "phone") {
     return (
       <div
