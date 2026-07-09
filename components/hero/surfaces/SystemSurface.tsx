@@ -1,5 +1,12 @@
 "use client";
 import { motion } from "framer-motion";
+import {
+  createRef,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { MayaAnchor } from "../MayaOverlay";
 
 interface Props {
@@ -29,15 +36,10 @@ const NODES: MapNode[] = [
   { key: "closed", label: "CLOSED · $32", x: 55, y: 76, sub: "won", shell: "closed" },
 ];
 
-// Straight polyline through every node center in order. One
-// continuous path — no separate segments — so the reveal mask
-// below can draw it monotonically from TikTok to CLOSED as scroll
-// progress advances. Straight-but-accurate beats curved-but-
-// missing: with the earlier Catmull-Rom pass the curve was
-// wandering past the labels between nodes; a polyline lands each
-// endpoint exactly on the node center, and the labels' opaque
-// backgrounds cover the segment of line that crosses beneath them.
-function polylinePath(points: [number, number][]): string {
+// Straight polyline through every node center in order. Endpoints
+// come from measured DOM refs, not hardcoded coords, so each
+// segment lands exactly on the actual rendered node box center.
+function polylinePath(points: Array<[number, number]>): string {
   if (points.length < 2) return "";
   return points
     .map(
@@ -48,12 +50,48 @@ function polylinePath(points: [number, number][]): string {
 }
 
 export function SystemSurface({ progress, anchorRef }: Props) {
-  // Straight-line polyline threading every node in order. Because
-  // it's one continuous path, the mask below reveals it from start
-  // to finish as a single monotonic operation tied to the chapter's
-  // scroll progress — the lead's path draws through TikTok → DM →
-  // CRM → AI Call → Email → CLOSED in order.
-  const pathD = polylinePath(NODES.map((n) => [n.x, n.y] as [number, number]));
+  const containerRef = useRef<HTMLDivElement>(null);
+  // One ref per node — attached to the 0 × 0 marker div positioned
+  // at each node's canonical (x %, y %) coordinate. Because that
+  // marker sits at the same point the label box centers itself on,
+  // its bounding rect origin IS the node's visible center.
+  const nodeRefs = useMemo(
+    () =>
+      Array.from({ length: NODES.length }, () =>
+        createRef<HTMLDivElement>(),
+      ),
+    [],
+  );
+  // Node centers in viewBox (0..100) space, measured from the DOM.
+  // Empty until the first useLayoutEffect pass runs after mount,
+  // at which point the funnel path picks them up and renders
+  // touching every node box. Re-measured on every window resize.
+  const [points, setPoints] = useState<Array<[number, number]>>([]);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const container = containerRef.current;
+      if (!container) return;
+      const c = container.getBoundingClientRect();
+      if (!c.width || !c.height) return;
+      const next: Array<[number, number]> = nodeRefs.map((ref) => {
+        const el = ref.current;
+        if (!el) return [50, 50];
+        const r = el.getBoundingClientRect();
+        // The marker div is 0 × 0 at the label's visual center, so
+        // rect.left / rect.top IS the center in viewport pixels.
+        const cx = r.left + r.width / 2 - c.left;
+        const cy = r.top + r.height / 2 - c.top;
+        return [(cx / c.width) * 100, (cy / c.height) * 100];
+      });
+      setPoints(next);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [nodeRefs]);
+
+  const pathD = polylinePath(points);
   // Reveal 0 → 1 across the chapter. Slight *1.1 so the last
   // stretch completes just before the chapter boundary — feels
   // more decisive than trailing to the very last frame.
@@ -62,6 +100,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
   return (
     <div className="absolute inset-0 px-6 pt-24 pb-16 flex">
       <div
+        ref={containerRef}
         className="relative flex-1 rounded-2xl overflow-hidden"
         style={{
           background: "var(--surface-panel)",
@@ -178,19 +217,28 @@ export function SystemSurface({ progress, anchorRef }: Props) {
           />
         </svg>
 
-        {/* Nodes. The LABEL is the primary element and sits dead-center
-            on (n.x, n.y) so the connector path meets each node exactly
-            at its opaque box. The shell-glyph echo and the sub caption
-            are absolute-positioned above / below the label so they
-            don't shift the label off center. */}
+        {/* Nodes. Each outer marker div is a 0 × 0 point at (n.x %,
+            n.y %) — the useLayoutEffect above measures its
+            getBoundingClientRect to derive the funnel line's segment
+            endpoints, so the connector always lands on the actual
+            rendered label box centers. The visible label sits
+            inside via `transform: translate(-50%, -50%)` so its
+            center is at that same point; shell glyph + sub caption
+            are absolute siblings above / below and don't shift it. */}
         {NODES.map((n, i) => {
           const revealed = progress > i / NODES.length - 0.05;
           const isClosed = n.key === "closed";
           return (
             <div
               key={n.key}
+              ref={nodeRefs[i]}
               className="absolute"
-              style={{ left: `${n.x}%`, top: `${n.y}%` }}
+              style={{
+                left: `${n.x}%`,
+                top: `${n.y}%`,
+                width: 0,
+                height: 0,
+              }}
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.92 }}

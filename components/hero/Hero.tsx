@@ -110,14 +110,13 @@ export function Hero() {
             Fades out with the rest of the hero. */}
         <HeroGlow heroOpacity={heroOpacity} />
 
-        {/* GIANT HEADLINE — hero only, near the top of the viewport.
-            Fades and shrinks slightly at the boundary. Sits just
-            below the nav (pt-16) so both lines — "Next buyer
-            commented" AND "Nobody replied" — clear the phone's top
-            edge on typical desktop viewports without needing to
-            shrink the type dramatically. */}
+        {/* GIANT HEADLINE — hero only. pt-24 puts a comfortable gap
+            below the nav; the (bigger) type from GiantHeadline
+            reaches down far enough that the phone's top edge
+            covers roughly the bottom third of "Nobody replied" —
+            the rest of both lines stays legible above. */}
         <motion.div
-          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-16 z-10"
+          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-24 z-10"
           style={{
             opacity: heroOpacity,
             scale: heroScale,
@@ -250,18 +249,17 @@ function CornerLabels({
   );
 }
 
-// Two-line heavy uppercase grotesk, tight leading. Font size is
-// clamped by BOTH viewport width and height (via min(6vw, 9vh))
-// so on short-height desktops (1440 × 768) the type shrinks with
-// the viewport instead of growing off the top of the phone — the
-// second line ("Nobody replied") stays fully readable above the
-// rising phone's top edge without a large size reduction elsewhere.
+// Two-line heavy uppercase grotesk, tight leading. Bumped up from
+// the earlier size so the second line ("Nobody replied") extends
+// far enough down that the rising phone's top edge covers roughly
+// its bottom third at a typical desktop viewport — the majority of
+// both lines still reads clearly above the phone.
 function GiantHeadline() {
   return (
     <div
       className="flex flex-col items-center gap-1 font-display font-bold uppercase"
       style={{
-        fontSize: "clamp(48px, min(6vw, 9vh), 96px)",
+        fontSize: "clamp(64px, 10vw, 136px)",
         lineHeight: 0.9,
         letterSpacing: "-0.02em",
       }}
