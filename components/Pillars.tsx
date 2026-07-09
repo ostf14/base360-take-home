@@ -56,12 +56,9 @@ export function Pillars() {
       style={{ background: "#0A0A0B" }}
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-14">
-        {/* Section header — kicker + headline + subcopy tying the
-            pillars back to Maya's journey through the scroll story. */}
+        {/* Section header — headline + subcopy tying the pillars
+            back to Maya's journey through the scroll story. */}
         <div className="flex flex-col gap-4 max-w-2xl">
-          <div className="text-xs font-mono uppercase tracking-widest text-acid">
-            &gt; WHAT BASE360 DOES
-          </div>
           <h2
             className="font-display font-bold tracking-tight"
             style={{

@@ -42,12 +42,9 @@ export function Comparison() {
       style={{ background: "#0A0A0B" }}
     >
       <div className="max-w-6xl mx-auto flex flex-col gap-14">
-        {/* Section header — kicker + headline. Subcopy intentionally
+        {/* Section header — headline only. Subcopy intentionally
             omitted so the visual contrast below carries the message. */}
         <div className="flex flex-col gap-4 max-w-2xl">
-          <div className="text-xs font-mono uppercase tracking-widest text-acid">
-            &gt; THE DIFFERENCE
-          </div>
           <h2
             className="font-display font-bold tracking-tight"
             style={{

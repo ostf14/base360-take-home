@@ -11,11 +11,9 @@ export function Problem() {
       style={{ background: "var(--bg)" }}
     >
       <div className="max-w-6xl mx-auto grid grid-cols-2 gap-16 items-center">
-        {/* Left column — kicker + headline + subcopy */}
+        {/* Left column — headline + subcopy. Kicker removed to
+            reduce section-chrome noise across the marketing blocks. */}
         <div className="flex flex-col gap-6">
-          <div className="text-xs font-mono uppercase tracking-widest text-acid">
-            &gt; THE PROBLEM
-          </div>
           <h2 className="font-display text-5xl leading-[1.02] font-bold text-text-hi tracking-tight">
             Buried in messages.
             <br />
