@@ -11,9 +11,6 @@ export function CtaClose() {
       className="relative py-40 px-8 overflow-hidden"
       style={{ background: "var(--bg)" }}
     >
-      {/* Pixel-stepped acid slab bleeding in from the right, FEDORIV-style */}
-      <PixelSlab />
-
       <div className="max-w-6xl mx-auto grid grid-cols-2 gap-16 items-center relative z-10">
         <div className="flex flex-col gap-6">
           <h2 className="font-display text-6xl leading-[0.98] font-bold text-text-hi tracking-tight">
@@ -77,30 +74,5 @@ export function CtaClose() {
         </form>
       </div>
     </section>
-  );
-}
-
-function PixelSlab() {
-  // A stepped, pixelated chartreuse block bleeding from the right edge —
-  // the FEDORIV move. Purely decorative.
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="absolute -right-20 top-1/2 -translate-y-1/2 flex flex-col gap-0">
-        {Array.from({ length: 12 }).map((_, i) => {
-          const w = 160 + Math.abs(6 - i) * 24;
-          return (
-            <div
-              key={i}
-              className="h-6"
-              style={{
-                width: w,
-                background: "var(--acid)",
-                opacity: 0.08 + (i % 3) * 0.02,
-              }}
-            />
-          );
-        })}
-      </div>
-    </div>
   );
 }
