@@ -318,31 +318,27 @@ function TypedLine({ text, show }: { text: string; show: boolean }) {
   );
 }
 
-// The "system noticed this" annotation. An intentionally-imperfect
-// ellipse — asymmetric Bezier control points, slight tilt, path arcs
-// pushed WELL past the SVG viewBox so the loop sweeps loosely around
-// Maya's row with real air on every side. The path finishes past its
-// start point with a small sweeping tail — reads like a marker circle
-// where the artist over-shot the closing stroke on purpose. Traced in
-// acid, 3 CSS px non-scaling-stroke, drop-shadow glow, drawn in over
-// ~1.4 s via pathLength shortly after mount. Fades to 0 once the
-// chapter-01 ignite kicks in so it doesn't stack with the highlight
-// border that appears above.
+// The "system noticed this" annotation. A CLOSED, neat-but-slightly-
+// irregular ellipse traced in acid — asymmetric Bezier control points
+// (12 vs 190 on the sides, 4 vs 54 top vs bottom), slight -1.2° tilt.
+// Wraps snugly around Maya's row with just a hair of air. Drawn in
+// over ~1.2 s shortly after mount via pathLength; vector-effect keeps
+// the stroke at 2.5 CSS px regardless of how much the SVG stretches.
+// Closed with Z — no long gaps, no stray tail — a complete loop.
+// Fades to 0 once the chapter-01 ignite kicks in so it doesn't stack
+// with the acid highlight border that appears above.
 function HandDrawnCircle({ active }: { active: boolean }) {
   return (
     <motion.svg
       aria-hidden
       className="absolute pointer-events-none"
       style={{
-        // Push the SVG bounds well past the row — the path itself then
-        // arcs even further past those bounds thanks to overflow: visible,
-        // so the loop reads as a big loose sweep instead of hugging text.
-        top: -18,
-        left: -26,
-        right: -28,
-        bottom: -14,
+        top: -8,
+        left: -12,
+        right: -14,
+        bottom: -6,
         overflow: "visible",
-        transform: "rotate(-1.6deg)",
+        transform: "rotate(-1.2deg)",
       }}
       viewBox="0 0 200 60"
       preserveAspectRatio="none"
@@ -351,18 +347,18 @@ function HandDrawnCircle({ active }: { active: boolean }) {
       transition={{ duration: 0.35 }}
     >
       <motion.path
-        d="M 6 34 C -10 12, 42 -8, 100 -7 C 172 -10, 216 8, 208 30 C 220 56, 148 66, 100 60 C 34 68, -14 52, 6 34 C 4 30, 14 24, 30 26"
+        d="M 10 32 C 6 14, 44 4, 100 4 C 158 3, 194 12, 190 32 C 195 50, 150 56, 100 54 C 44 56, 6 46, 10 32 Z"
         fill="none"
         stroke="var(--acid)"
-        strokeWidth={3}
+        strokeWidth={2.5}
         strokeLinecap="round"
         strokeLinejoin="round"
         vectorEffect="non-scaling-stroke"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
-        transition={{ duration: 1.4, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
         style={{
-          filter: "drop-shadow(0 0 6px rgba(223, 255, 0, 0.55))",
+          filter: "drop-shadow(0 0 5px rgba(223, 255, 0, 0.5))",
         }}
       />
     </motion.svg>

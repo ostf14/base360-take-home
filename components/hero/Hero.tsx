@@ -169,26 +169,80 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Bottom captions — pinned to the viewport corners, fade with hero. */}
+        {/* SOLUTION LINE. Sits centered, floating in the gap between the
+            headline and the top of the rising phone — bridges the pain
+            statement above with the phone below. Rendered AFTER the phone
+            in JSX so it paints in front, never buried behind the device.
+            A subtle dark scrim + backdrop-blur keeps the text legible
+            even when the vertical band crosses the phone's bezel/screen. */}
+        <motion.div
+          className="absolute inset-x-0 pointer-events-none flex justify-center px-6"
+          style={{
+            top: "29vh",
+            opacity: heroOpacity,
+            zIndex: 20,
+          }}
+        >
+          <div
+            className="rounded-lg px-6 py-3 flex flex-col items-center gap-1.5"
+            style={{
+              background: "rgba(10, 10, 11, 0.55)",
+              backdropFilter: "blur(6px)",
+              WebkitBackdropFilter: "blur(6px)",
+              border: "1px solid rgba(255, 255, 255, 0.06)",
+            }}
+          >
+            <div
+              className="font-display font-medium text-center leading-tight whitespace-nowrap"
+              style={{
+                color: "var(--text-hi)",
+                fontSize: "clamp(18px, 1.8vw, 24px)",
+                letterSpacing: "-0.005em",
+              }}
+            >
+              Base360 catches every comment
+            </div>
+            <div
+              className="font-mono uppercase text-center font-bold"
+              style={{
+                color: "var(--acid)",
+                fontSize: "clamp(10px, 0.95vw, 12px)",
+                letterSpacing: "0.22em",
+                textShadow: "0 0 12px rgba(223, 255, 0, 0.4)",
+              }}
+            >
+              Watch ↓
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Bottom corner marks — no text, just two 12 × 12 outlined
+            squares that mirror the inactive-stepper node style. Purely
+            visual balance for the corners; the pain-and-solution
+            copy already lives in the headline + solution line above. */}
         <motion.div
           className="absolute bottom-8 left-0 right-0 flex items-center justify-between px-10 pointer-events-none"
           style={{ opacity: heroOpacity }}
         >
-          <span className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
-            one system · every conversation
-          </span>
-          <span
-            className="text-[10px] font-mono uppercase tracking-widest font-bold"
-            style={{
-              color: "var(--acid)",
-              textShadow: "0 0 12px rgba(223,255,0,0.32)",
-            }}
-          >
-            see what should&apos;ve happened ↓
-          </span>
+          <CornerSquare />
+          <CornerSquare />
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function CornerSquare() {
+  return (
+    <div
+      aria-hidden
+      style={{
+        width: 12,
+        height: 12,
+        background: "var(--bg)",
+        border: "1px solid var(--hairline)",
+      }}
+    />
   );
 }
 
@@ -213,13 +267,13 @@ function GiantHeadline() {
           textShadow: "0 0 40px rgba(223,255,0,0.32)",
         }}
       >
-        Next buyer commented.
+        Next buyer commented
       </div>
       <div
         className="whitespace-nowrap"
         style={{ color: "var(--text-hi)" }}
       >
-        Nobody replied.
+        Nobody replied
       </div>
     </div>
   );
