@@ -260,7 +260,7 @@ function GiantHeadline() {
     <div
       className="flex flex-col items-center gap-1 font-display font-bold uppercase"
       style={{
-        fontSize: "clamp(48px, min(6vw, 9vh), 96px)",
+        fontSize: "clamp(50px, min(6.4vw, 9.5vh), 100px)",
         lineHeight: 0.9,
         letterSpacing: "-0.02em",
       }}
