@@ -78,49 +78,6 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               <div className="text-[13px] text-text-hi leading-snug">
                 how much is this? <span>😍</span>
               </div>
-              {/* AI public reply — this is the key beat: the brand
-                  replied to her in public. Reads clearly and distinctly
-                  from the surrounding comments via an acid-tinted card
-                  + acid "AI" chip + full-brightness text. */}
-              <motion.div
-                initial={{ opacity: 0, y: -4 }}
-                animate={{
-                  opacity: igniteProgress > 0.35 ? 1 : 0,
-                  y: igniteProgress > 0.35 ? 0 : -4,
-                }}
-                transition={{ duration: 0.3 }}
-                className="mt-2 rounded-md p-2.5"
-                style={{
-                  background: "rgba(223, 255, 0, 0.06)",
-                  border: "1px solid rgba(223, 255, 0, 0.22)",
-                  borderLeft: "2px solid var(--acid)",
-                  boxShadow: "0 0 20px rgba(223, 255, 0, 0.08)",
-                }}
-              >
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="text-[12px] font-semibold text-text-hi">
-                    @northbloom.co
-                  </span>
-                  <span
-                    className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
-                    style={{
-                      color: "#0A0A0B",
-                      background: "var(--acid)",
-                    }}
-                  >
-                    AI
-                  </span>
-                  <span className="text-[10px] font-mono text-text-lo ml-auto">
-                    public reply
-                  </span>
-                </div>
-                <div className="text-[12px] text-text-hi leading-snug">
-                  <TypedLine
-                    text="just slid into your DMs 💌"
-                    show={igniteProgress > 0.35}
-                  />
-                </div>
-              </motion.div>
             </div>
             <div className="flex flex-col items-center text-text-lo shrink-0">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -130,6 +87,55 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
             </div>
           </div>
         </motion.div>
+
+        {/* AI public reply lives OUTSIDE the Maya motion.div so the
+            acid rectangle above wraps ONLY the comment row (avatar +
+            name + text). Conditionally mounted once ignite crosses a
+            small threshold — that way it never occupies invisible
+            vertical space inside the rectangle during the hero, and
+            the box stays tight around the comment. Aligns with the
+            text column via ml-12 (past the 40 px anchor + 8 px gap). */}
+        {igniteProgress > 0.15 && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{
+              opacity: igniteProgress > 0.35 ? 1 : 0,
+              y: igniteProgress > 0.35 ? 0 : -4,
+            }}
+            transition={{ duration: 0.3 }}
+            className="ml-12 mr-4 mt-2 rounded-md p-2.5"
+            style={{
+              background: "rgba(223, 255, 0, 0.06)",
+              border: "1px solid rgba(223, 255, 0, 0.22)",
+              borderLeft: "2px solid var(--acid)",
+              boxShadow: "0 0 20px rgba(223, 255, 0, 0.08)",
+            }}
+          >
+            <div className="flex items-center gap-1.5 mb-1">
+              <span className="text-[12px] font-semibold text-text-hi">
+                @northbloom.co
+              </span>
+              <span
+                className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
+                style={{
+                  color: "#0A0A0B",
+                  background: "var(--acid)",
+                }}
+              >
+                AI
+              </span>
+              <span className="text-[10px] font-mono text-text-lo ml-auto">
+                public reply
+              </span>
+            </div>
+            <div className="text-[12px] text-text-hi leading-snug">
+              <TypedLine
+                text="just slid into your DMs 💌"
+                show={igniteProgress > 0.35}
+              />
+            </div>
+          </motion.div>
+        )}
       </div>
     </PhoneShell>
   );

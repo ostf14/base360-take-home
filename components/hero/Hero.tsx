@@ -174,13 +174,32 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Solution plaque BELOW the phone. Two lines centered:
+        {/* Phone bottom fade. Full-width gradient from transparent at
+            top to solid --bg (#0A0A0B) below — dissolves the phone's
+            bezel foot, home indicator, and shell shadow into the page
+            background so there's no hard bottom edge on the device.
+            zIndex 15 sits above the Canvas but below the plaque, so
+            the fade paints over the phone but the plaque still reads
+            on top. Fades out with the hero. */}
+        <motion.div
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 pointer-events-none"
+          style={{
+            opacity: heroOpacity,
+            height: "45vh",
+            background:
+              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,0.7) 25%, rgba(10,10,11,1) 45%)",
+            zIndex: 15,
+          }}
+        />
+
+        {/* Solution plaque BELOW the phone, in the black area the
+            fade creates. Two lines centered:
               "Base360 catches every comment" — quiet white statement.
               "WATCH ↓"                       — acid scroll cue.
             The arrow lives HERE now, not floating near the comment
-            rectangle. Absolute-positioned above the corner squares,
-            fades with hero opacity, sits above the phone Canvas via
-            zIndex so it never gets buried when the phone slides. */}
+            rectangle. zIndex: 20 keeps it above the phone-bottom
+            gradient (zIndex: 15) so it reads on solid black. */}
         <motion.div
           className="absolute inset-x-0 flex justify-center pointer-events-none"
           style={{ bottom: 72, opacity: heroOpacity, zIndex: 20 }}
