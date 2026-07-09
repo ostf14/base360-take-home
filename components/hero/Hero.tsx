@@ -76,15 +76,15 @@ export function Hero() {
     [0, HERO_END - HERO_HANDOFF, HERO_END],
     ["-21vw", "-21vw", "0vw"],
   );
-  // Hero phoneY reduced from 22vh so the phone's bottom edge stays
-  // inside the viewport instead of being cropped by it. That leaves a
-  // clear band beneath the phone shell for the plaque + arrow to live
-  // in, and it also puts Maya's comment + the acid rectangle around
-  // it fully in the solid, non-cropped part of the phone.
+  // Hero phoneY pushes the phone visibly lower in the hero viewport
+  // so it sits in the lower half — the pain headline reads at the
+  // top and the phone (with Maya's comment fully solid in its upper
+  // portion) drops beneath it, with room at the very bottom for the
+  // "Watch ↓" plaque.
   const phoneY = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["4vh", "4vh", "0vh"],
+    ["12vh", "12vh", "0vh"],
   );
 
   // Chapter tracking. -1 during hero means Stepper renders every node as
@@ -174,21 +174,21 @@ export function Hero() {
           </div>
         </div>
 
-        {/* Phone bottom fade. Full-width gradient from transparent at
-            top to solid --bg (#0A0A0B) below — dissolves the phone's
-            bezel foot, home indicator, and shell shadow into the page
-            background so there's no hard bottom edge on the device.
-            zIndex 15 sits above the Canvas but below the plaque, so
-            the fade paints over the phone but the plaque still reads
-            on top. Fades out with the hero. */}
+        {/* Phone bottom fade. Kept SHORT so only the very bottom edge
+            of the phone melts into the page background — Maya's
+            comment and the acid rectangle above stay fully solid and
+            untouched. The gradient starts around 78 vh (well below
+            the comment) and reaches solid #0A0A0B by ~93 vh, so only
+            the phone's last ~15–20% dissolves. zIndex 15 sits above
+            the Canvas but below the plaque. */}
         <motion.div
           aria-hidden
           className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{
             opacity: heroOpacity,
-            height: "45vh",
+            height: "22vh",
             background:
-              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,0.7) 25%, rgba(10,10,11,1) 45%)",
+              "linear-gradient(180deg, rgba(10,10,11,0) 0%, rgba(10,10,11,0.6) 40%, rgba(10,10,11,1) 70%)",
             zIndex: 15,
           }}
         />
@@ -202,7 +202,7 @@ export function Hero() {
             gradient (zIndex: 15) so it reads on solid black. */}
         <motion.div
           className="absolute inset-x-0 flex justify-center pointer-events-none"
-          style={{ bottom: 72, opacity: heroOpacity, zIndex: 20 }}
+          style={{ bottom: 10, opacity: heroOpacity, zIndex: 20 }}
         >
           <div className="flex flex-col items-center gap-1.5 text-center">
             <div
