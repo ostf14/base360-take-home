@@ -7,9 +7,9 @@ interface Props {
   scrollYProgress: MotionValue<number>;
 }
 
-// Names paired with each chapter's index. Shown in the active label to
-// the LEFT of the rail. Uppercase, mono — designed to be read as the
-// current step name, not as chrome.
+// Step names paired with each chapter's index. Only the ACTIVE step's
+// label is opaque; the others sit at opacity 0 so the reader always
+// sees exactly one label — the current step — beside the rail.
 const NODE_LABELS = [
   "COMMENT",
   "DM",
@@ -19,51 +19,70 @@ const NODE_LABELS = [
   "ONE SYSTEM",
 ];
 
-// Snap the acid fill to node positions at each chapter boundary. 6 nodes
-// evenly distributed [0%..100%]; the fill reaches node i's row exactly
-// when scrollYProgress crosses i/6. Left unshifted on purpose — the fill
-// keeps advancing across the brief empty midpoints in the surface
-// handoff, so the reader always sees forward motion on the rail even
-// during the sub-frame gap where both surfaces are 0.
+// Snap the acid fill to node positions at each chapter boundary. 6
+// nodes evenly distributed [0 % .. 100 %]; the fill reaches node i's
+// row exactly when scrollYProgress crosses i / 6. Left unshifted on
+// purpose so the fill keeps advancing across the brief empty
+// midpoints in the surface handoff — the reader always sees forward
+// motion on the rail.
 const FILL_INPUT = [0, 1 / 6, 2 / 6, 3 / 6, 4 / 6, 5 / 6, 1];
 const FILL_OUTPUT = ["0%", "20%", "40%", "60%", "80%", "100%", "100%"];
 
 const NODE_SIZE = 12;
+const NODE_GAP = 56; // px between adjacent node centers' rows
+// 6 nodes + 5 gaps = 6*12 + 5*56 = 352 px — a compact rail that
+// reads as a single tight index instead of getting spread thin over
+// the full 100 vh viewport.
 
-// The vertical rail. Lives in the 64px middle grid column and IS the
-// divider between copy and canvas. NOTHING crosses the rail line: all
-// six nodes are the same-shape square sitting ON the rail, labels sit
-// to the LEFT of the rail with a clear gap, and each node's opaque
-// background hides the segment of rail directly behind it so the line
-// meets each square's top/bottom edge without piercing it.
+// Left-edge vertical stepper. Compact (~350 px) column centered
+// vertically in the viewport, rail hugging the left gutter with the
+// active label to its right. Squares sit CENTERED on the rail; each
+// square's opaque background hides the segment of rail directly
+// behind it so the line meets the square edge without piercing.
+//
+// Node states:
+//   PAST    → solid dim-acid fill + dim-acid border (traveled)
+//   ACTIVE  → bright acid fill, acid border, 1.35× scale, acid glow
+//   FUTURE  → --bg fill (hides rail), hairline border, no glow
 export function Stepper({ activeChapter, scrollYProgress }: Props) {
   const fillHeight = useTransform(scrollYProgress, FILL_INPUT, FILL_OUTPUT);
-
   return (
-    <div className="relative h-full w-full flex justify-start pl-8 py-20">
-      <div className="relative h-full flex flex-col justify-between items-center">
-        {/* Faint hairline running the full node range. Rendered behind
-            the nodes (default z-index) so each square's own background
-            hides the piece of rail directly behind it. */}
+    <div className="relative h-full w-full flex items-center pl-8">
+      <div
+        className="relative flex flex-col items-center"
+        style={{ gap: NODE_GAP - NODE_SIZE }}
+      >
+        {/* Rail strip — 1 px wide, spanning between the first and
+            last node centers. Two children: a faint hairline
+            background and an acid fill that grows from top to
+            fillHeight. Percentages resolve against this strip so
+            fill=100 % exactly reaches the last node's center. */}
         <div
           aria-hidden
-          className="absolute top-1.5 bottom-1.5 left-1/2 -translate-x-1/2 w-px"
-          style={{ background: "var(--hairline)", opacity: 0.8 }}
-        />
-        {/* Acid fill — grows top-down as we scroll. */}
-        <motion.div
-          aria-hidden
-          className="absolute top-1.5 left-1/2 -translate-x-1/2 w-px"
+          className="absolute w-px z-0"
           style={{
-            background: "var(--acid)",
-            height: fillHeight,
-            boxShadow: "0 0 6px rgba(223,255,0,0.55)",
+            top: NODE_SIZE / 2,
+            bottom: NODE_SIZE / 2,
+            left: "50%",
+            transform: "translateX(-50%)",
           }}
-        />
+        >
+          <div
+            className="absolute inset-0"
+            style={{ background: "var(--hairline)", opacity: 0.8 }}
+          />
+          <motion.div
+            className="absolute top-0 left-0 right-0"
+            style={{
+              background: "var(--acid)",
+              height: fillHeight,
+              boxShadow: "0 0 6px rgba(223,255,0,0.55)",
+            }}
+          />
+        </div>
         {CHAPTERS.map((_, i) => (
           <Node
             key={i}
-            index={i}
             active={i === activeChapter}
             past={i < activeChapter}
             label={NODE_LABELS[i]}
@@ -79,21 +98,15 @@ function Node({
   past,
   label,
 }: {
-  index: number;
   active: boolean;
   past: boolean;
   label: string;
 }) {
   return (
-    <div className="relative flex items-center justify-center">
-      {/* Label sits to the RIGHT of the rail, left-anchored a gap-width
-          past the square's right edge. In the new centered-surface
-          layout the rail lives at the viewport left edge, so labels
-          flow inward (to the right) and never leak off-screen. Only
-          the ACTIVE node's label is opaque; the others sit at
-          opacity 0 so the label follows the current chapter without
-          any clutter. Just the step NAME — the step number is
-          already carried by the kicker in the plaque. */}
+    <div className="relative flex items-center justify-center z-10">
+      {/* Active-only label — 14 px past the node's right edge,
+          vertically centered. Non-active labels sit at opacity 0
+          so exactly one step name is ever legible at a time. */}
       <motion.div
         initial={false}
         animate={{ opacity: active ? 1 : 0 }}
@@ -108,15 +121,10 @@ function Node({
       >
         {label}
       </motion.div>
-
-      {/* Node square. Same shape across all six positions — state comes
-          through fill / border / scale / glow only. Future nodes use
-          --bg (same as canvas) as background so the rail behind them is
-          hidden while the border reads as a clean hairline outline.
-          PAST nodes use a solid opaque dim-acid — the previous
-          --acid-dim was 28% alpha, which let the hairline rail bleed
-          through and read as a translucent, half-empty square. Solid
-          fill keeps the traveled path fully visible. */}
+      {/* The square. Same shape across all six positions — state
+          drives fill / border / scale / glow. Future nodes use --bg
+          (same as page) so the rail directly behind them is hidden
+          and the border reads as a clean hairline outline. */}
       <motion.div
         initial={false}
         animate={{
@@ -136,7 +144,6 @@ function Node({
             : "0 0 0 rgba(0,0,0,0)",
         }}
         transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-        className="relative z-10"
         style={{
           width: NODE_SIZE,
           height: NODE_SIZE,
