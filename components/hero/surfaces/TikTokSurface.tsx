@@ -73,7 +73,13 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               the chapter-01 ignite takes over so it doesn't compete
               with the acid highlight border above. */}
           <HandDrawnCircle active={active} />
-          <div className="relative flex gap-2 items-start py-1.5">
+          {/* zIndex: 2 keeps the comment content painted ON TOP of the
+              acid ellipse; the loop wraps around the outside, letters
+              stay fully legible. */}
+          <div
+            className="relative flex gap-2 items-start py-1.5"
+            style={{ zIndex: 2 }}
+          >
             <MayaAnchor anchorRef={anchorRef} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
@@ -319,48 +325,57 @@ function TypedLine({ text, show }: { text: string; show: boolean }) {
 }
 
 // The "system noticed this" annotation. A CLOSED, neat-but-slightly-
-// irregular ellipse traced in acid — asymmetric Bezier control points
-// (12 vs 190 on the sides, 4 vs 54 top vs bottom), slight -1.2° tilt.
-// Wraps snugly around Maya's row with just a hair of air. Drawn in
-// over ~1.2 s shortly after mount via pathLength; vector-effect keeps
-// the stroke at 2.5 CSS px regardless of how much the SVG stretches.
-// Closed with Z — no long gaps, no stray tail — a complete loop.
-// Fades to 0 once the chapter-01 ignite kicks in so it doesn't stack
-// with the acid highlight border that appears above.
+// irregular ellipse traced in acid — same path d as before. The
+// wrapper sits around Maya's comment (avatar + name + text) via a
+// negative inset so the loop goes AROUND the outside; the SVG keeps
+// its natural aspect (no preserveAspectRatio="none") so the ellipse
+// stays an ellipse and doesn't get squashed flat-and-wide across the
+// row. Layer-wise the whole overlay sits BEHIND the comment content
+// (content gets zIndex: 2 in the parent) so the stroke never runs
+// through the letters. Fades out once igniteProgress > 0.15.
 function HandDrawnCircle({ active }: { active: boolean }) {
   return (
-    <motion.svg
+    <div
       aria-hidden
-      className="absolute pointer-events-none"
       style={{
-        top: -8,
-        left: -12,
-        right: -14,
-        bottom: -6,
-        overflow: "visible",
+        position: "absolute",
+        // Negative inset extends the overlay beyond the comment box on
+        // all sides so the loop wraps loosely AROUND the comment
+        // instead of hugging the text edges.
+        inset: "-14px -20px",
+        pointerEvents: "none",
+        zIndex: 1,
         transform: "rotate(-1.2deg)",
       }}
-      viewBox="0 0 200 60"
-      preserveAspectRatio="none"
-      initial={{ opacity: 1 }}
-      animate={{ opacity: active ? 0 : 1 }}
-      transition={{ duration: 0.35 }}
     >
-      <motion.path
-        d="M 10 32 C 6 14, 44 4, 100 4 C 158 3, 194 12, 190 32 C 195 50, 150 56, 100 54 C 44 56, 6 46, 10 32 Z"
-        fill="none"
-        stroke="var(--acid)"
-        strokeWidth={2.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      <motion.svg
+        viewBox="0 0 200 60"
         style={{
-          filter: "drop-shadow(0 0 5px rgba(223, 255, 0, 0.5))",
+          width: "100%",
+          height: "100%",
+          overflow: "visible",
+          display: "block",
         }}
-      />
-    </motion.svg>
+        initial={{ opacity: 1 }}
+        animate={{ opacity: active ? 0 : 1 }}
+        transition={{ duration: 0.35 }}
+      >
+        <motion.path
+          d="M 10 32 C 6 14, 44 4, 100 4 C 158 3, 194 12, 190 32 C 195 50, 150 56, 100 54 C 44 56, 6 46, 10 32 Z"
+          fill="none"
+          stroke="var(--acid)"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            filter: "drop-shadow(0 0 5px rgba(223, 255, 0, 0.5))",
+          }}
+        />
+      </motion.svg>
+    </div>
   );
 }
