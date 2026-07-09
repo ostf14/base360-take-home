@@ -2,6 +2,7 @@ import { Nav } from "@/components/Nav";
 import { Problem } from "@/components/Problem";
 import { Hero } from "@/components/hero/Hero";
 import { Pillars } from "@/components/Pillars";
+import { Comparison } from "@/components/Comparison";
 import { Credibility } from "@/components/Credibility";
 import { CtaClose } from "@/components/CtaClose";
 import { Footer } from "@/components/Footer";
@@ -17,6 +18,7 @@ export default function Page() {
         </div>
         <Problem />
         <Pillars />
+        <Comparison />
         <Credibility />
         <CtaClose />
         <Footer />
