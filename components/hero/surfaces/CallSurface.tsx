@@ -41,12 +41,14 @@ export function CallSurface({ progress, anchorRef }: Props) {
       {/* Huge centered waveform */}
       <BigWaveform progress={progress} />
 
-      {/* Transcript ticker. The AI voice is the focus of the frame —
-          same acid treatment as the DM outgoing bubbles and the TikTok
-          public reply: a solid acid "AI" chip + a 2px acid left stripe
-          + full-brightness text. Maya's incoming lines stay neutral so
-          the eye tracks what the agent is saying. */}
-      <div className="mt-10 w-full max-w-2xl flex flex-col gap-2 min-h-[110px]">
+      {/* Transcript ticker. The AI voice keeps its acid treatment —
+          solid acid "AI" chip + 2 px acid left stripe + bright text —
+          so the eye lands on what the agent is saying first. Maya's
+          incoming lines stay neutral (no acid), but their text is
+          near-white so the back-and-forth rhythm is legible, not a
+          bright line answered by an invisible one. gap-6 (24 px)
+          gives every turn a clear vertical beat of air. */}
+      <div className="mt-10 w-full max-w-2xl flex flex-col gap-6 min-h-[110px]">
         {TRANSCRIPT.map((line, i) => {
           const isAI = line.who === "ai";
           return (
@@ -80,16 +82,17 @@ export function CallSurface({ progress, anchorRef }: Props) {
                 </span>
               ) : (
                 <span
-                  className="font-mono uppercase text-[9px] shrink-0 mt-0.5 tracking-widest"
-                  style={{ color: "var(--text-lo)" }}
+                  className="font-mono uppercase text-[10px] shrink-0 mt-0.5 tracking-widest font-bold"
+                  style={{ color: "rgba(255,255,255,0.6)" }}
                 >
                   MAYA
                 </span>
               )}
               <span
-                className={`leading-snug ${
-                  isAI ? "text-text-hi" : "text-text-hi/70"
-                }`}
+                className="leading-snug"
+                style={{
+                  color: isAI ? "var(--text-hi)" : "#D6D6DA",
+                }}
               >
                 {line.text}
               </span>
