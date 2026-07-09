@@ -187,7 +187,7 @@ export function Hero() {
             Two-line lower cue. Fades out with the rest of the hero. */}
         <motion.div
           className="absolute inset-x-0 flex justify-center pointer-events-none z-30"
-          style={{ bottom: 40, opacity: heroOpacity }}
+          style={{ bottom: 12, opacity: heroOpacity }}
         >
           <div className="flex flex-col items-center gap-1.5 text-center">
             <div
@@ -260,7 +260,7 @@ function GiantHeadline() {
     <div
       className="flex flex-col items-center gap-1 font-display font-bold uppercase"
       style={{
-        fontSize: "clamp(50px, min(6.4vw, 9.5vh), 100px)",
+        fontSize: "clamp(54px, min(6.85vw, 10vh), 108px)",
         lineHeight: 0.9,
         letterSpacing: "-0.02em",
       }}
