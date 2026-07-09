@@ -12,10 +12,10 @@ export default function Page() {
     <DesktopOnly>
       <main className="min-h-screen">
         <Nav />
-        <Problem />
         <div id="story">
           <Hero />
         </div>
+        <Problem />
         <Pillars />
         <Credibility />
         <CtaClose />

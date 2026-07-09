@@ -63,12 +63,14 @@ export function Hero() {
 
   // Phone transform. Its NATURAL position is the story dock (right canvas
   // column). During hero it's translated left toward viewport-center and
-  // down so it rises out of the bottom edge, overlapping the lower part
-  // of the giant headline's second line.
+  // a smaller amount down so its TOP sits higher and the full TikTok feed
+  // — video + brand caption + comments row including Maya — is visible
+  // above the bottom crop.
   //   -21vw is roughly viewport-center minus canvas-col-center on desktop
-  //   widths (1024–1920); +40vh pushes the phone down so its top lands on
-  //   the lower half of line 2 ("Nobody replied.") and its bottom crops
-  //   past the viewport foot.
+  //   widths (1024–1920); +22vh raises the phone (was +40vh) so Maya's
+  //   comment sits clearly on-screen, with the very bottom of the shell
+  //   still cropping past the viewport foot for the rising-out-of-black
+  //   read.
   const phoneX = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
@@ -77,7 +79,7 @@ export function Hero() {
   const phoneY = useTransform(
     scrollYProgress,
     [0, HERO_END - HERO_HANDOFF, HERO_END],
-    ["40vh", "40vh", "0vh"],
+    ["22vh", "22vh", "0vh"],
   );
 
   // Chapter tracking. -1 during hero means Stepper renders every node as
@@ -126,12 +128,19 @@ export function Hero() {
             screen; fades out with the rest of the hero. */}
         <HeroGlow heroOpacity={heroOpacity} />
 
-        {/* GIANT HEADLINE. Fades and shrinks slightly at the boundary.
-            Rendered BEFORE the phone in JSX so the phone (later in JSX)
-            visually overlaps it, covering only the lower part of line 2. */}
+        {/* GIANT HEADLINE. Sits near the TOP of the viewport just below
+            the nav — not vertically centered — so the phone can rise
+            below it without competing for the same vertical band.
+            Fades and shrinks slightly at the boundary. Rendered BEFORE
+            the phone in JSX so the phone paints on top if any overlap
+            occurs at compact viewport heights. */}
         <motion.div
-          className="absolute inset-0 pointer-events-none flex items-center justify-center px-6"
-          style={{ opacity: heroOpacity, scale: heroScale }}
+          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-24"
+          style={{
+            opacity: heroOpacity,
+            scale: heroScale,
+            transformOrigin: "50% 20%",
+          }}
         >
           <GiantHeadline />
         </motion.div>

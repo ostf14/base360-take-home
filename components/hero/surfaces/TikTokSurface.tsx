@@ -68,6 +68,11 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               transition: "all 400ms ease",
             }}
           />
+          {/* Hand-drawn acid circle around Maya's comment — the "the
+              system noticed THIS one" hook for the hero. Fades out as
+              the chapter-01 ignite takes over so it doesn't compete
+              with the acid highlight border above. */}
+          <HandDrawnCircle active={active} />
           <div className="relative flex gap-2 items-start py-1.5">
             <MayaAnchor anchorRef={anchorRef} />
             <div className="flex-1 min-w-0">
@@ -299,5 +304,50 @@ function TypedLine({ text, show }: { text: string; show: boolean }) {
     >
       {text}
     </motion.span>
+  );
+}
+
+// The "system noticed this" annotation. An intentionally-imperfect
+// ellipse — asymmetric Bezier control points, slight tilt — traced in
+// acid, drawn in over ~1.2s shortly after mount via pathLength.
+// vector-effect keeps the stroke at 2.5 CSS px regardless of how much
+// the SVG stretches to fit Maya's row. Fades to 0 once the chapter-01
+// ignite kicks in so it doesn't stack with the acid highlight border
+// that appears above.
+function HandDrawnCircle({ active }: { active: boolean }) {
+  return (
+    <motion.svg
+      aria-hidden
+      className="absolute pointer-events-none"
+      style={{
+        top: -6,
+        left: -8,
+        right: -10,
+        bottom: -4,
+        overflow: "visible",
+        transform: "rotate(-1.2deg)",
+      }}
+      viewBox="0 0 200 60"
+      preserveAspectRatio="none"
+      initial={{ opacity: 1 }}
+      animate={{ opacity: active ? 0 : 1 }}
+      transition={{ duration: 0.35 }}
+    >
+      <motion.path
+        d="M 12 32 C 6 15, 46 4, 100 5 C 158 3, 195 13, 190 32 C 195 49, 148 55, 100 52 C 42 55, 6 46, 12 32 Z"
+        fill="none"
+        stroke="var(--acid)"
+        strokeWidth={2.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        vectorEffect="non-scaling-stroke"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.2, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        style={{
+          filter: "drop-shadow(0 0 5px rgba(223, 255, 0, 0.5))",
+        }}
+      />
+    </motion.svg>
   );
 }

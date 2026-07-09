@@ -16,9 +16,13 @@ export function PhoneShell({ platform, children }: Props) {
       <div
         className="relative flex flex-col overflow-hidden"
         style={{
-          width: 380,
-          height: "min(760px, 100%)",
-          borderRadius: 44,
+          // Slimmer device. Narrower width and a lower max-height make
+          // enough room for the entire TikTok feed — including Maya's
+          // comment — to sit ABOVE the bottom crop when the phone is
+          // rising out of the hero. Corners scaled proportionally.
+          width: 320,
+          height: "min(640px, 100%)",
+          borderRadius: 40,
           padding: 8,
           // Bezel is a step lighter than --bg so the phone silhouette
           // reads against the near-black canvas. Kept neutral grey — the
