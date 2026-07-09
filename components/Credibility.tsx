@@ -53,14 +53,15 @@ export function Credibility() {
           className="font-display font-bold tracking-tight"
           style={{
             color: "var(--text-hi)",
-            fontSize: 30,
-            lineHeight: 1.25,
+            fontSize: 34,
+            lineHeight: 1.15,
             letterSpacing: "-0.015em",
-            maxWidth: 760,
           }}
         >
           Built by the team behind{" "}
-          <InlineLogoChip label="STR OPERATOR" />, scaled to{" "}
+          <InlineLogoChip label="STR OPERATOR" />
+          <br />
+          scaled to{" "}
           <span
             style={{
               color: "var(--acid)",

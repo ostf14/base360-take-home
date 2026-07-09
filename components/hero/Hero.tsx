@@ -111,9 +111,13 @@ export function Hero() {
         <HeroGlow heroOpacity={heroOpacity} />
 
         {/* GIANT HEADLINE — hero only, near the top of the viewport.
-            Fades and shrinks slightly at the boundary. */}
+            Fades and shrinks slightly at the boundary. Sits just
+            below the nav (pt-16) so both lines — "Next buyer
+            commented" AND "Nobody replied" — clear the phone's top
+            edge on typical desktop viewports without needing to
+            shrink the type dramatically. */}
         <motion.div
-          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-24 z-10"
+          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-16 z-10"
           style={{
             opacity: heroOpacity,
             scale: heroScale,
@@ -191,7 +195,7 @@ export function Hero() {
               className="font-display font-medium"
               style={{
                 color: "var(--text-hi)",
-                fontSize: 16,
+                fontSize: 22,
                 letterSpacing: "-0.005em",
               }}
             >
@@ -201,7 +205,7 @@ export function Hero() {
               className="font-mono uppercase font-bold"
               style={{
                 color: "var(--acid)",
-                fontSize: 11,
+                fontSize: 14,
                 letterSpacing: "0.22em",
                 textShadow: "0 0 12px rgba(223, 255, 0, 0.5)",
               }}
@@ -246,13 +250,18 @@ function CornerLabels({
   );
 }
 
-// Two-line heavy uppercase grotesk, tight leading, one word per line.
+// Two-line heavy uppercase grotesk, tight leading. Font size is
+// clamped by BOTH viewport width and height (via min(6vw, 9vh))
+// so on short-height desktops (1440 × 768) the type shrinks with
+// the viewport instead of growing off the top of the phone — the
+// second line ("Nobody replied") stays fully readable above the
+// rising phone's top edge without a large size reduction elsewhere.
 function GiantHeadline() {
   return (
     <div
       className="flex flex-col items-center gap-1 font-display font-bold uppercase"
       style={{
-        fontSize: "clamp(48px, 7vw, 104px)",
+        fontSize: "clamp(48px, min(6vw, 9vh), 96px)",
         lineHeight: 0.9,
         letterSpacing: "-0.02em",
       }}

@@ -14,9 +14,9 @@ export function CtaClose() {
       <div className="max-w-6xl mx-auto grid grid-cols-2 gap-16 items-center relative z-10">
         <div className="flex flex-col gap-6">
           <h2 className="font-display text-6xl leading-[0.98] font-bold text-text-hi tracking-tight">
-            Closed —
+            Never miss a
             <br />
-            <span className="text-acid">automatically.</span>
+            <span className="text-acid">customer</span> again.
           </h2>
           <p className="text-text-lo text-lg max-w-md">
             Join the waitlist — design partners get first-customer pricing.
