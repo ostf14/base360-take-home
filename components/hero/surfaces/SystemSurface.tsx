@@ -51,22 +51,25 @@ function polylinePath(points: Array<[number, number]>): string {
 
 export function SystemSurface({ progress, anchorRef }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
-  // One ref per node — attached to the 0 × 0 marker div positioned
-  // at each node's canonical (x %, y %) coordinate. Because that
-  // marker sits at the same point the label box centers itself on,
-  // its bounding rect origin IS the node's visible center.
+  // One ref per node — attached to a childless, absolutely
+  // positioned 0 × 0 marker span placed at each node's canonical
+  // (x %, y %) point. Because the span has NO children, its
+  // getBoundingClientRect can't be inflated by the sibling label /
+  // shell glyph / sub caption's rendered area — the rect is a
+  // pure point at the node's center.
   const nodeRefs = useMemo(
     () =>
       Array.from({ length: NODES.length }, () =>
-        createRef<HTMLDivElement>(),
+        createRef<HTMLSpanElement>(),
       ),
     [],
   );
   // Node centers in viewBox (0..100) space, measured from the DOM.
-  // Empty until the first useLayoutEffect pass runs after mount,
-  // at which point the funnel path picks them up and renders
-  // touching every node box. Re-measured on every window resize.
-  const [points, setPoints] = useState<Array<[number, number]>>([]);
+  // Null until the first useLayoutEffect pass has read every ref;
+  // the funnel path is not rendered before then — the alternative
+  // would be drawing with hardcoded fallback coords, which is
+  // exactly what the "line must land on the boxes" fix rules out.
+  const [points, setPoints] = useState<Array<[number, number]> | null>(null);
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -74,15 +77,43 @@ export function SystemSurface({ progress, anchorRef }: Props) {
       if (!container) return;
       const c = container.getBoundingClientRect();
       if (!c.width || !c.height) return;
-      const next: Array<[number, number]> = nodeRefs.map((ref) => {
+      // The SVG lives at `absolute inset-0` inside the container,
+      // whose containing block is the container's PADDING box —
+      // i.e. inside the 1 px border. Path coords in viewBox 100×100
+      // stretch across the SVG's rendered dimensions, which are the
+      // padding box's dimensions. Measuring / converting against the
+      // padding box (not the border box getBoundingClientRect
+      // returns) is what makes the path endpoints land exactly on
+      // the node marker centers instead of ~1 px off.
+      const style = window.getComputedStyle(container);
+      const bl = parseFloat(style.borderLeftWidth) || 0;
+      const bt = parseFloat(style.borderTopWidth) || 0;
+      const br = parseFloat(style.borderRightWidth) || 0;
+      const bb = parseFloat(style.borderBottomWidth) || 0;
+      const pbLeft = c.left + bl;
+      const pbTop = c.top + bt;
+      const pbW = c.width - bl - br;
+      const pbH = c.height - bt - bb;
+      if (pbW <= 0 || pbH <= 0) return;
+      // Read every ref up front. If ANY is missing we bail — the
+      // path stays hidden until the next resize / re-mount produces
+      // a full measurement pass.
+      const nextRaw = nodeRefs.map((ref) => {
         const el = ref.current;
-        if (!el) return [50, 50];
-        const r = el.getBoundingClientRect();
-        // The marker div is 0 × 0 at the label's visual center, so
-        // rect.left / rect.top IS the center in viewport pixels.
-        const cx = r.left + r.width / 2 - c.left;
-        const cy = r.top + r.height / 2 - c.top;
-        return [(cx / c.width) * 100, (cy / c.height) * 100];
+        if (!el) return null;
+        return el.getBoundingClientRect();
+      });
+      if (nextRaw.some((r) => r === null)) return;
+      const next: Array<[number, number]> = (
+        nextRaw as DOMRect[]
+      ).map((r) => {
+        // r is DOMRect of the childless marker span. Its rect
+        // origin IS the node's visual center. Convert
+        // viewport-space (px) → padding-box-space (px) →
+        // viewBox-space (0..100).
+        const cx = r.left + r.width / 2 - pbLeft;
+        const cy = r.top + r.height / 2 - pbTop;
+        return [(cx / pbW) * 100, (cy / pbH) * 100];
       });
       setPoints(next);
     };
@@ -91,7 +122,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
     return () => window.removeEventListener("resize", measure);
   }, [nodeRefs]);
 
-  const pathD = polylinePath(points);
+  const pathD = points ? polylinePath(points) : "";
   // Reveal 0 → 1 across the chapter. Slight *1.1 so the last
   // stretch completes just before the chapter boundary — feels
   // more decisive than trailing to the very last frame.
@@ -217,29 +248,46 @@ export function SystemSurface({ progress, anchorRef }: Props) {
           />
         </svg>
 
-        {/* Nodes. Each outer marker div is a 0 × 0 point at (n.x %,
-            n.y %) — the useLayoutEffect above measures its
-            getBoundingClientRect to derive the funnel line's segment
-            endpoints, so the connector always lands on the actual
-            rendered label box centers. The visible label sits
-            inside via `transform: translate(-50%, -50%)` so its
-            center is at that same point; shell glyph + sub caption
-            are absolute siblings above / below and don't shift it. */}
+        {/* Nodes. Each node has TWO absolutely positioned children:
+              (1) a childless span placed at (0, 0) of the outer
+                  wrapper — that's the measurement marker for the
+                  funnel line's endpoint at this node.
+              (2) the motion.div containing the visible label,
+                  which is transform-centered on the same point
+                  via translate(-50%, -50%).
+            Keeping (1) as its own element with no descendants means
+            its bounding rect is a clean 0 × 0 point at (n.x %, n.y %)
+            — sibling label / shell glyph / sub caption can't inflate
+            the marker's rect, so the measured funnel endpoints land
+            exactly on the labels' visible centers. */}
         {NODES.map((n, i) => {
           const revealed = progress > i / NODES.length - 0.05;
           const isClosed = n.key === "closed";
           return (
             <div
               key={n.key}
-              ref={nodeRefs[i]}
               className="absolute"
               style={{
                 left: `${n.x}%`,
                 top: `${n.y}%`,
-                width: 0,
-                height: 0,
               }}
             >
+              {/* Measurement marker — childless, 0 × 0, at the outer
+                  wrapper's origin (which IS (n.x %, n.y %) of the
+                  container). Its DOMRect is a pure point at that
+                  location, safe from any label-cluster inflation. */}
+              <span
+                ref={nodeRefs[i]}
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  width: 0,
+                  height: 0,
+                  pointerEvents: "none",
+                }}
+              />
               <motion.div
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: revealed ? 1 : 0.15, scale: 1 }}

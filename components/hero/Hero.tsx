@@ -110,13 +110,13 @@ export function Hero() {
             Fades out with the rest of the hero. */}
         <HeroGlow heroOpacity={heroOpacity} />
 
-        {/* GIANT HEADLINE — hero only. pt-24 puts a comfortable gap
-            below the nav; the (bigger) type from GiantHeadline
-            reaches down far enough that the phone's top edge
-            covers roughly the bottom third of "Nobody replied" —
-            the rest of both lines stays legible above. */}
+        {/* GIANT HEADLINE — hero only. pt-16 keeps it just below the
+            nav so both lines fit fully within the viewport at every
+            desktop width — no letters cropped left or right — while
+            the rising phone still overlaps the bottom of the second
+            line at typical heights. */}
         <motion.div
-          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-24 z-10"
+          className="absolute inset-x-0 top-0 pointer-events-none flex flex-col items-center px-6 pt-16 z-10"
           style={{
             opacity: heroOpacity,
             scale: heroScale,
@@ -249,17 +249,18 @@ function CornerLabels({
   );
 }
 
-// Two-line heavy uppercase grotesk, tight leading. Bumped up from
-// the earlier size so the second line ("Nobody replied") extends
-// far enough down that the rising phone's top edge covers roughly
-// its bottom third at a typical desktop viewport — the majority of
-// both lines still reads clearly above the phone.
+// Two-line heavy uppercase grotesk, tight leading. Type is clamped
+// by BOTH viewport width and height via min(6vw, 9vh) so the
+// longer first line "NEXT BUYER COMMENTED" always fits fully
+// within the viewport at every desktop size — the bigger-than-fit
+// setting was overflowing horizontally, cropping letters on both
+// sides. Max 96 keeps it safely inside padding at ~1024 px widths.
 function GiantHeadline() {
   return (
     <div
       className="flex flex-col items-center gap-1 font-display font-bold uppercase"
       style={{
-        fontSize: "clamp(64px, 10vw, 136px)",
+        fontSize: "clamp(48px, min(6vw, 9vh), 96px)",
         lineHeight: 0.9,
         letterSpacing: "-0.02em",
       }}
