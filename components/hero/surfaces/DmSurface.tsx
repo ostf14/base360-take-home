@@ -25,11 +25,11 @@ interface Props {
 export function DmSurface({ progress, anchorRef }: Props) {
   return (
     <PhoneShell platform="instagram">
-      {/* DM contact header — reads as the AI operator's inbox row:
-          the LEAD (@maya.r + panda avatar) on the left, and the
-          "AI AGENT" acid chip on the right saying "this thread is
-          being handled by the AI". Extra vertical gap between the
-          handle and the subtitle so they don't cramp into one line. */}
+      {/* DM contact header — the LEAD (@maya.r + fox avatar) on the
+          left with clear vertical spacing between handle and
+          subtitle. No right-side "AI AGENT" chip: it added noise and
+          the point (that the reply is from the AI) is carried by the
+          acid emphasis on the outgoing bubbles below. */}
       <div
         className="flex items-center gap-3 px-4 py-3 border-b"
         style={{ borderColor: "var(--hairline)" }}
@@ -42,17 +42,6 @@ export function DmSurface({ progress, anchorRef }: Props) {
           </span>
           <span className="text-[9px] font-mono uppercase tracking-widest text-text-lo leading-none">
             tiktok · direct message
-          </span>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          <span
-            className="text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
-            style={{
-              color: "#0A0A0B",
-              background: "var(--acid)",
-            }}
-          >
-            AI Agent
           </span>
         </div>
       </div>

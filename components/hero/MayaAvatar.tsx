@@ -16,32 +16,31 @@ export function MayaAvatar({ size = 40, square = false, ring = false }: Props) {
       } ${ring ? "ring-2 ring-acid" : ""}`}
       style={style}
     >
-      {/* Neutral light-grey fill (a step darker than the panda's
-          white face) so the 🐼 silhouette contrasts. A subtle dark
-          inset border traces the circle edge — the panda is white +
-          black on white belly, so without a border the head can
-          bleed into a plain light-grey fill. Same avatar across
-          overlay, DM header, CRM header, closed system node. */}
+      {/* Deep near-black fill. The fox emoji is warm orange-white,
+          so it silhouettes strongly against the black without any
+          extra silhouette-border. On the overlay the acid ring
+          already traces the circle edge; anywhere else Maya renders
+          she's on a darker background, so the disc reads as an
+          object regardless. Same avatar across overlay, DM header,
+          CRM header, closed system node. */}
       <div
         className="absolute inset-0"
-        style={{
-          background: "#B4B4B9",
-          boxShadow: "inset 0 0 0 1px rgba(0, 0, 0, 0.22)",
-        }}
+        style={{ background: "#050506" }}
       />
       <div
         className="absolute inset-0 flex items-center justify-center"
         style={{
           fontSize: size * 0.72,
           lineHeight: 1,
-          // OS color-emoji font stack — otherwise 🐼 can render as a
-          // monochrome glyph and lose the black-eye-patches contrast.
+          // OS color-emoji font stack — without this 🦊 can render as
+          // a monochrome glyph and lose the warm-orange contrast that
+          // makes the black background work.
           fontFamily:
             "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif",
         }}
         aria-hidden
       >
-        🐼
+        🦊
       </div>
     </div>
   );

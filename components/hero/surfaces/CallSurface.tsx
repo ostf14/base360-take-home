@@ -52,31 +52,61 @@ export function CallSurface({ progress, anchorRef }: Props) {
       {/* Huge centered waveform */}
       <BigWaveform progress={progress} />
 
-      {/* Transcript ticker underneath — plain lines, no card, no border */}
+      {/* Transcript ticker. The AI voice is the focus of the frame —
+          same acid treatment as the DM outgoing bubbles and the TikTok
+          public reply: a solid acid "AI" chip + a 2px acid left stripe
+          + full-brightness text. Maya's incoming lines stay neutral so
+          the eye tracks what the agent is saying. */}
       <div className="mt-10 w-full max-w-2xl flex flex-col gap-2 min-h-[110px]">
-        {TRANSCRIPT.map((line, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, y: 4 }}
-            animate={{
-              opacity: progress > 0.15 + i * 0.18 ? 1 : 0.15,
-              y: 0,
-            }}
-            transition={{ duration: 0.25 }}
-            className="flex items-start gap-3 text-[12px]"
-          >
-            <span
-              className="font-mono uppercase text-[9px] shrink-0 mt-0.5"
-              style={{
-                color:
-                  line.who === "ai" ? "var(--text-lo)" : "var(--text-hi)",
+        {TRANSCRIPT.map((line, i) => {
+          const isAI = line.who === "ai";
+          return (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 4 }}
+              animate={{
+                opacity: progress > 0.15 + i * 0.18 ? 1 : 0.15,
+                y: 0,
               }}
+              transition={{ duration: 0.25 }}
+              className="flex items-start gap-2.5 text-[12px]"
+              style={
+                isAI
+                  ? {
+                      borderLeft: "2px solid var(--acid)",
+                      paddingLeft: 10,
+                    }
+                  : { paddingLeft: 12 }
+              }
             >
-              {line.who === "ai" ? "AI ›" : "MAYA ›"}
-            </span>
-            <span className="text-text-hi/85 leading-snug">{line.text}</span>
-          </motion.div>
-        ))}
+              {isAI ? (
+                <span
+                  className="font-mono uppercase text-[9px] shrink-0 mt-0.5 font-bold px-1.5 py-0.5 rounded-sm tracking-widest"
+                  style={{
+                    color: "#0A0A0B",
+                    background: "var(--acid)",
+                  }}
+                >
+                  AI
+                </span>
+              ) : (
+                <span
+                  className="font-mono uppercase text-[9px] shrink-0 mt-0.5 tracking-widest"
+                  style={{ color: "var(--text-lo)" }}
+                >
+                  MAYA
+                </span>
+              )}
+              <span
+                className={`leading-snug ${
+                  isAI ? "text-text-hi" : "text-text-hi/70"
+                }`}
+              >
+                {line.text}
+              </span>
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* Call controls — muted, static, no chrome */}
