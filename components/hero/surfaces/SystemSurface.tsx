@@ -183,7 +183,7 @@ function NodeCol({
             isClosed ? "var(--acid)" : "rgba(255,255,255,0.22)"
           }`,
           boxShadow: isClosed
-            ? "0 0 26px rgba(223,255,0,0.55)"
+            ? "var(--acid-halo-md)"
             : "0 4px 12px rgba(0,0,0,0.45)",
         }}
       >

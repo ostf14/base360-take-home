@@ -81,7 +81,7 @@ function PlaqueBody({ chapter }: { chapter: Chapter }) {
           <span
             style={{
               color: "var(--acid)",
-              textShadow: "0 0 18px rgba(223,255,0,0.35)",
+              textShadow: "var(--acid-halo-sm)",
             }}
           >
             {hit}

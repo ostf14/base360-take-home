@@ -153,7 +153,7 @@ export function EmailSurface({ progress, anchorRef }: Props) {
                             isIgnite ? "var(--acid)" : "var(--hairline)"
                           }`,
                           boxShadow: isIgnite
-                            ? "0 0 18px rgba(223,255,0,0.45)"
+                            ? "var(--acid-halo-sm)"
                             : "none",
                         }}
                       >

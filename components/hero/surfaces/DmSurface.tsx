@@ -137,7 +137,7 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
                   background: "rgba(223, 255, 0, 0.10)",
                   color: "var(--text-hi)",
                   border: "1px solid rgba(223, 255, 0, 0.32)",
-                  boxShadow: "0 0 16px rgba(223, 255, 0, 0.08)",
+                  boxShadow: "var(--acid-halo-faint)",
                 }
           }
         >

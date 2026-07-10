@@ -516,11 +516,27 @@ function RadiusSection() {
   );
 }
 
+// Acid halo tokens rendered as chips — one per step. Each chip has
+// the halo token applied as its boxShadow so what you see IS the
+// declared value. The caption reads live via getComputedStyle so
+// editing a token in tokens.css updates the shadow AND the caption
+// in place.
+const ACID_HALO_TOKENS = [
+  "--acid-halo-faint",
+  "--acid-halo-sm",
+  "--acid-halo-md",
+  "--acid-halo-lg",
+] as const;
+
 function ElevationSection() {
+  const haloValues = useTokenValues(ACID_HALO_TOKENS);
   return (
     <section>
       <SectionLabel>ELEVATION / GLOW</SectionLabel>
       <div className="flex flex-col" style={{ gap: "var(--space-6)" }}>
+        {/* Specimen shadow — the composite lift stack used on the
+            PhoneShell / WindowShell. Rendered on a large slab so the
+            layered inset bevels + drop + acid warmth are readable. */}
         <div>
           <div
             className="font-mono uppercase"
@@ -546,6 +562,12 @@ function ElevationSection() {
             />
           </div>
         </div>
+
+        {/* Acid halo scale — chips rendered WITH each halo token as
+            boxShadow, plus name + live computed value. Chips share
+            the same size / background so the eye tracks halo
+            differences between steps rather than shape differences.
+            faint → lg reads left to right as ambient → dramatic. */}
         <div>
           <div
             className="font-mono uppercase"
@@ -556,7 +578,67 @@ function ElevationSection() {
               marginBottom: "var(--space-3)",
             }}
           >
-            --acid-glow · 0 0 32 px halo
+            acid halo · 4 steps
+          </div>
+          <div
+            className="grid grid-cols-2"
+            style={{ gap: "var(--space-6)", padding: "var(--space-3)" }}
+          >
+            {ACID_HALO_TOKENS.map((name) => (
+              <div
+                key={name}
+                className="flex flex-col items-center"
+                style={{ gap: "var(--space-2)" }}
+              >
+                <div
+                  aria-hidden
+                  style={{
+                    width: 56,
+                    height: 56,
+                    background: "var(--acid)",
+                    borderRadius: "var(--radius-md)",
+                    boxShadow: `var(${name})`,
+                  }}
+                />
+                <div
+                  className="font-mono text-center"
+                  style={{
+                    fontSize: "var(--text-2xs)",
+                    color: "var(--text-hi)",
+                  }}
+                >
+                  {name.replace("--", "")}
+                </div>
+                <div
+                  className="font-mono text-center"
+                  style={{
+                    fontSize: "var(--text-2xs)",
+                    color: "var(--text-lo)",
+                  }}
+                >
+                  {haloValues[name] || "…"}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* --acid-glow — kept as a distinct token because it's an
+            rgba COLOR (not a full box-shadow), still consumed by the
+            `shadow-acid` tailwind utility and this preview. Shown
+            here as "the halo color at 32 px" so the reader sees
+            where the color-form of the acid halo lives. */}
+        <div>
+          <div
+            className="font-mono uppercase"
+            style={{
+              fontSize: "var(--text-2xs)",
+              letterSpacing: "0.22em",
+              color: "var(--text-lo)",
+              marginBottom: "var(--space-3)",
+            }}
+          >
+            --acid-glow · rgba color used in shadow-acid
           </div>
           <div className="flex justify-center" style={{ padding: "var(--space-3)" }}>
             <div
@@ -625,7 +707,7 @@ function ComponentsSection() {
               background: "var(--acid)",
               color: "#0A0A0B",
               fontWeight: 700,
-              boxShadow: "0 0 20px rgba(223,255,0,0.35)",
+              boxShadow: "var(--acid-halo-sm)",
             }}
           >
             Get early access

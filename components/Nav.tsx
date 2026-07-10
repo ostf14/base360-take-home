@@ -36,7 +36,7 @@ export function Nav() {
               background: "var(--acid)",
               color: "#0A0A0B",
               fontWeight: 700,
-              boxShadow: "0 0 20px rgba(223,255,0,0.35)",
+              boxShadow: "var(--acid-halo-sm)",
             }}
           >
             Get early access

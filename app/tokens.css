@@ -107,4 +107,20 @@
   --text-xl:   22px;  /* section headline / large numeric */
   --text-2xl:  34px;  /* pillars headline */
   --text-3xl:  60px;  /* CTA close headline */
+
+  /* ── Acid halo scale ───────────────────────────────────────── */
+  /* 4 clean shadow tokens replacing the 16–40 px cluster of
+     "0 0 Npx rgba(223,255,0,α)" glows scattered across the
+     components. Every consumer that used to inline the same
+     "0 0 20 / 0.35" or "0 0 32 / 0.45" values now points at one
+     of these. Tiny structural glows (arrow filters ≤ 6 px,
+     stepper node 6 px, kicker text 8–14 px) stay inline — their
+     shapes are specific to the element they live on and don't
+     dedupe cleanly. --acid-glow (rgba color, not a shadow) is
+     kept as-is: still consumed by the `shadow-acid` tailwind
+     utility and the ElevationSection preview. */
+  --acid-halo-faint: 0 0 24px rgba(223, 255, 0, 0.08);   /* subtle ambient card / bubble */
+  --acid-halo-sm:    0 0 20px rgba(223, 255, 0, 0.35);   /* CTA + kicker + accent word */
+  --acid-halo-md:    0 0 32px rgba(223, 255, 0, 0.45);   /* CLOSED pill / CtaClose button */
+  --acid-halo-lg:    0 0 40px rgba(223, 255, 0, 0.55);   /* reserved — no current 40 / 0.55 consumer, kept for future halos */
 }

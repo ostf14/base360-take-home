@@ -59,7 +59,7 @@ export function CtaClose() {
                 background: "var(--acid)",
                 color: "#0A0A0B",
                 fontWeight: 700,
-                boxShadow: "0 0 32px rgba(223,255,0,0.4)",
+                boxShadow: "var(--acid-halo-md)",
               }}
             >
               {submitted ? "> queued · you'll hear back" : "Join the waitlist"}

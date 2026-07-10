@@ -108,7 +108,7 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               background: "rgba(223, 255, 0, 0.06)",
               border: "1px solid rgba(223, 255, 0, 0.22)",
               borderLeft: "2px solid var(--acid)",
-              boxShadow: "0 0 20px rgba(223, 255, 0, 0.08)",
+              boxShadow: "var(--acid-halo-faint)",
             }}
           >
             <div className="flex items-center gap-1.5 mb-1">

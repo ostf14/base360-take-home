@@ -65,7 +65,7 @@ export function Credibility() {
           <span
             style={{
               color: "var(--acid)",
-              textShadow: "0 0 18px rgba(223,255,0,0.32)",
+              textShadow: "var(--acid-halo-sm)",
             }}
           >
             8 figures
