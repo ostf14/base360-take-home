@@ -39,9 +39,7 @@ const SPACING_TOKENS = [
   "--space-20",
   "--space-24",
   "--space-28",
-  "--space-32",
   "--space-40",
-  "--space-48",
 ];
 
 const RADIUS_TOKENS = [
