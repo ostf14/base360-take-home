@@ -34,13 +34,13 @@ export function DmSurface({ progress, anchorRef }: Props) {
         className="flex items-center gap-3 px-4 py-3 border-b"
         style={{ borderColor: "var(--hairline)" }}
       >
-        <span className="text-[13px] font-mono text-text-lo/70">‹</span>
+        <span className="text-sm font-mono text-text-lo/70">‹</span>
         <MayaAnchor anchorRef={anchorRef} />
         <div className="flex flex-col gap-1">
-          <span className="text-[13px] text-text-hi font-semibold leading-none">
+          <span className="text-sm text-text-hi font-semibold leading-none">
             @maya.r
           </span>
-          <span className="text-[9px] font-mono uppercase tracking-widest text-text-lo leading-none">
+          <span className="text-2xs font-mono uppercase tracking-widest text-text-lo leading-none">
             tiktok · direct message
           </span>
         </div>
@@ -55,7 +55,7 @@ export function DmSurface({ progress, anchorRef }: Props) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-2 text-[9px] font-mono text-text-lo mt-2"
+            className="flex items-center gap-2 text-2xs font-mono text-text-lo mt-2"
           >
             <span
               className="w-1 h-1 rounded-full"
@@ -78,7 +78,7 @@ export function DmSurface({ progress, anchorRef }: Props) {
           +
         </span>
         <div
-          className="flex-1 px-3 py-1.5 rounded-full text-[11px] text-text-lo/70"
+          className="flex-1 px-3 py-1.5 rounded-full text-xs text-text-lo/70"
           style={{
             background: "var(--surface-2)",
             border: "1px solid var(--hairline)",
@@ -86,7 +86,7 @@ export function DmSurface({ progress, anchorRef }: Props) {
         >
           Message…
         </div>
-        <span className="text-[13px] text-text-lo/70">↑</span>
+        <span className="text-sm text-text-lo/70">↑</span>
       </div>
     </PhoneShell>
   );
@@ -114,7 +114,7 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
       >
         {!isIncoming && (
           <span
-            className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
+            className="text-2xs font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
             style={{
               color: "#0A0A0B",
               background: "var(--acid)",
@@ -124,7 +124,7 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
           </span>
         )}
         <div
-          className={`px-3 py-1.5 text-[12px] leading-snug rounded-xl ${
+          className={`px-3 py-1.5 text-sm leading-snug rounded-xl ${
             isIncoming ? "rounded-bl-sm" : "rounded-br-sm"
           }`}
           style={

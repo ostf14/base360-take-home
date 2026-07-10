@@ -63,7 +63,7 @@ export function Pillars() {
             className="font-display font-bold tracking-tight"
             style={{
               color: "var(--text-hi)",
-              fontSize: 34,
+              fontSize: "var(--text-2xl)",
               lineHeight: 1.1,
               letterSpacing: "-0.015em",
             }}
@@ -116,7 +116,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
           the number and the icon read cleanly on the card. */}
       <div className="relative flex items-center justify-between" style={{ zIndex: 1 }}>
         <span
-          className="text-[11px] font-mono uppercase tracking-widest font-bold"
+          className="text-xs font-mono uppercase tracking-widest font-bold"
           style={{
             color: "var(--acid)",
             textShadow: "0 0 10px rgba(223,255,0,0.28)",
@@ -140,7 +140,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
           className="font-display font-bold whitespace-nowrap"
           style={{
             color: "var(--text-hi)",
-            fontSize: 16,
+            fontSize: "var(--text-base)",
             lineHeight: 1.25,
             letterSpacing: "-0.005em",
           }}
@@ -148,7 +148,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
           {pillar.title}
         </h3>
         <p
-          className="text-[13px] leading-snug"
+          className="text-sm leading-snug"
           style={{ color: "var(--text-lo)" }}
         >
           {pillar.body}

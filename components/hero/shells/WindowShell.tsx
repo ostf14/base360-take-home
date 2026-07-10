@@ -48,8 +48,8 @@ export function WindowShell({ url, tabs, children }: Props) {
               border: "1px solid var(--hairline)",
             }}
           >
-            <span className="text-[9px] font-mono text-text-lo/60">▲</span>
-            <span className="text-[10px] font-mono text-text-lo tracking-wider truncate">
+            <span className="text-2xs font-mono text-text-lo/60">▲</span>
+            <span className="text-xs font-mono text-text-lo tracking-wider truncate">
               {url}
             </span>
           </div>
@@ -72,7 +72,7 @@ export function WindowShell({ url, tabs, children }: Props) {
             {tabs.map((t, i) => (
               <div
                 key={i}
-                className="text-[10px] font-mono uppercase tracking-widest px-3 py-2 relative"
+                className="text-xs font-mono uppercase tracking-widest px-3 py-2 relative"
                 style={{
                   color: t.active ? "var(--text-hi)" : "var(--text-lo)",
                 }}

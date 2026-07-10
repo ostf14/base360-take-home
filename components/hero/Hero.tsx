@@ -205,7 +205,7 @@ export function Hero() {
               className="font-display font-medium"
               style={{
                 color: "var(--text-hi)",
-                fontSize: 22,
+                fontSize: "var(--text-xl)",
                 letterSpacing: "-0.005em",
               }}
             >
@@ -215,7 +215,7 @@ export function Hero() {
               className="font-mono uppercase font-bold"
               style={{
                 color: "var(--acid)",
-                fontSize: 14,
+                fontSize: "var(--text-base)",
                 letterSpacing: "0.22em",
                 textShadow: "0 0 12px rgba(223, 255, 0, 0.5)",
               }}
@@ -247,13 +247,13 @@ function CornerLabels({
 }) {
   return (
     <div className="flex items-center justify-between px-8 pt-20">
-      <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-text-lo">
+      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-text-lo">
         <span className="w-1.5 h-1.5 bg-acid live-dot" />
         <span>
           {label.surface} · {label.context}
         </span>
       </div>
-      <div className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
+      <div className="text-xs font-mono uppercase tracking-widest text-text-lo">
         base360://maya.r
       </div>
     </div>

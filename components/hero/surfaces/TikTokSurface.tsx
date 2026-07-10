@@ -34,10 +34,10 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
         }}
       >
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-mono uppercase tracking-widest text-text-hi">
+          <span className="text-xs font-mono uppercase tracking-widest text-text-hi">
             128 comments
           </span>
-          <span className="text-[10px] font-mono text-text-lo">latest</span>
+          <span className="text-xs font-mono text-text-lo">latest</span>
         </div>
 
         <motion.div
@@ -70,12 +70,12 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
             <MayaAnchor anchorRef={anchorRef} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="text-[13px] font-semibold text-text-hi">
+                <span className="text-sm font-semibold text-text-hi">
                   maya.r
                 </span>
-                <span className="text-[10px] font-mono text-text-lo">now</span>
+                <span className="text-xs font-mono text-text-lo">now</span>
               </div>
-              <div className="text-[13px] text-text-hi leading-snug">
+              <div className="text-sm text-text-hi leading-snug">
                 how much is this? <span>😍</span>
               </div>
             </div>
@@ -83,7 +83,7 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 21s-7-4.35-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.65-7 10-7 10z" />
               </svg>
-              <span className="text-[9px] font-mono">4</span>
+              <span className="text-2xs font-mono">4</span>
             </div>
           </div>
         </motion.div>
@@ -112,11 +112,11 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
             }}
           >
             <div className="flex items-center gap-1.5 mb-1">
-              <span className="text-[12px] font-semibold text-text-hi">
+              <span className="text-sm font-semibold text-text-hi">
                 @northbloom.co
               </span>
               <span
-                className="text-[8px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
+                className="text-2xs font-mono font-bold uppercase px-1.5 py-0.5 rounded-sm tracking-widest"
                 style={{
                   color: "#0A0A0B",
                   background: "var(--acid)",
@@ -124,11 +124,11 @@ export function TikTokSurface({ igniteProgress, anchorRef }: Props) {
               >
                 AI
               </span>
-              <span className="text-[10px] font-mono text-text-lo ml-auto">
+              <span className="text-xs font-mono text-text-lo ml-auto">
                 public reply
               </span>
             </div>
-            <div className="text-[12px] text-text-hi leading-snug">
+            <div className="text-sm text-text-hi leading-snug">
               <TypedLine
                 text="just slid into your DMs 💌"
                 show={igniteProgress > 0.35}
@@ -195,11 +195,11 @@ function BrandOverlay() {
           }}
         />
         <div className="flex flex-col leading-tight">
-          <span className="text-[12px] font-semibold">@northbloom.co</span>
-          <span className="text-[10px] text-text-lo/80">128.4K views · 3h</span>
+          <span className="text-sm font-semibold">@northbloom.co</span>
+          <span className="text-xs text-text-lo/80">128.4K views · 3h</span>
         </div>
         <span
-          className="ml-2 text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm"
+          className="ml-2 text-2xs font-mono uppercase px-1.5 py-0.5 rounded-sm"
           style={{
             color: "var(--text-hi)",
             border: "1px solid var(--text-hi)",
@@ -208,10 +208,10 @@ function BrandOverlay() {
           Follow
         </span>
       </div>
-      <div className="text-[11px] text-text-hi/85">
+      <div className="text-xs text-text-hi/85">
         new drop. black finish. only 200 units 🖤
       </div>
-      <div className="text-[10px] font-mono text-text-lo/80">
+      <div className="text-xs font-mono text-text-lo/80">
         ♪ original sound — northbloom
       </div>
     </div>

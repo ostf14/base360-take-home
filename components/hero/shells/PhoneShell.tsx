@@ -54,7 +54,7 @@ export function PhoneShell({ platform, children }: Props) {
             }}
           />
           {/* Status bar — muted mono, no acid */}
-          <div className="relative z-20 flex items-center justify-between px-6 pt-2.5 pb-1.5 text-[10px] font-mono text-text-lo/80">
+          <div className="relative z-20 flex items-center justify-between px-6 pt-2.5 pb-1.5 text-xs font-mono text-text-lo/80">
             <span>9:41</span>
             <span className="opacity-0 select-none">•</span>
             <span className="flex items-center gap-1.5">
@@ -69,21 +69,21 @@ export function PhoneShell({ platform, children }: Props) {
           >
             {platform === "tiktok" ? (
               <>
-                <span className="text-[11px] font-mono uppercase tracking-widest text-text-hi">
+                <span className="text-xs font-mono uppercase tracking-widest text-text-hi">
                   For You
                 </span>
-                <span className="text-[11px] font-mono uppercase tracking-widest text-text-lo/70">
+                <span className="text-xs font-mono uppercase tracking-widest text-text-lo/70">
                   Following
                 </span>
-                <span className="text-[10px] text-text-lo">🔍</span>
+                <span className="text-xs text-text-lo">🔍</span>
               </>
             ) : (
               <>
-                <span className="text-[11px] font-mono text-text-lo/80">←</span>
-                <span className="text-[11px] font-mono uppercase tracking-widest text-text-hi">
+                <span className="text-xs font-mono text-text-lo/80">←</span>
+                <span className="text-xs font-mono uppercase tracking-widest text-text-hi">
                   Messages
                 </span>
-                <span className="text-[11px] font-mono text-text-lo/80">✎</span>
+                <span className="text-xs font-mono text-text-lo/80">✎</span>
               </>
             )}
           </div>

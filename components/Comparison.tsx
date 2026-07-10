@@ -49,7 +49,7 @@ export function Comparison() {
             className="font-display font-bold tracking-tight"
             style={{
               color: "var(--text-hi)",
-              fontSize: 34,
+              fontSize: "var(--text-2xl)",
               lineHeight: 1.1,
               letterSpacing: "-0.015em",
             }}
@@ -173,14 +173,14 @@ function CardHeader({
           />
         )}
         <span
-          className="text-[11px] font-mono uppercase font-bold"
+          className="text-xs font-mono uppercase font-bold"
           style={{ color: labelColor, letterSpacing: "0.22em" }}
         >
           {label}
         </span>
       </div>
       <span
-        className="text-[10px] font-mono uppercase font-bold"
+        className="text-xs font-mono uppercase font-bold"
         style={{ color: tagColor, letterSpacing: "0.22em" }}
       >
         {tag}
@@ -218,14 +218,14 @@ function Row({
         style={{
           width: 16,
           height: 16,
-          fontSize: 13,
+          fontSize: "var(--text-sm)",
           color: symbolColor,
           textShadow: symbolGlow ?? "none",
         }}
       >
         {symbol}
       </span>
-      <span className="text-[14px] leading-snug" style={{ color: textColor }}>
+      <span className="text-base leading-snug" style={{ color: textColor }}>
         {text}
       </span>
     </div>

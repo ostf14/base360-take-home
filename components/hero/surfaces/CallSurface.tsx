@@ -29,11 +29,11 @@ export function CallSurface({ progress, anchorRef }: Props) {
       {/* Callee identity block: Maya + name + phone. */}
       <div className="flex flex-col items-center gap-3 mb-6">
         <MayaAnchor anchorRef={anchorRef} />
-        <div className="text-2xl font-display text-text-hi">Maya R.</div>
-        <div className="text-[10px] font-mono uppercase tracking-widest text-text-lo">
+        <div className="text-xl font-display text-text-hi">Maya R.</div>
+        <div className="text-xs font-mono uppercase tracking-widest text-text-lo">
           +1 · 416 · ●●● ●●●●
         </div>
-        <div className="text-[10px] font-mono uppercase tracking-widest text-text-lo/70">
+        <div className="text-xs font-mono uppercase tracking-widest text-text-lo/70">
           agent · ai voice
         </div>
       </div>
@@ -60,7 +60,7 @@ export function CallSurface({ progress, anchorRef }: Props) {
                 y: 0,
               }}
               transition={{ duration: 0.25 }}
-              className="flex items-start gap-2.5 text-[12px]"
+              className="flex items-start gap-2.5 text-sm"
               style={
                 isAI
                   ? {
@@ -74,7 +74,7 @@ export function CallSurface({ progress, anchorRef }: Props) {
             >
               {isAI ? (
                 <span
-                  className="font-mono uppercase text-[9px] shrink-0 mt-0.5 font-bold px-1.5 py-0.5 rounded-sm tracking-widest"
+                  className="font-mono uppercase text-2xs shrink-0 mt-0.5 font-bold px-1.5 py-0.5 rounded-sm tracking-widest"
                   style={{
                     color: "#0A0A0B",
                     background: "var(--acid)",
@@ -84,7 +84,7 @@ export function CallSurface({ progress, anchorRef }: Props) {
                 </span>
               ) : (
                 <span
-                  className="font-mono uppercase text-[10px] shrink-0 mt-0.5 tracking-widest font-bold"
+                  className="font-mono uppercase text-xs shrink-0 mt-0.5 tracking-widest font-bold"
                   style={{ color: "rgba(255,255,255,0.6)" }}
                 >
                   MAYA
@@ -116,7 +116,7 @@ export function CallSurface({ progress, anchorRef }: Props) {
             >
               ·
             </span>
-            <span className="text-[9px] font-mono uppercase tracking-widest">
+            <span className="text-2xs font-mono uppercase tracking-widest">
               {label}
             </span>
           </div>
@@ -131,7 +131,7 @@ export function CallSurface({ progress, anchorRef }: Props) {
           >
             ✕
           </span>
-          <span className="text-[9px] font-mono uppercase tracking-widest text-text-lo">
+          <span className="text-2xs font-mono uppercase tracking-widest text-text-lo">
             end
           </span>
         </div>

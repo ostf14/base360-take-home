@@ -13,7 +13,7 @@ export function CtaClose() {
     >
       <div className="max-w-6xl mx-auto grid grid-cols-2 gap-16 items-center relative z-10">
         <div className="flex flex-col gap-6">
-          <h2 className="font-display text-6xl leading-[0.98] font-bold text-text-hi tracking-tight">
+          <h2 className="font-display text-3xl leading-[0.98] font-bold text-text-hi tracking-tight">
             Never miss a
             <br />
             <span className="text-acid">customer</span> again.
@@ -38,7 +38,7 @@ export function CtaClose() {
               backdropFilter: "blur(6px)",
             }}
           >
-            <label className="text-[10px] font-mono uppercase tracking-widest text-acid">
+            <label className="text-xs font-mono uppercase tracking-widest text-acid">
               request access
             </label>
             <input
@@ -64,7 +64,7 @@ export function CtaClose() {
             >
               {submitted ? "> queued · you'll hear back" : "Join the waitlist"}
             </button>
-            <div className="text-[10px] font-mono text-text-lo text-center mt-1">
+            <div className="text-xs font-mono text-text-lo text-center mt-1">
               no spam · one email when we open the cohort
             </div>
           </div>

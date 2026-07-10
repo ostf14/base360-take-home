@@ -1,7 +1,7 @@
 export function Footer() {
   return (
     <footer
-      className="px-8 py-10 flex items-center justify-between font-mono uppercase text-[10px] tracking-widest text-text-lo"
+      className="px-8 py-10 flex items-center justify-between font-mono uppercase text-xs tracking-widest text-text-lo"
       style={{
         borderTop: "1px solid var(--hairline)",
         background: "var(--bg)",

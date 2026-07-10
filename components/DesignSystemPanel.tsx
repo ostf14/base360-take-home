@@ -52,46 +52,37 @@ const RADIUS_TOKENS = [
   "--radius-pill",
 ];
 
-interface FontSpec {
-  role: string;
-  family: string;
-  weights: string;
-  cssVar: string;
+// One row per --text-* token. Family / weight are the pairing each
+// size actually carries in the app — small mono for labels, body for
+// mid-scale copy, display for headline sizes. Everything renders
+// live: fontSize resolves to var(<token>) and the label pulls the
+// computed px value from getComputedStyle. Editing --text-sm in
+// tokens.css updates the pixel value here immediately.
+interface TypeSpec {
+  token: string;
+  family: "mono" | "body" | "display";
   weight: 400 | 500 | 700;
   sample: string;
-  size: number;
 }
 
-const FONTS: FontSpec[] = [
-  {
-    role: "DISPLAY",
-    family: "Space Grotesk",
-    weights: "500 / 700",
-    cssVar: "--font-display",
-    weight: 700,
-    sample: "One system. Every channel.",
-    size: 22,
-  },
-  {
-    role: "BODY",
-    family: "Inter",
-    weights: "400 / 500",
-    cssVar: "--font-body",
-    weight: 400,
-    sample:
-      "Base360 watches every social channel and answers in public — instantly, in your voice.",
-    size: 13,
-  },
-  {
-    role: "MONO / LABELS",
-    family: "JetBrains Mono",
-    weights: "400 / 500 / 700",
-    cssVar: "--font-mono",
-    weight: 700,
-    sample: "> STEP 01 / 06 — THE COMMENT",
-    size: 11,
-  },
+const TYPE_SPECS: TypeSpec[] = [
+  { token: "--text-2xs",  family: "mono",    weight: 700, sample: "TIKTOK · PUBLIC" },
+  { token: "--text-xs",   family: "mono",    weight: 700, sample: "> STEP 01 / 06 — THE COMMENT" },
+  { token: "--text-sm",   family: "body",    weight: 400, sample: "Every conversation becomes a lead." },
+  { token: "--text-base", family: "body",    weight: 400, sample: "Base360 replies in your voice — instantly, in public." },
+  { token: "--text-lg",   family: "body",    weight: 500, sample: "Join the waitlist" },
+  { token: "--text-xl",   family: "display", weight: 700, sample: "Every reply becomes a lead." },
+  { token: "--text-2xl",  family: "display", weight: 700, sample: "What Base360 runs." },
+  { token: "--text-3xl",  family: "display", weight: 700, sample: "Never miss." },
 ];
+
+const TYPE_TOKENS = TYPE_SPECS.map((s) => s.token);
+
+const FAMILY_CSS: Record<TypeSpec["family"], string> = {
+  mono: "var(--font-mono), ui-monospace, monospace",
+  body: "var(--font-body), system-ui, sans-serif",
+  display: "var(--font-display), system-ui, sans-serif",
+};
 
 // Live-reads a list of CSS custom-property names off <html> so the
 // UI always shows the current declared value from tokens.css.
@@ -174,7 +165,7 @@ function TopBar({ onClick }: { onClick: () => void }) {
       <span
         className="font-mono uppercase font-bold"
         style={{
-          fontSize: 10,
+          fontSize: "var(--text-xs)",
           letterSpacing: "0.28em",
         }}
       >
@@ -184,7 +175,7 @@ function TopBar({ onClick }: { onClick: () => void }) {
         aria-hidden
         className="font-mono uppercase"
         style={{
-          fontSize: 9,
+          fontSize: "var(--text-2xs)",
           letterSpacing: "0.28em",
           color: "var(--text-lo)",
           opacity: 0.65,
@@ -248,7 +239,7 @@ function Header({ onClose }: { onClose: () => void }) {
         <div
           className="font-mono uppercase font-bold"
           style={{
-            fontSize: 10,
+            fontSize: "var(--text-xs)",
             letterSpacing: "0.28em",
             color: "var(--acid)",
           }}
@@ -259,7 +250,7 @@ function Header({ onClose }: { onClose: () => void }) {
           className="font-display font-bold"
           style={{
             color: "var(--text-hi)",
-            fontSize: 22,
+            fontSize: "var(--text-xl)",
             lineHeight: 1.15,
             letterSpacing: "-0.015em",
             marginTop: "var(--space-2)",
@@ -270,7 +261,7 @@ function Header({ onClose }: { onClose: () => void }) {
         <div
           className="font-mono"
           style={{
-            fontSize: 10,
+            fontSize: "var(--text-xs)",
             color: "var(--text-lo)",
             marginTop: "var(--space-1)",
           }}
@@ -289,7 +280,7 @@ function Header({ onClose }: { onClose: () => void }) {
           border: "1px solid var(--hairline)",
           borderRadius: "var(--radius-sm)",
           color: "var(--text-lo)",
-          fontSize: 14,
+          fontSize: "var(--text-base)",
           lineHeight: 1,
         }}
       >
@@ -304,7 +295,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <div
       className="font-mono uppercase font-bold"
       style={{
-        fontSize: 10,
+        fontSize: "var(--text-xs)",
         letterSpacing: "0.28em",
         color: "var(--text-lo)",
         marginBottom: "var(--space-3)",
@@ -356,13 +347,13 @@ function ColorSection() {
             <div className="flex-1 min-w-0">
               <div
                 className="font-mono"
-                style={{ fontSize: 11, color: "var(--text-hi)" }}
+                style={{ fontSize: "var(--text-xs)", color: "var(--text-hi)" }}
               >
                 {name}
               </div>
               <div
                 className="font-mono truncate"
-                style={{ fontSize: 10, color: "var(--text-lo)" }}
+                style={{ fontSize: "var(--text-xs)", color: "var(--text-lo)" }}
               >
                 {values[name] || "…"}
               </div>
@@ -370,7 +361,7 @@ function ColorSection() {
             <span
               className="font-mono uppercase transition-opacity shrink-0"
               style={{
-                fontSize: 9,
+                fontSize: "var(--text-2xs)",
                 letterSpacing: "0.22em",
                 color: "var(--acid)",
                 opacity: copied === name ? 1 : 0,
@@ -386,40 +377,56 @@ function ColorSection() {
 }
 
 function TypeSection() {
+  const values = useTokenValues(TYPE_TOKENS);
   return (
     <section>
       <SectionLabel>TYPE</SectionLabel>
       <div className="flex flex-col" style={{ gap: "var(--space-5)" }}>
-        {FONTS.map((f) => (
-          <div
-            key={f.role}
-            className="flex flex-col"
-            style={{ gap: "var(--space-2)" }}
-          >
+        {TYPE_SPECS.map((spec) => {
+          const name = spec.token.replace("--", "");
+          return (
             <div
-              className="font-mono uppercase"
-              style={{
-                fontSize: 9,
-                letterSpacing: "0.22em",
-                color: "var(--text-lo)",
-              }}
+              key={spec.token}
+              className="flex flex-col"
+              style={{ gap: "var(--space-2)" }}
             >
-              {f.family} · {f.role} · {f.weights}
+              {/* Meta row — token name · computed px · family. Reads
+                  live from getComputedStyle so editing a --text-*
+                  value in tokens.css updates the px column here. */}
+              <div
+                className="font-mono uppercase flex items-center"
+                style={{
+                  fontSize: "var(--text-2xs)",
+                  letterSpacing: "0.22em",
+                  color: "var(--text-lo)",
+                  gap: "var(--space-3)",
+                }}
+              >
+                <span style={{ color: "var(--text-hi)" }}>{name}</span>
+                <span>{values[spec.token] || "…"}</span>
+                <span>· {spec.family}</span>
+              </div>
+              {/* Sample rendered AT that token's size in the family
+                  the size actually carries in the app. fontFamily is
+                  a CSS var; fontSize resolves to the same token the
+                  meta row above just labelled — the two are wired to
+                  the same source. */}
+              <div
+                style={{
+                  fontFamily: FAMILY_CSS[spec.family],
+                  fontSize: `var(${spec.token})`,
+                  fontWeight: spec.weight,
+                  color: "var(--text-hi)",
+                  lineHeight: 1.2,
+                  letterSpacing:
+                    spec.family === "display" ? "-0.015em" : 0,
+                }}
+              >
+                {spec.sample}
+              </div>
             </div>
-            <div
-              style={{
-                fontFamily: `var(${f.cssVar}), system-ui, sans-serif`,
-                fontSize: f.size,
-                fontWeight: f.weight,
-                color: "var(--text-hi)",
-                lineHeight: 1.25,
-                letterSpacing: f.cssVar === "--font-display" ? "-0.015em" : 0,
-              }}
-            >
-              {f.sample}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );
@@ -435,7 +442,7 @@ function SpacingSection() {
           <div key={name} className="flex items-center" style={{ gap: "var(--space-3)" }}>
             <div
               className="font-mono shrink-0"
-              style={{ fontSize: 10, color: "var(--text-hi)", width: 72 }}
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-hi)", width: 72 }}
             >
               {name.replace("--space-", "space-")}
             </div>
@@ -452,7 +459,7 @@ function SpacingSection() {
             />
             <div
               className="font-mono ml-auto shrink-0"
-              style={{ fontSize: 10, color: "var(--text-lo)" }}
+              style={{ fontSize: "var(--text-xs)", color: "var(--text-lo)" }}
             >
               {values[name] || "…"}
             </div>
@@ -491,13 +498,13 @@ function RadiusSection() {
             <div>
               <div
                 className="font-mono"
-                style={{ fontSize: 10, color: "var(--text-hi)" }}
+                style={{ fontSize: "var(--text-xs)", color: "var(--text-hi)" }}
               >
                 {name.replace("--radius-", "")}
               </div>
               <div
                 className="font-mono"
-                style={{ fontSize: 9, color: "var(--text-lo)" }}
+                style={{ fontSize: "var(--text-2xs)", color: "var(--text-lo)" }}
               >
                 {values[name] || "…"}
               </div>
@@ -518,7 +525,7 @@ function ElevationSection() {
           <div
             className="font-mono uppercase"
             style={{
-              fontSize: 9,
+              fontSize: "var(--text-2xs)",
               letterSpacing: "0.22em",
               color: "var(--text-lo)",
               marginBottom: "var(--space-3)",
@@ -543,7 +550,7 @@ function ElevationSection() {
           <div
             className="font-mono uppercase"
             style={{
-              fontSize: 9,
+              fontSize: "var(--text-2xs)",
               letterSpacing: "0.22em",
               color: "var(--text-lo)",
               marginBottom: "var(--space-3)",
@@ -581,7 +588,7 @@ function ComponentPreview({
       <div
         className="font-mono uppercase"
         style={{
-          fontSize: 9,
+          fontSize: "var(--text-2xs)",
           letterSpacing: "0.22em",
           color: "var(--text-lo)",
         }}
@@ -629,7 +636,7 @@ function ComponentsSection() {
           <div
             className="inline-flex items-center font-mono uppercase"
             style={{
-              fontSize: 10,
+              fontSize: "var(--text-xs)",
               letterSpacing: "0.22em",
               color: "var(--text-lo)",
               gap: "var(--space-2)",
@@ -734,7 +741,7 @@ function ComponentsSection() {
             style={{
               padding: "var(--space-3) var(--space-5)",
               gap: "var(--space-2)",
-              fontSize: 15,
+              fontSize: "var(--text-base)",
               color: "var(--text-hi)",
               background: "rgba(28,28,31,0.92)",
               border: "1px solid rgba(255,255,255,0.22)",

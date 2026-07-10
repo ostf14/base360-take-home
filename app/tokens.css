@@ -86,4 +86,25 @@
                             corner. Only one consumer, but 24 px
                             would look glaringly too angular here. */
   --radius-pill: 9999px; /* pill / full circle */
+
+  /* ── Type scale ────────────────────────────────────────────── */
+  /* 8 clean steps replacing 60+ inline text-[Npx] / fontSize: N
+     values scattered across the components. The old cluster of
+     8/9/10/11 px mono labels collapses to two steps (--text-2xs
+     for glyph-tight labels, --text-xs for the standard mono
+     kicker); 12/13 collapse to --text-sm; 14/15 to --text-base.
+     Higher steps are display sizes for card / section headlines.
+     The hero clamp headline stays inline (its viewport-adaptive
+     min/max scaling has no scale-step analogue).
+     Wired into tailwind.config.fontSize so text-2xs / text-xs /
+     text-sm / text-base / text-lg / text-xl / text-2xl / text-3xl
+     resolve against these vars. */
+  --text-2xs:  9px;   /* micro mono glyph labels */
+  --text-xs:   11px;  /* standard mono kicker / small ui text */
+  --text-sm:   13px;  /* small body / dense rows */
+  --text-base: 15px;  /* body baseline */
+  --text-lg:   18px;  /* card headline */
+  --text-xl:   22px;  /* section headline / large numeric */
+  --text-2xl:  34px;  /* pillars headline */
+  --text-3xl:  60px;  /* CTA close headline */
 }

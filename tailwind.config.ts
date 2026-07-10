@@ -79,6 +79,23 @@ const config: Config = {
         full: "var(--radius-pill)",
         pill: "var(--radius-pill)",
       },
+      // Type scale utility classes route through --text-* vars in
+      // tokens.css. Replaces 121 hardcoded text-[Npx] / inline
+      // fontSize values that were sprinkled across the components.
+      // Steps: 2xs (9) · xs (11) · sm (13) · base (15) · lg (18) ·
+      // xl (22) · 2xl (34) · 3xl (60). Hero clamp headline is
+      // intentionally excluded — its viewport-adaptive size has no
+      // scale-step analogue and stays inline.
+      fontSize: {
+        "2xs": "var(--text-2xs)",
+        xs: "var(--text-xs)",
+        sm: "var(--text-sm)",
+        base: "var(--text-base)",
+        lg: "var(--text-lg)",
+        xl: "var(--text-xl)",
+        "2xl": "var(--text-2xl)",
+        "3xl": "var(--text-3xl)",
+      },
     },
   },
   plugins: [],

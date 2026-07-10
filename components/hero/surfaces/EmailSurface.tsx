@@ -61,13 +61,13 @@ export function EmailSurface({ progress, anchorRef }: Props) {
           style={{ borderColor: "var(--hairline)" }}
         >
           <div>
-            <div className="text-[9px] font-mono uppercase tracking-widest text-text-lo">
+            <div className="text-2xs font-mono uppercase tracking-widest text-text-lo">
               sequence
             </div>
             <div className="text-base font-display text-text-hi">
               Bloom-01 · Post-conversation nurture
             </div>
-            <div className="text-[10px] font-mono text-text-lo mt-0.5">
+            <div className="text-xs font-mono text-text-lo mt-0.5">
               3 steps · avg 47% open · 12% ctr
             </div>
           </div>
@@ -77,18 +77,18 @@ export function EmailSurface({ progress, anchorRef }: Props) {
               className="flex items-center gap-2 px-2 py-1 rounded-sm"
               style={{ border: "1px solid var(--hairline)" }}
             >
-              <span className="text-[9px] font-mono uppercase text-text-lo">
+              <span className="text-2xs font-mono uppercase text-text-lo">
                 recipient
               </span>
               <MayaAnchor anchorRef={anchorRef} />
-              <span className="text-[11px] text-text-hi">Maya R.</span>
+              <span className="text-xs text-text-hi">Maya R.</span>
             </div>
           </div>
         </div>
 
         {/* Column headers */}
         <div
-          className="grid grid-cols-[60px_1fr_120px_260px_100px] px-5 py-2 text-[9px] font-mono uppercase tracking-widest text-text-lo border-b"
+          className="grid grid-cols-[60px_1fr_120px_260px_100px] px-5 py-2 text-2xs font-mono uppercase tracking-widest text-text-lo border-b"
           style={{ borderColor: "var(--hairline)" }}
         >
           <span>step</span>
@@ -119,18 +119,18 @@ export function EmailSurface({ progress, anchorRef }: Props) {
                 className="grid grid-cols-[60px_1fr_120px_260px_100px] items-center px-5 py-3 border-b"
                 style={{ borderColor: "var(--hairline)" }}
               >
-                <span className="font-mono text-[11px] text-text-lo">
+                <span className="font-mono text-xs text-text-lo">
                   {email.step}
                 </span>
                 <div className="flex flex-col gap-0.5 min-w-0 pr-4">
-                  <span className="text-[12px] text-text-hi font-medium truncate">
+                  <span className="text-sm text-text-hi font-medium truncate">
                     {email.subject}
                   </span>
-                  <span className="text-[10px] text-text-lo truncate">
+                  <span className="text-xs text-text-lo truncate">
                     {email.preview}
                   </span>
                 </div>
-                <span className="font-mono text-[10px] text-text-lo">
+                <span className="font-mono text-xs text-text-lo">
                   {email.when}
                 </span>
                 <div className="flex items-center gap-1.5 flex-wrap">
@@ -145,7 +145,7 @@ export function EmailSurface({ progress, anchorRef }: Props) {
                           opacity: on ? 1 : 0.28,
                           scale: isIgnite ? 1.03 : 1,
                         }}
-                        className="inline-flex items-center gap-1 text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-sm"
+                        className="inline-flex items-center gap-1 text-2xs font-mono uppercase px-1.5 py-0.5 rounded-sm"
                         style={{
                           color: isIgnite ? "#0A0A0B" : "var(--text-lo)",
                           background: isIgnite ? "var(--acid)" : "transparent",
@@ -171,7 +171,7 @@ export function EmailSurface({ progress, anchorRef }: Props) {
                   })}
                 </div>
                 <span
-                  className="text-right text-[10px] font-mono uppercase tracking-widest"
+                  className="text-right text-xs font-mono uppercase tracking-widest"
                   style={{
                     color:
                       status === "Complete"
@@ -188,7 +188,7 @@ export function EmailSurface({ progress, anchorRef }: Props) {
 
         {/* Footer strip */}
         <div
-          className="flex items-center justify-between px-5 py-2 border-t text-[9px] font-mono uppercase tracking-widest text-text-lo"
+          className="flex items-center justify-between px-5 py-2 border-t text-2xs font-mono uppercase tracking-widest text-text-lo"
           style={{
             borderColor: "var(--hairline)",
             background: "var(--surface-2)",

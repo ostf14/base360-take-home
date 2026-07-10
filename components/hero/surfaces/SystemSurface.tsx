@@ -63,7 +63,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
       >
         {/* Chrome — top-left "SYSTEM VIEW / ZOOM 1:1", top-right
             "MAYA.R · ONE THREAD". */}
-        <div className="absolute top-4 left-5 flex items-center gap-3 text-[10px] font-mono uppercase tracking-widest text-text-lo z-10">
+        <div className="absolute top-4 left-5 flex items-center gap-3 text-xs font-mono uppercase tracking-widest text-text-lo z-10">
           <span>base360 / system view</span>
           <span
             className="w-px h-3"
@@ -71,7 +71,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
           />
           <span className="text-text-lo/70">zoom · 1:1</span>
         </div>
-        <div className="absolute top-4 right-5 flex items-center gap-2 text-[10px] font-mono uppercase text-text-lo/70 z-10">
+        <div className="absolute top-4 right-5 flex items-center gap-2 text-xs font-mono uppercase text-text-lo/70 z-10">
           <span
             className="w-1.5 h-1.5 rounded-full"
             style={{ background: "var(--text-lo)" }}
@@ -123,7 +123,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
               y: progress > 0.7 ? 0 : 8,
             }}
             transition={{ duration: 0.35 }}
-            className="mt-12 text-[10px] font-mono uppercase tracking-widest text-text-lo text-center"
+            className="mt-12 text-xs font-mono uppercase tracking-widest text-text-lo text-center"
           >
             one operating system
           </motion.div>
@@ -175,7 +175,7 @@ function NodeCol({
           height: BOX_HEIGHT,
           // 9 px snaps to --space-2 (8) — the icon → label gap.
           gap: "var(--space-2)",
-          fontSize: 15,
+          fontSize: "var(--text-base)",
           boxSizing: "border-box",
           color: isClosed ? "#0A0A0B" : "var(--text-hi)",
           background: isClosed ? "var(--acid)" : "rgba(28,28,31,0.92)",
@@ -201,7 +201,7 @@ function NodeCol({
         )}
         <span>{n.label}</span>
       </motion.div>
-      <div className="text-[9px] font-mono uppercase text-text-lo/90 tracking-widest whitespace-nowrap">
+      <div className="text-2xs font-mono uppercase text-text-lo/90 tracking-widest whitespace-nowrap">
         {n.sub}
       </div>
     </div>

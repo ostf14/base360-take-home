@@ -36,7 +36,7 @@ export function Credibility() {
           <span
             className="font-mono uppercase"
             style={{
-              fontSize: 9,
+              fontSize: "var(--text-2xs)",
               letterSpacing: "0.22em",
               color: "rgba(255,255,255,0.32)",
             }}
@@ -53,7 +53,7 @@ export function Credibility() {
           className="font-display font-bold tracking-tight"
           style={{
             color: "var(--text-hi)",
-            fontSize: 34,
+            fontSize: "var(--text-2xl)",
             lineHeight: 1.15,
             letterSpacing: "-0.015em",
           }}
@@ -109,7 +109,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
     <div
       className="font-mono uppercase font-bold"
       style={{
-        fontSize: 10,
+        fontSize: "var(--text-xs)",
         letterSpacing: "0.28em",
         color: "rgba(255,255,255,0.48)",
       }}
@@ -133,7 +133,7 @@ function InlineLogoChip({ label }: { label: string }) {
         border: PLACEHOLDER_BORDER,
         borderRadius: "var(--radius-md)",
         color: PLACEHOLDER_TEXT,
-        fontSize: 11,
+        fontSize: "var(--text-xs)",
         letterSpacing: "0.22em",
         verticalAlign: "middle",
         // Small negative y so the chip visually centres against the
@@ -162,7 +162,7 @@ function FounderCard({ role }: { role: string }) {
       />
       <div className="flex flex-col gap-0.5 min-w-0">
         <span
-          className="text-[13px]"
+          className="text-sm"
           style={{ color: PLACEHOLDER_TEXT }}
         >
           [ Founder ]
@@ -170,7 +170,7 @@ function FounderCard({ role }: { role: string }) {
         <span
           className="font-mono uppercase"
           style={{
-            fontSize: 10,
+            fontSize: "var(--text-xs)",
             letterSpacing: "0.2em",
             color: "rgba(255,255,255,0.55)",
           }}
@@ -192,7 +192,7 @@ function InvestorLogo({ label }: { label: string }) {
         border: PLACEHOLDER_BORDER,
         borderRadius: "var(--radius-sm)",
         color: PLACEHOLDER_TEXT,
-        fontSize: 10,
+        fontSize: "var(--text-xs)",
         letterSpacing: "0.24em",
         fontWeight: 700,
       }}

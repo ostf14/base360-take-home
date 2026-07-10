@@ -71,7 +71,7 @@ function PlaqueBody({ chapter }: { chapter: Chapter }) {
         className="font-display font-bold whitespace-nowrap"
         style={{
           color: "var(--text-hi)",
-          fontSize: 24,
+          fontSize: "var(--text-xl)",
           lineHeight: 1.2,
           letterSpacing: "-0.015em",
         }}
@@ -94,7 +94,7 @@ function PlaqueBody({ chapter }: { chapter: Chapter }) {
           width; if a future edit overflows, it wraps to two, no
           hard clip. */}
       <div
-        className="text-[13px] leading-snug"
+        className="text-sm leading-snug"
         style={{ color: "var(--text-lo)" }}
       >
         {chapter.subcopy}

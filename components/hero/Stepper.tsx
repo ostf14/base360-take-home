@@ -111,7 +111,7 @@ function Node({
         initial={false}
         animate={{ opacity: active ? 1 : 0 }}
         transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-left font-mono uppercase pointer-events-none text-[10px] font-bold"
+        className="absolute top-1/2 -translate-y-1/2 whitespace-nowrap text-left font-mono uppercase pointer-events-none text-xs font-bold"
         style={{
           left: "calc(100% + 14px)",
           letterSpacing: "0.18em",

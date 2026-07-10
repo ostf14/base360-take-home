@@ -43,13 +43,13 @@ export function CrmSurface({ progress, anchorRef }: Props) {
           className="flex flex-col border-r py-2"
           style={{ borderColor: "var(--hairline)" }}
         >
-          <div className="px-4 py-2 text-[9px] font-mono uppercase tracking-widest text-text-lo/70">
+          <div className="px-4 py-2 text-2xs font-mono uppercase tracking-widest text-text-lo/70">
             workspace
           </div>
           {NAV.map((n) => (
             <div
               key={n.label}
-              className="flex items-center justify-between px-4 py-1.5 text-[11px]"
+              className="flex items-center justify-between px-4 py-1.5 text-xs"
               style={{
                 color: n.active ? "var(--text-hi)" : "var(--text-lo)",
                 background: n.active ? "rgba(255,255,255,0.03)" : "transparent",
@@ -58,7 +58,7 @@ export function CrmSurface({ progress, anchorRef }: Props) {
             >
               <span>{n.label}</span>
               {n.count != null && (
-                <span className="font-mono text-[9px] text-text-lo/60">
+                <span className="font-mono text-2xs text-text-lo/60">
                   {n.count.toLocaleString()}
                 </span>
               )}
@@ -87,7 +87,7 @@ export function CrmSurface({ progress, anchorRef }: Props) {
               <div className="text-lg font-display text-text-hi leading-tight">
                 Maya R.
               </div>
-              <div className="text-[10px] font-mono text-text-lo truncate">
+              <div className="text-xs font-mono text-text-lo truncate">
                 LEAD #001-8412 · maya.r · toronto, ca · updated just now
               </div>
             </div>
@@ -118,7 +118,7 @@ export function CrmSurface({ progress, anchorRef }: Props) {
               style={{ borderColor: "var(--hairline)" }}
             >
               <div
-                className="grid grid-cols-[80px_1fr_auto] px-5 py-2 text-[9px] font-mono uppercase tracking-widest text-text-lo border-b"
+                className="grid grid-cols-[80px_1fr_auto] px-5 py-2 text-2xs font-mono uppercase tracking-widest text-text-lo border-b"
                 style={{ borderColor: "var(--hairline)" }}
               >
                 <span>timestamp</span>
@@ -135,7 +135,7 @@ export function CrmSurface({ progress, anchorRef }: Props) {
                       x: 0,
                     }}
                     transition={{ duration: 0.2 }}
-                    className="grid grid-cols-[80px_1fr_auto] px-5 py-2 text-[11px] items-center border-b"
+                    className="grid grid-cols-[80px_1fr_auto] px-5 py-2 text-xs items-center border-b"
                     style={{ borderColor: "var(--hairline)" }}
                   >
                     <span className="font-mono text-text-lo">{row.t}</span>
@@ -146,7 +146,7 @@ export function CrmSurface({ progress, anchorRef }: Props) {
                       />
                       {row.label}
                     </span>
-                    <span className="font-mono text-[10px] text-text-lo">
+                    <span className="font-mono text-xs text-text-lo">
                       {row.src}
                     </span>
                   </motion.div>
@@ -157,7 +157,7 @@ export function CrmSurface({ progress, anchorRef }: Props) {
             {/* Right rail: automation + next best action */}
             <div className="flex flex-col p-4 gap-3 overflow-hidden">
               <div>
-                <div className="text-[9px] font-mono uppercase tracking-widest text-text-lo mb-2">
+                <div className="text-2xs font-mono uppercase tracking-widest text-text-lo mb-2">
                   automations
                 </div>
                 <Toggle label="Surfaced to sales" on={progress > 0.55} />
@@ -165,11 +165,11 @@ export function CrmSurface({ progress, anchorRef }: Props) {
                 <Toggle label="Voice callback on intent" on={progress > 0.85} />
               </div>
               <div className="mt-2">
-                <div className="text-[9px] font-mono uppercase tracking-widest text-text-lo mb-2">
+                <div className="text-2xs font-mono uppercase tracking-widest text-text-lo mb-2">
                   next best action
                 </div>
                 <div
-                  className="flex items-center justify-between text-[11px] px-3 py-2 rounded"
+                  className="flex items-center justify-between text-xs px-3 py-2 rounded"
                   style={{
                     background: "transparent",
                     color: "var(--text-hi)",
@@ -177,15 +177,15 @@ export function CrmSurface({ progress, anchorRef }: Props) {
                   }}
                 >
                   <span>Trigger AI voice call</span>
-                  <span className="font-mono text-[10px] text-text-lo">→</span>
+                  <span className="font-mono text-xs text-text-lo">→</span>
                 </div>
               </div>
               <div className="mt-2">
-                <div className="text-[9px] font-mono uppercase tracking-widest text-text-lo mb-2">
+                <div className="text-2xs font-mono uppercase tracking-widest text-text-lo mb-2">
                   attribution
                 </div>
                 <div
-                  className="rounded p-3 text-[10px] font-mono text-text-lo/85 leading-relaxed"
+                  className="rounded p-3 text-xs font-mono text-text-lo/85 leading-relaxed"
                   style={{
                     background: "var(--surface-2)",
                     border: "1px solid var(--hairline)",
@@ -211,7 +211,7 @@ function IntentBadge({ progress }: { progress: number }) {
   const isHigh = level === "High";
   return (
     <motion.span
-      className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-sm inline-flex items-center gap-1"
+      className="text-xs font-mono uppercase px-2 py-0.5 rounded-sm inline-flex items-center gap-1"
       animate={{
         color: isHigh ? "#0A0A0B" : "var(--text-lo)",
         background: isHigh ? "var(--acid)" : "transparent",
@@ -229,7 +229,7 @@ function IntentBadge({ progress }: { progress: number }) {
 function Btn({ label }: { label: string }) {
   return (
     <span
-      className="text-[10px] font-mono uppercase px-2 py-1 rounded-sm text-text-lo"
+      className="text-xs font-mono uppercase px-2 py-1 rounded-sm text-text-lo"
       style={{
         border: "1px solid var(--hairline)",
         background: "var(--surface-2)",
@@ -254,12 +254,12 @@ function Metric({
       className="flex flex-col gap-0.5 px-5 py-3 border-r"
       style={{ borderColor: "var(--hairline)" }}
     >
-      <span className="text-[9px] font-mono uppercase tracking-widest text-text-lo">
+      <span className="text-2xs font-mono uppercase tracking-widest text-text-lo">
         {label}
       </span>
       <span className="text-lg font-display text-text-hi">
         {value}
-        <span className="text-[10px] font-mono text-text-lo ml-1">{unit}</span>
+        <span className="text-xs font-mono text-text-lo ml-1">{unit}</span>
       </span>
     </div>
   );
@@ -268,7 +268,7 @@ function Metric({
 function Toggle({ label, on }: { label: string; on: boolean }) {
   return (
     <div className="flex items-center justify-between gap-3 py-1">
-      <span className="text-[11px] text-text-hi/85">{label}</span>
+      <span className="text-xs text-text-hi/85">{label}</span>
       <motion.div
         animate={{
           background: on ? "var(--acid)" : "var(--surface)",
