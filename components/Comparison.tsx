@@ -78,8 +78,9 @@ function OldWayCard() {
       style={{
         background: "#0D0D0F",
         border: "1px solid rgba(255,255,255,0.07)",
-        borderRadius: 14,
-        padding: "22px 26px 24px",
+        borderRadius: "var(--radius-lg)",
+        // 22 / 26 snap to --space-5 / --space-6 (nearest scale steps).
+        padding: "var(--space-5) var(--space-6) var(--space-6)",
         opacity: 0.86,
       }}
     >
@@ -113,8 +114,9 @@ function NewWayCard() {
       style={{
         background: "#101207",
         border: "1px solid rgba(223,255,0,0.4)",
-        borderRadius: 14,
-        padding: "22px 26px 24px",
+        borderRadius: "var(--radius-lg)",
+        // 22 / 26 snap to --space-5 / --space-6 (nearest scale steps).
+        padding: "var(--space-5) var(--space-6) var(--space-6)",
         boxShadow:
           "0 0 40px rgba(223,255,0,0.08), inset 0 1px 0 rgba(223,255,0,0.05)",
       }}

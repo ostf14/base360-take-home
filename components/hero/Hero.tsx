@@ -187,7 +187,7 @@ export function Hero() {
             Two-line lower cue. Fades out with the rest of the hero. */}
         <motion.div
           className="absolute inset-x-0 flex justify-center pointer-events-none z-30"
-          style={{ bottom: 12, opacity: heroOpacity }}
+          style={{ bottom: "var(--space-3)", opacity: heroOpacity }}
         >
           <div className="flex flex-col items-center gap-1.5 text-center">
             <div
@@ -220,7 +220,7 @@ export function Hero() {
             the fade. Semi-transparent dark card, ~560 px wide. */}
         <motion.div
           className="absolute inset-x-0 flex justify-center z-30"
-          style={{ bottom: 48, opacity: storyChromeOpacity }}
+          style={{ bottom: "var(--space-12)", opacity: storyChromeOpacity }}
         >
           <ChapterPlaque activeChapter={activeIdx} />
         </motion.div>

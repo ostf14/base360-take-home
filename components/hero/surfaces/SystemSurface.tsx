@@ -169,9 +169,12 @@ function NodeCol({
         transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
         className="flex items-center rounded-md whitespace-nowrap font-mono font-bold uppercase tracking-wider"
         style={{
-          padding: "14px 18px",
+          // 14 / 18 px snap to --space-3 (12) / --space-5 (20) as the
+          // closest scale steps, with BOX_HEIGHT recomputed above.
+          padding: "var(--space-3) var(--space-5)",
           height: BOX_HEIGHT,
-          gap: 9,
+          // 9 px snaps to --space-2 (8) — the icon → label gap.
+          gap: "var(--space-2)",
           fontSize: 15,
           boxSizing: "border-box",
           color: isClosed ? "#0A0A0B" : "var(--text-hi)",

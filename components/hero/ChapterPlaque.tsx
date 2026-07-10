@@ -35,14 +35,15 @@ export function ChapterPlaque({ activeChapter }: Props) {
       className="relative"
       style={{
         width: 620,
-        borderRadius: 14,
+        borderRadius: "var(--radius-lg)",
         background: "rgba(15,15,18,0.82)",
         backdropFilter: "blur(6px)",
         WebkitBackdropFilter: "blur(6px)",
         border: "1px solid rgba(255,255,255,0.1)",
         boxShadow:
           "0 10px 40px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04)",
-        padding: "18px 24px",
+        // 18 px vertical snaps to --space-5 (20); horizontal 24 → --space-6.
+        padding: "var(--space-5) var(--space-6)",
       }}
     >
       <AnimatePresence mode="wait">

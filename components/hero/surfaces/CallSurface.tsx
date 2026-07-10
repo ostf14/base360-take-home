@@ -65,9 +65,11 @@ export function CallSurface({ progress, anchorRef }: Props) {
                 isAI
                   ? {
                       borderLeft: "2px solid var(--acid)",
-                      paddingLeft: 10,
+                      // 2 px border + 10 px pad = 12 px inset, matches
+                      // Maya's `var(--space-3)` padding on the neutral row.
+                      paddingLeft: "calc(var(--space-3) - 2px)",
                     }
-                  : { paddingLeft: 12 }
+                  : { paddingLeft: "var(--space-3)" }
               }
             >
               {isAI ? (

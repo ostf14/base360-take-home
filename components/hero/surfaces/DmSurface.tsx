@@ -124,7 +124,7 @@ function DmBubble({ m, show }: { m: Msg; show: boolean }) {
           </span>
         )}
         <div
-          className={`px-3 py-1.5 text-[12px] leading-snug rounded-2xl ${
+          className={`px-3 py-1.5 text-[12px] leading-snug rounded-xl ${
             isIncoming ? "rounded-bl-sm" : "rounded-br-sm"
           }`}
           style={

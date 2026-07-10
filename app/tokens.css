@@ -1,4 +1,5 @@
 :root {
+  /* ── Colours ───────────────────────────────────────────────── */
   --bg:        #0A0A0B;
   --surface:   #141416;
   --surface-2: #1C1C1F;
@@ -18,15 +19,19 @@
      no color cast — so the shell reads as an object and the Maya lead
      stays the brightest accent in the frame. */
   --shell-body: #1D1E22;
-  /* Specimen shadow: a real lift stack, applied to both PhoneShell and
-     WindowShell. Layers, outer → inner:
-       1. Faint acid warmth beneath the shell (large blur, negative spread
-          so it stays a low pool, not a ring).
-       2. Strong soft dark drop so the shell reads as floating on black.
-       3. 1px separator ring so the exact edge is legible on the dark
-          canvas even when the drop shadow behind it is soft.
-       4. 1px bevel: bright rim at top+left (light-catching), dim rim at
-          bottom+right — a real rim, not a glow. */
+
+  /* Muted / dim acid — used only for chrome that used to shout. */
+  --acid-dim:  rgba(223, 255, 0, 0.28);
+  --acid-hush: rgba(223, 255, 0, 0.12);
+
+  /* ── Shadows / composite effects ───────────────────────────── */
+  /* Specimen shadow: a real lift stack, applied to both PhoneShell
+     and WindowShell. Layers, outer → inner:
+       1. Faint acid warmth beneath the shell.
+       2. Strong soft dark drop so it reads as floating on black.
+       3. 1 px separator ring so the exact edge is legible on the
+          dark canvas even when the drop shadow behind it is soft.
+       4. 1 px bevel: bright rim top+left, dim rim bottom+right. */
   --specimen-shadow:
     0 40px 80px -30px rgba(223, 255, 0, 0.05),
     0 20px 60px rgba(0, 0, 0, 0.7),
@@ -34,7 +39,49 @@
     inset  1px  1px 0 rgba(255, 255, 255, 0.10),
     inset -1px -1px 0 rgba(255, 255, 255, 0.04);
 
-  /* Muted / dim acid — used only for chrome that used to shout. */
-  --acid-dim:  rgba(223, 255, 0, 0.28);
-  --acid-hush: rgba(223, 255, 0, 0.12);
+  /* ── Spacing scale ─────────────────────────────────────────── */
+  /* 4 px base. Wired into tailwind.config so p-*/gap-*/m-* utility
+     classes read through these vars — the numeric keys keep the
+     same pixel values Tailwind ships (nothing regresses visually)
+     but the source of truth is now one file. Use these vars
+     directly in inline styles / padding shorthands. */
+  --space-0:   0px;
+  --space-px:  1px;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-7:   28px;
+  --space-8:   32px;
+  --space-9:   36px;
+  --space-10:  40px;
+  --space-11:  44px;
+  --space-12:  48px;
+  --space-14:  56px;
+  --space-16:  64px;
+  --space-20:  80px;
+  --space-24:  96px;
+  --space-28:  112px;
+  --space-32:  128px;
+  --space-40:  160px;
+  --space-48:  192px;
+
+  /* ── Radius scale ──────────────────────────────────────────── */
+  /* Consolidated from ad-hoc inline values used across shells /
+     cards / chips / notches. Non-scale radii (36, 8, 6…) are
+     snapped by callers to the nearest step. The Tailwind
+     rounded-* utilities are extended to these tokens in
+     tailwind.config, so both class-based and inline callers get
+     the same value from one source. */
+  --radius-none: 0;
+  --radius-xs:   4px;   /* small chips (mono tag labels) */
+  --radius-sm:   6px;   /* placeholder chips, tiny controls */
+  --radius-md:   8px;   /* URL chip, medium boxes, small cards */
+  --radius-lg:   14px;  /* section cards, plaque, comparison cards */
+  --radius-xl:   20px;  /* phone dynamic-island notch, home indicator */
+  --radius-2xl:  24px;  /* surface panels (System view, Canvas) */
+  --radius-3xl:  40px;  /* phone shell outer */
+  --radius-pill: 9999px; /* pill / full circle */
 }

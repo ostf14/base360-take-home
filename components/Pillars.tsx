@@ -106,8 +106,9 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
       style={{
         background: "#111114",
         border: "1px solid rgba(255,255,255,0.09)",
-        borderRadius: 14,
-        padding: "20px 22px 24px",
+        borderRadius: "var(--radius-lg)",
+        // 22 px horizontal snaps to --space-5 (20); 20/24 stay on-scale.
+        padding: "var(--space-5) var(--space-5) var(--space-6)",
       }}
     >
       {/* Header row — acid mono number left, acid Lucide icon right.

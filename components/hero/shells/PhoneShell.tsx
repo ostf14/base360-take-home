@@ -22,8 +22,8 @@ export function PhoneShell({ platform, children }: Props) {
           // rising out of the hero. Corners scaled proportionally.
           width: 320,
           height: "min(640px, 100%)",
-          borderRadius: 40,
-          padding: 8,
+          borderRadius: "var(--radius-3xl)",
+          padding: "var(--space-2)",
           // Bezel is a step lighter than --bg so the phone silhouette
           // reads against the near-black canvas. Kept neutral grey — the
           // Maya avatar stays the brightest thing in the frame.
@@ -36,7 +36,10 @@ export function PhoneShell({ platform, children }: Props) {
         <div
           className="relative flex flex-col flex-1 overflow-hidden"
           style={{
-            borderRadius: 36,
+            // Inner phone screen — snaps to --radius-3xl (40) minus
+            // the 8 px bezel padding, i.e. one step down. Uses
+            // --radius-2xl closest.
+            borderRadius: "var(--radius-2xl)",
             background: "var(--surface)",
           }}
         >
@@ -47,7 +50,7 @@ export function PhoneShell({ platform, children }: Props) {
             style={{
               width: 96,
               height: 26,
-              borderRadius: 20,
+              borderRadius: "var(--radius-xl)",
               background: "#050506",
             }}
           />

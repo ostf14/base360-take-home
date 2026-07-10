@@ -17,7 +17,7 @@ export function WindowShell({ url, tabs, children }: Props) {
       <div
         className="relative flex-1 flex flex-col overflow-hidden"
         style={{
-          borderRadius: 14,
+          borderRadius: "var(--radius-lg)",
           // Solid neutral grey, a step lighter than --bg so the window
           // chrome separates from the near-black canvas instead of
           // reading as a translucent hole. Matches PhoneShell so all
@@ -105,7 +105,7 @@ function TrafficLight({ color }: { color: string }) {
       style={{
         width: 11,
         height: 11,
-        borderRadius: "50%",
+        borderRadius: "var(--radius-pill)",
         background: color,
       }}
     />
