@@ -6,6 +6,7 @@ import { Credibility } from "@/components/Credibility";
 import { CtaClose } from "@/components/CtaClose";
 import { Footer } from "@/components/Footer";
 import { DesktopOnly } from "@/components/DesktopOnly";
+import { DesignSystemPanel } from "@/components/DesignSystemPanel";
 
 export default function Page() {
   return (
@@ -20,6 +21,7 @@ export default function Page() {
         <Credibility />
         <CtaClose />
         <Footer />
+        <DesignSystemPanel />
       </main>
     </DesktopOnly>
   );
