@@ -69,19 +69,25 @@
   --space-48:  192px;
 
   /* ── Radius scale ──────────────────────────────────────────── */
-  /* Consolidated from ad-hoc inline values used across shells /
-     cards / chips / notches. Non-scale radii (36, 8, 6…) are
-     snapped by callers to the nearest step. The Tailwind
-     rounded-* utilities are extended to these tokens in
-     tailwind.config, so both class-based and inline callers get
-     the same value from one source. */
-  --radius-none: 0;
-  --radius-xs:   4px;   /* small chips (mono tag labels) */
-  --radius-sm:   6px;   /* placeholder chips, tiny controls */
-  --radius-md:   8px;   /* URL chip, medium boxes, small cards */
-  --radius-lg:   14px;  /* section cards, plaque, comparison cards */
-  --radius-xl:   20px;  /* phone dynamic-island notch, home indicator */
-  --radius-2xl:  24px;  /* surface panels (System view, Canvas) */
-  --radius-3xl:  40px;  /* phone shell outer */
+  /* 7 clean steps. Consolidated after the usage audit:
+       · --radius-none dropped (0 uses).
+       · Old --radius-xl (20) and --radius-2xl (24) — visually
+         indistinct and only 2 uses each — merged to a single
+         --radius-xl at 22 px.
+       · Old --radius-3xl (40, phone shell only) promoted to
+         --radius-2xl so the scale reads cleanly xs → 2xl.
+     The Tailwind rounded-* utilities are extended to these
+     tokens in tailwind.config so class-based and inline callers
+     resolve against the same source. */
+  --radius-xs:   4px;    /* small chips (mono tag labels) */
+  --radius-sm:   6px;    /* placeholder chips, tiny controls */
+  --radius-md:   8px;    /* URL chip, medium boxes, small cards */
+  --radius-lg:   14px;   /* section cards, plaque, comparison cards */
+  --radius-xl:   22px;   /* phone notch, DM bubbles, System panel,
+                            phone inner screen — every "large but not
+                            device-shell" corner uses this one step */
+  --radius-2xl:  40px;   /* phone shell outer — the true device-size
+                            corner. Only one consumer, but 24 px
+                            would look glaringly too angular here. */
   --radius-pill: 9999px; /* pill / full circle */
 }

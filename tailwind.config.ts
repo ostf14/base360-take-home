@@ -60,19 +60,19 @@ const config: Config = {
         "48": "var(--space-48)",
       },
       // Border-radius utility classes route through the --radius-*
-      // scale. The token values were consolidated from every
-      // hardcoded borderRadius: N found in the components; where
-      // callers used a non-scale value (36 → 40, 8 → 8, 6 → 6) they
-      // snap to the nearest step by using the corresponding var().
+      // scale. The scale has 7 steps after the consolidation pass
+      // (dropped --radius-none, merged xl+2xl into a single 22 px xl,
+      // renamed the phone-shell 40 px step from 3xl to 2xl). The
+      // rounded-2xl utility maps to the phone-shell corner; the
+      // former rounded-3xl class is gone (0 consumers).
       borderRadius: {
-        none: "var(--radius-none)",
+        none: "0",
         sm: "var(--radius-xs)",
         DEFAULT: "var(--radius-sm)",
         md: "var(--radius-md)",
         lg: "var(--radius-lg)",
         xl: "var(--radius-xl)",
         "2xl": "var(--radius-2xl)",
-        "3xl": "var(--radius-3xl)",
         full: "var(--radius-pill)",
         pill: "var(--radius-pill)",
       },

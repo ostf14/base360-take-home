@@ -49,14 +49,12 @@ const SPACING_TOKENS = [
 ];
 
 const RADIUS_TOKENS = [
-  "--radius-none",
   "--radius-xs",
   "--radius-sm",
   "--radius-md",
   "--radius-lg",
   "--radius-xl",
   "--radius-2xl",
-  "--radius-3xl",
   "--radius-pill",
 ];
 

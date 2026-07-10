@@ -54,7 +54,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
   return (
     <div className="absolute inset-0 px-6 pt-24 pb-16 flex">
       <div
-        className="relative flex-1 rounded-2xl overflow-hidden"
+        className="relative flex-1 rounded-xl overflow-hidden"
         style={{
           background: "var(--surface-panel)",
           border: "1px solid var(--hairline)",
