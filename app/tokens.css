@@ -40,11 +40,11 @@
     inset -1px -1px 0 rgba(255, 255, 255, 0.04);
 
   /* ── Spacing scale ─────────────────────────────────────────── */
-  /* 4 px base. Wired into tailwind.config so p-*/gap-*/m-* utility
-     classes read through these vars — the numeric keys keep the
-     same pixel values Tailwind ships (nothing regresses visually)
-     but the source of truth is now one file. Use these vars
-     directly in inline styles / padding shorthands. */
+  /* 4 px base. Wired into tailwind.config so p-<N>, gap-<N>, m-<N>
+     utility classes read through these vars — the numeric keys
+     keep the same pixel values Tailwind ships (nothing regresses
+     visually) but the source of truth is now one file. Use these
+     vars directly in inline styles / padding shorthands. */
   --space-0:   0px;
   --space-px:  1px;
   --space-1:   4px;
