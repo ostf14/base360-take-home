@@ -187,7 +187,7 @@ export function CrmSurface({ progress, anchorRef }: Props) {
                 <div
                   className="rounded p-3 text-[10px] font-mono text-text-lo/85 leading-relaxed"
                   style={{
-                    background: "var(--surface-panel-2)",
+                    background: "var(--surface-2)",
                     border: "1px solid var(--hairline)",
                   }}
                 >
@@ -232,7 +232,7 @@ function Btn({ label }: { label: string }) {
       className="text-[10px] font-mono uppercase px-2 py-1 rounded-sm text-text-lo"
       style={{
         border: "1px solid var(--hairline)",
-        background: "var(--surface-panel-2)",
+        background: "var(--surface-2)",
       }}
     >
       {label}

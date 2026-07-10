@@ -27,7 +27,7 @@ export function PhoneShell({ platform, children }: Props) {
           // Bezel is a step lighter than --bg so the phone silhouette
           // reads against the near-black canvas. Kept neutral grey — the
           // Maya avatar stays the brightest thing in the frame.
-          background: "var(--shell-body)",
+          background: "var(--surface-2)",
           // Rim + separator ring + drop + acid whisper all live in the
           // shared token; no need for the old ad-hoc overlays.
           boxShadow: "var(--specimen-shadow)",

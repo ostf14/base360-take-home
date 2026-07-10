@@ -56,7 +56,7 @@ export function SystemSurface({ progress, anchorRef }: Props) {
       <div
         className="relative flex-1 rounded-xl overflow-hidden"
         style={{
-          background: "var(--surface-panel)",
+          background: "var(--surface)",
           border: "1px solid var(--hairline)",
           boxShadow: "var(--specimen-shadow)",
         }}

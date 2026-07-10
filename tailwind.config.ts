@@ -32,9 +32,15 @@ const config: Config = {
         specimen: "var(--specimen-shadow)",
       },
       // Spacing keys mirror the Tailwind numeric scale but resolve to
-      // --space-* vars so the tokens.css file is the single source of
-      // truth. The pixel values match Tailwind's defaults, so p-4,
-      // gap-6, m-8 etc. render identically to before.
+      // --space-* vars so the tokens.css file is the single source
+      // of truth. The pixel values match Tailwind's defaults so p-4,
+      // gap-6, m-8 etc. render identically. The 9, 32, 48 keys are
+      // intentionally OMITTED — they had 0 consumers across every
+      // spacing/sizing utility at the last audit; leaving them out
+      // prevents a future `p-9` or `h-48` from quietly resurrecting
+      // the dead scale. (px, 7, 11 are kept: consumed by h-px, h-7,
+      // w-11/h-11 in the phone glyphs, DM avatar, and call
+      // controls respectively.)
       spacing: {
         "0": "var(--space-0)",
         px: "var(--space-px)",
@@ -46,7 +52,6 @@ const config: Config = {
         "6": "var(--space-6)",
         "7": "var(--space-7)",
         "8": "var(--space-8)",
-        "9": "var(--space-9)",
         "10": "var(--space-10)",
         "11": "var(--space-11)",
         "12": "var(--space-12)",
@@ -55,9 +60,7 @@ const config: Config = {
         "20": "var(--space-20)",
         "24": "var(--space-24)",
         "28": "var(--space-28)",
-        "32": "var(--space-32)",
         "40": "var(--space-40)",
-        "48": "var(--space-48)",
       },
       // Border-radius utility classes route through the --radius-*
       // scale. The scale has 7 steps after the consolidation pass

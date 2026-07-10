@@ -191,7 +191,7 @@ export function EmailSurface({ progress, anchorRef }: Props) {
           className="flex items-center justify-between px-5 py-2 border-t text-[9px] font-mono uppercase tracking-widest text-text-lo"
           style={{
             borderColor: "var(--hairline)",
-            background: "var(--surface-panel-2)",
+            background: "var(--surface-2)",
           }}
         >
           <span>3 rows · 1 recipient</span>

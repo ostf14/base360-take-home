@@ -1,5 +1,10 @@
 :root {
   /* ── Colours ───────────────────────────────────────────────── */
+  /* Two solid surfaces, one for the base and one for the raised
+     step. The earlier --surface-panel / --surface-panel-2 /
+     --shell-body tokens were all within 1–3 rgb units of these
+     two AND all their consumers were opaque enough that the
+     alpha never made a visible difference — collapsed here. */
   --bg:        #0A0A0B;
   --surface:   #141416;
   --surface-2: #1C1C1F;
@@ -8,21 +13,10 @@
   --text-lo:   #8A8A8F;
   --hairline:  rgba(255, 255, 255, 0.08);
   --acid-glow: rgba(223, 255, 0, 0.35);
-  --acid-soft: rgba(223, 255, 0, 0.12);
-
-  /* Environments recede — surfaces are exhibits, not live UI. */
-  --surface-panel:   rgba(20, 20, 22, 0.9);
-  --surface-panel-2: rgba(28, 28, 31, 0.9);
-  /* Shell body: a neutral dark grey a step LIGHTER than --bg (#0A0A0B) so
-     phone bezels and window chrome silhouette against the canvas instead
-     of disappearing into near-black-on-near-black. Kept grey — no acid,
-     no color cast — so the shell reads as an object and the Maya lead
-     stays the brightest accent in the frame. */
-  --shell-body: #1D1E22;
-
-  /* Muted / dim acid — used only for chrome that used to shout. */
+  /* Muted acid — used for chrome that used to shout. The earlier
+     --acid-soft / --acid-hush tokens (both 0 uses, both 0.12 α)
+     were dead + duplicates and have been dropped. */
   --acid-dim:  rgba(223, 255, 0, 0.28);
-  --acid-hush: rgba(223, 255, 0, 0.12);
 
   /* ── Shadows / composite effects ───────────────────────────── */
   /* Specimen shadow: a real lift stack, applied to both PhoneShell
@@ -46,27 +40,29 @@
      visually) but the source of truth is now one file. Use these
      vars directly in inline styles / padding shorthands. */
   --space-0:   0px;
-  --space-px:  1px;
+  --space-px:  1px;   /* consumed by h-px in glyph rows */
   --space-1:   4px;
   --space-2:   8px;
   --space-3:   12px;
   --space-4:   16px;
   --space-5:   20px;
   --space-6:   24px;
-  --space-7:   28px;
+  --space-7:   28px;  /* consumed by h-7 (search bar / DM avatar) */
   --space-8:   32px;
-  --space-9:   36px;
   --space-10:  40px;
-  --space-11:  44px;
+  --space-11:  44px;  /* consumed by w-11/h-11 (call controls) */
   --space-12:  48px;
   --space-14:  56px;
   --space-16:  64px;
   --space-20:  80px;
   --space-24:  96px;
   --space-28:  112px;
-  --space-32:  128px;
   --space-40:  160px;
-  --space-48:  192px;
+  /* Removed after the audit — 0 consumers each across p-*, gap-*,
+     m-*, AND w-/h-/inset- sizing utilities: --space-9, --space-32,
+     --space-48. Also dropped from tailwind.config.spacing so the
+     matching utility classes (p-9, mt-32, h-48, etc.) can't be
+     written and quietly resurface the dead scale. */
 
   /* ── Radius scale ──────────────────────────────────────────── */
   /* 7 clean steps. Consolidated after the usage audit:

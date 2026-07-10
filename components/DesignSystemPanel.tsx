@@ -19,11 +19,7 @@ const COLOR_TOKENS = [
   "--text-lo",
   "--hairline",
   "--acid-glow",
-  "--acid-soft",
   "--acid-dim",
-  "--surface-panel",
-  "--surface-panel-2",
-  "--shell-body",
 ];
 
 const SPACING_TOKENS = [
@@ -538,7 +534,7 @@ function ElevationSection() {
               style={{
                 width: 200,
                 height: 80,
-                background: "var(--shell-body)",
+                background: "var(--surface-2)",
                 borderRadius: "var(--radius-lg)",
                 boxShadow: "var(--specimen-shadow)",
               }}

@@ -22,7 +22,7 @@ export function WindowShell({ url, tabs, children }: Props) {
           // chrome separates from the near-black canvas instead of
           // reading as a translucent hole. Matches PhoneShell so all
           // surfaces float equally.
-          background: "var(--shell-body)",
+          background: "var(--surface-2)",
           // No explicit border — the 1px separator ring and the
           // top+left / bottom+right bevel rim are baked into the
           // shared --specimen-shadow stack.
@@ -33,7 +33,7 @@ export function WindowShell({ url, tabs, children }: Props) {
         <div
           className="flex items-center gap-4 px-4 py-2.5 border-b"
           style={{
-            background: "var(--surface-panel-2)",
+            background: "var(--surface-2)",
             borderColor: "var(--hairline)",
           }}
         >
@@ -65,7 +65,7 @@ export function WindowShell({ url, tabs, children }: Props) {
           <div
             className="flex items-center gap-1 px-3 border-b overflow-x-auto no-scrollbar"
             style={{
-              background: "var(--surface-panel-2)",
+              background: "var(--surface-2)",
               borderColor: "var(--hairline)",
             }}
           >
