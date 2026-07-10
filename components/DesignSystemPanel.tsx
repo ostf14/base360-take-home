@@ -122,6 +122,11 @@ function useTokenValues(tokens: readonly string[]) {
   return values;
 }
 
+// Height of the fixed top bar in px. Exported so Nav (top offset)
+// and Hero (sticky top / height) can align to the same value from
+// one source rather than duplicating a magic 34.
+export const DESIGN_SYSTEM_BAR_HEIGHT = 34;
+
 export function DesignSystemPanel() {
   const [open, setOpen] = useState(false);
 
@@ -136,13 +141,17 @@ export function DesignSystemPanel() {
 
   return (
     <>
-      <Trigger onClick={() => setOpen(true)} />
+      <TopBar onClick={() => setOpen(true)} />
       <Drawer open={open} onClose={() => setOpen(false)} />
     </>
   );
 }
 
-function Trigger({ onClick }: { onClick: () => void }) {
+// Full-width fixed bar pinned above the navbar — always visible as
+// the entry point to the token drawer. Whole strip is a button so
+// clicking anywhere on the row opens the panel; hovering flips
+// label + dot to acid.
+function TopBar({ onClick }: { onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   return (
     <button
@@ -150,11 +159,12 @@ function Trigger({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="fixed bottom-6 right-6 z-[60] flex items-center gap-2 px-3 py-2 font-mono uppercase text-[10px] tracking-widest transition-colors"
+      className="fixed top-0 left-0 right-0 z-[90] flex items-center justify-center transition-colors"
       style={{
+        height: DESIGN_SYSTEM_BAR_HEIGHT,
         background: "var(--surface)",
-        border: `1px solid ${hovered ? "var(--acid)" : "var(--hairline)"}`,
-        borderRadius: "var(--radius-md)",
+        borderBottom: "1px solid var(--hairline)",
+        gap: "var(--space-3)",
         color: hovered ? "var(--acid)" : "var(--text-lo)",
       }}
       aria-label="Open design system panel"
@@ -165,12 +175,31 @@ function Trigger({ onClick }: { onClick: () => void }) {
         style={{
           width: 6,
           height: 6,
-          borderRadius: "var(--radius-pill)",
           background: "var(--acid)",
           boxShadow: hovered ? "0 0 8px rgba(223,255,0,0.6)" : "none",
         }}
       />
-      <span>{"{ } SYSTEM"}</span>
+      <span
+        className="font-mono uppercase font-bold"
+        style={{
+          fontSize: 10,
+          letterSpacing: "0.28em",
+        }}
+      >
+        DESIGN SYSTEM
+      </span>
+      <span
+        aria-hidden
+        className="font-mono uppercase"
+        style={{
+          fontSize: 9,
+          letterSpacing: "0.28em",
+          color: "var(--text-lo)",
+          opacity: 0.65,
+        }}
+      >
+        {"{ } click to inspect"}
+      </span>
     </button>
   );
 }

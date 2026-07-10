@@ -8,6 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { CHAPTERS, Surface } from "@/lib/chapters";
+import { DESIGN_SYSTEM_BAR_HEIGHT } from "@/components/DesignSystemPanel";
 import { Canvas, activeChapterAt } from "./Canvas";
 import { ChapterPlaque } from "./ChapterPlaque";
 import { Stepper } from "./Stepper";
@@ -105,7 +106,17 @@ export function Hero() {
       className="relative"
       style={{ height: `${TOTAL_FRAMES * 100}vh` }}
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      <div
+        className="sticky w-full overflow-hidden"
+        style={{
+          // Pin the story frame BELOW the design-system top bar so
+          // the phone / plaque / stepper aren't clipped by it, and
+          // shrink height by the bar so the visible pinned viewport
+          // still ends exactly at the browser foot.
+          top: DESIGN_SYSTEM_BAR_HEIGHT,
+          height: `calc(100vh - ${DESIGN_SYSTEM_BAR_HEIGHT}px)`,
+        }}
+      >
         {/* Hero radial glow — soft violet → acid pool behind the phone.
             Fades out with the rest of the hero. */}
         <HeroGlow heroOpacity={heroOpacity} />

@@ -1,15 +1,17 @@
 "use client";
+import { DESIGN_SYSTEM_BAR_HEIGHT } from "@/components/DesignSystemPanel";
 
 // Transparent floating nav. No background plate and no bottom border,
 // even when the page is scrolled — the story surfaces slide beneath
 // the nav row (BASE360 wordmark, links, CTA) without ever being
 // clipped by a nav strip. The nav still holds z-50 so its content
-// stays clickable above the sticky story frame.
+// stays clickable above the sticky story frame. Shifted down by the
+// design-system top bar's height so it doesn't sit underneath it.
 export function Nav() {
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50"
-      style={{ background: "transparent" }}
+      className="fixed left-0 right-0 z-50"
+      style={{ background: "transparent", top: DESIGN_SYSTEM_BAR_HEIGHT }}
     >
       <div className="flex items-center justify-between px-8 py-4">
         <div className="flex items-center gap-3">
