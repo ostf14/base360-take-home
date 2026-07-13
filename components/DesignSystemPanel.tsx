@@ -174,8 +174,7 @@ function TopBar({ onClick }: { onClick: () => void }) {
           href="https://mihhailovski-product-designer.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="transition-colors hover:text-acid"
-          style={{ color: "var(--text-hi)" }}
+          className="text-text-hi transition-colors hover:text-acid"
         >
           Aleksandr Mihhailovski
         </a>
