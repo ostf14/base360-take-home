@@ -130,32 +130,68 @@ export function DesignSystemPanel() {
   );
 }
 
-// Full-width fixed bar pinned above the navbar — always visible as
-// the entry point to the token drawer. A wrapper div carries the
-// strip styling; the click-to-open button fills the wrapper so any
-// click on the row still opens the panel. The left-corner credit
-// sits absolutely over the button as a sibling — the wrapper span
-// has pointer-events: none so clicks pass through to the button
-// beneath, and the inner <a> re-enables pointer-events + stops
-// propagation so clicking the name navigates to the portfolio
-// without also firing the panel-open handler.
+// Full-width fixed bar pinned above the navbar. Two independent
+// interactive elements live inside it, side by side, with NO overlap
+// so their hover + click states are fully independent:
+//   · Left  — designer credit (`<a>` on the name only) — hover flips
+//             the name to acid; click opens the portfolio URL.
+//   · Center — DESIGN SYSTEM open button — hover flips its label +
+//             dot glow to acid; click opens the token drawer.
+// Previous version stacked the credit ABOVE the click-to-open button
+// with pointer-events: none, which meant hovering the credit also
+// fired the button's mouseenter (both acid states lit at once). This
+// restructure makes them siblings under a flex row so each element
+// receives its own mouse events cleanly.
 function TopBar({ onClick }: { onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
-      className="fixed top-0 left-0 right-0 z-[90]"
+      className="fixed top-0 left-0 right-0 z-[90] flex items-center justify-center"
       style={{
         height: DESIGN_SYSTEM_BAR_HEIGHT,
         background: "var(--surface)",
         borderBottom: "1px solid var(--hairline)",
       }}
     >
+      {/* Designer credit — absolute-left so it doesn't push the
+          centered DESIGN SYSTEM button off-axis. Only the name is a
+          link; the "designed by" prefix is inert text. Because the
+          span is out-of-flow and doesn't sit on top of the button,
+          hovering it does NOT trigger the button's hover state. */}
+      <span
+        className="absolute font-mono uppercase"
+        style={{
+          left: "var(--space-4)",
+          top: "50%",
+          transform: "translateY(-50%)",
+          fontSize: "var(--text-2xs)",
+          letterSpacing: "0.22em",
+          color: "var(--text-lo)",
+        }}
+      >
+        designed by{" "}
+        <a
+          href="https://mihhailovski-product-designer.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="transition-colors hover:text-acid"
+          style={{ color: "var(--text-hi)" }}
+        >
+          Aleksandr Mihhailovski
+        </a>
+      </span>
+
+      {/* DESIGN SYSTEM open button — visually centred by the flex
+          container. Hover flips label + dot glow to acid; click
+          opens the drawer. The button no longer spans the full
+          strip, so it only fires hover / click for interactions
+          that actually land on its content. */}
       <button
         type="button"
         onClick={onClick}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="absolute inset-0 flex items-center justify-center transition-colors"
+        className="flex items-center transition-colors"
         style={{
           gap: "var(--space-3)",
           color: hovered ? "var(--acid)" : "var(--text-lo)",
@@ -195,36 +231,6 @@ function TopBar({ onClick }: { onClick: () => void }) {
           {"{ } click to inspect"}
         </span>
       </button>
-      {/* Designer credit — sits absolutely on the left, over the
-          click-to-open button. pointer-events: none on the wrapper
-          span keeps the surrounding "designed by" text click-
-          transparent (a click there still opens the panel via the
-          button below); the inner <a> restores pointer-events and
-          stops propagation so clicking the name goes to the
-          portfolio URL only. */}
-      <span
-        className="absolute font-mono uppercase pointer-events-none"
-        style={{
-          left: "var(--space-4)",
-          top: "50%",
-          transform: "translateY(-50%)",
-          fontSize: "var(--text-2xs)",
-          letterSpacing: "0.22em",
-          color: "var(--text-lo)",
-        }}
-      >
-        designed by{" "}
-        <a
-          href="https://mihhailovski-product-designer.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={(e) => e.stopPropagation()}
-          className="pointer-events-auto transition-colors hover:text-acid"
-          style={{ color: "var(--text-hi)" }}
-        >
-          Aleksandr Mihhailovski
-        </a>
-      </span>
     </div>
   );
 }
