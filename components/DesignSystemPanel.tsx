@@ -131,59 +131,101 @@ export function DesignSystemPanel() {
 }
 
 // Full-width fixed bar pinned above the navbar — always visible as
-// the entry point to the token drawer. Whole strip is a button so
-// clicking anywhere on the row opens the panel; hovering flips
-// label + dot to acid.
+// the entry point to the token drawer. A wrapper div carries the
+// strip styling; the click-to-open button fills the wrapper so any
+// click on the row still opens the panel. The left-corner credit
+// sits absolutely over the button as a sibling — the wrapper span
+// has pointer-events: none so clicks pass through to the button
+// beneath, and the inner <a> re-enables pointer-events + stops
+// propagation so clicking the name navigates to the portfolio
+// without also firing the panel-open handler.
 function TopBar({ onClick }: { onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="fixed top-0 left-0 right-0 z-[90] flex items-center justify-center transition-colors"
+    <div
+      className="fixed top-0 left-0 right-0 z-[90]"
       style={{
         height: DESIGN_SYSTEM_BAR_HEIGHT,
         background: "var(--surface)",
         borderBottom: "1px solid var(--hairline)",
-        gap: "var(--space-3)",
-        color: hovered ? "var(--acid)" : "var(--text-lo)",
       }}
-      aria-label="Open design system panel"
     >
-      <span
-        aria-hidden
-        className="inline-block"
+      <button
+        type="button"
+        onClick={onClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="absolute inset-0 flex items-center justify-center transition-colors"
         style={{
-          width: 6,
-          height: 6,
-          background: "var(--acid)",
-          boxShadow: hovered ? "0 0 8px rgba(223,255,0,0.6)" : "none",
+          gap: "var(--space-3)",
+          color: hovered ? "var(--acid)" : "var(--text-lo)",
+          background: "transparent",
         }}
-      />
-      <span
-        className="font-mono uppercase font-bold"
-        style={{
-          fontSize: "var(--text-xs)",
-          letterSpacing: "0.28em",
-        }}
+        aria-label="Open design system panel"
       >
-        DESIGN SYSTEM
-      </span>
+        <span
+          aria-hidden
+          className="inline-block"
+          style={{
+            width: 6,
+            height: 6,
+            background: "var(--acid)",
+            boxShadow: hovered ? "0 0 8px rgba(223,255,0,0.6)" : "none",
+          }}
+        />
+        <span
+          className="font-mono uppercase font-bold"
+          style={{
+            fontSize: "var(--text-xs)",
+            letterSpacing: "0.28em",
+          }}
+        >
+          DESIGN SYSTEM
+        </span>
+        <span
+          aria-hidden
+          className="font-mono uppercase"
+          style={{
+            fontSize: "var(--text-2xs)",
+            letterSpacing: "0.28em",
+            color: "var(--text-lo)",
+            opacity: 0.65,
+          }}
+        >
+          {"{ } click to inspect"}
+        </span>
+      </button>
+      {/* Designer credit — sits absolutely on the left, over the
+          click-to-open button. pointer-events: none on the wrapper
+          span keeps the surrounding "designed by" text click-
+          transparent (a click there still opens the panel via the
+          button below); the inner <a> restores pointer-events and
+          stops propagation so clicking the name goes to the
+          portfolio URL only. */}
       <span
-        aria-hidden
-        className="font-mono uppercase"
+        className="absolute font-mono uppercase pointer-events-none"
         style={{
+          left: "var(--space-4)",
+          top: "50%",
+          transform: "translateY(-50%)",
           fontSize: "var(--text-2xs)",
-          letterSpacing: "0.28em",
+          letterSpacing: "0.22em",
           color: "var(--text-lo)",
-          opacity: 0.65,
         }}
       >
-        {"{ } click to inspect"}
+        designed by{" "}
+        <a
+          href="https://mihhailovski-product-designer.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="pointer-events-auto transition-colors hover:text-acid"
+          style={{ color: "var(--text-hi)" }}
+        >
+          Aleksandr Mihhailovski
+        </a>
       </span>
-    </button>
+    </div>
   );
 }
 
